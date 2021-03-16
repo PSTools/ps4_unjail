@@ -1,2 +1,2 @@
 # ps4_unjail
- PS4 Unjail Plugin
+ PS4 Universal Plugin
