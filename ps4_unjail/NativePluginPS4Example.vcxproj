@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ORBIS">
+      <Configuration>Debug</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ORBIS">
+      <Configuration>Release</Configuration>
+      <Platform>ORBIS</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C0867F77-F7CE-4EC5-9923-8DB2348D4C3A}</ProjectGuid>
+    <ProjectName>universal</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Condition="'$(DebuggerFlavor)'=='ORBISDebugger'" Label="OverrideDebuggerDefaults">
+    <!--LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand-->
+    <!--LocalDebuggerCommandArguments></LocalDebuggerCommandArguments-->
+    <!--LocalDebuggerTarget></LocalDebuggerTarget-->
+    <!--LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory-->
+    <!--LocalRunCommandLine></LocalRunCommandLine-->
+  </PropertyGroup>
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <OutDir>$(SolutionDir)..\Plugins\PS4\</OutDir>
+    <IncludePath>C:\tauon2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <OutDir>$(SolutionDir)..\Plugins\PS4\</OutDir>
+    <IncludePath>.\tauon\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link />
+    <Link />
+    <Link>
+      <AdditionalDependencies>-lScePosix_stub_weak;-lSceNet_stub_weak;-lSceNetCtl_stub_weak;-lSceNetDebug_stub_weak;-lSceUsbd_stub_weak;-lSceUsbStorage_tau_stub_weak;-lSceSysmodule_tau_stub_weak;-lSceSysmodule_stub_weak;-lSceSystemService_tau_stub_weak;-lkernel_tau_stub_weak</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\tauon2\lib;$(SCE_ORBIS_SDK_DIR)\lib;$(SCE_ORBIS_SDK_DIR)\target\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link />
+    <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)\tauon\lib;$(SCE_ORBIS_SDK_DIR)\lib;$(SCE_ORBIS_SDK_DIR)\target\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>-lkernel_tau_stub;-lkernel_tau_stub_weak;-lScePosix_stub_weak;-lSceNet_stub_weak;-lSceNetCtl_stub_weak;-lSceNetDebug_stub_weak;-lSceUsbd_stub_weak;-lSceUsbStorage_tau_stub_weak;-lSceSysmodule_tau_stub_weak;-lSceSysmodule_stub_weak</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="checkheaders.cpp" />
+    <ClCompile Include="decrypt.c" />
+    <ClCompile Include="decryptio.c" />
+    <ClCompile Include="encryptsrv.c" />
+    <ClCompile Include="ftps4.c">
+      <CLanguageStd Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
+      </CLanguageStd>
+      <CLanguageStd Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
+      </CLanguageStd>
+    </ClCompile>
+    <ClCompile Include="mount.c" />
+    <ClCompile Include="PlayerInterface\UnityPrxPlugin.cpp" />
+    <ClCompile Include="pluginLib.cpp" />
+    <ClCompile Include="pluginunjail.cpp" />
+    <ClCompile Include="prx.cpp" />
+    <ClCompile Include="syscall.cpp" />
+    <ClCompile Include="unjail.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">CompileAsC</CompileAs>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bls.h" />
+    <ClInclude Include="debug.h" />
+    <ClInclude Include="decrypt.h" />
+    <ClInclude Include="decryptio.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="encryptsrv.h" />
+    <ClInclude Include="encryptsrv_args.h" />
+    <ClInclude Include="ftps4.h" />
+    <ClInclude Include="mount.h" />
+    <ClInclude Include="PlayerInterface\IPluginPS3.h" />
+    <ClInclude Include="PlayerInterface\IPluginPSP2.h" />
+    <ClInclude Include="PlayerInterface\IPluginSceAppParams.h" />
+    <ClInclude Include="PlayerInterface\IPluginSceNpParams.h" />
+    <ClInclude Include="PlayerInterface\IPluginUnity.h" />
+    <ClInclude Include="PlayerInterface\PrxPluginInterface.h" />
+    <ClInclude Include="PlayerInterface\UnityEventQueue.h" />
+    <ClInclude Include="PlayerInterface\UnityPrxPlugin.h" />
+    <ClInclude Include="pluginunjail.h" />
+    <ClInclude Include="pup.h" />
+    <ClInclude Include="syscall.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="unjail.h" />
+  </ItemGroup>
+  <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

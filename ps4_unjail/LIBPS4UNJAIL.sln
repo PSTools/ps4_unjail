@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativePluginPS4Example", "NativePluginPS4Example.vcxproj", "{C0867F77-F7CE-4EC5-9923-8DB2348D4C3A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ORBIS = Debug|ORBIS
+		Release|ORBIS = Release|ORBIS
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0867F77-F7CE-4EC5-9923-8DB2348D4C3A}.Debug|ORBIS.ActiveCfg = Debug|ORBIS
+		{C0867F77-F7CE-4EC5-9923-8DB2348D4C3A}.Debug|ORBIS.Build.0 = Debug|ORBIS
+		{C0867F77-F7CE-4EC5-9923-8DB2348D4C3A}.Release|ORBIS.ActiveCfg = Release|ORBIS
+		{C0867F77-F7CE-4EC5-9923-8DB2348D4C3A}.Release|ORBIS.Build.0 = Release|ORBIS
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

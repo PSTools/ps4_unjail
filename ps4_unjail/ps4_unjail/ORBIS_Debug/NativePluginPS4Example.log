@@ -1,0 +1,16 @@
+﻿Build started 02/04/2019 22:46:36.
+     1>Project "C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\NativePluginPS4Example.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         prx.cpp
+         orbis-clang.exe -o ORBIS_Debug\prx.o -c -MD -MV -fdiagnostics-format=msvc -I"C:\sdk\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\sdk\ORBIS SDKs\4.500\target\include" -I"C:\sdk\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\prx.cpp
+     1>C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\prx.cpp(68,11): warning : unused variable 'size' [-Wunused-variable]
+     1>C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\prx.cpp(69,19): warning : unused variable 'data' [-Wunused-variable]
+     1>C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\prx.cpp(242,1): warning : control reaches end of non-void function [-Wreturn-type]
+       Link:
+         C:\sdk\ORBIS SDKs\4.500\host_tools\bin\orbis-ld.exe -o "C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\..\Plugins\PS4\universal.prx" --oformat=prx --prx-stub-output-dir="C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\..\Plugins\PS4" -L"C:\sdk\ORBIS SDKs\4.500\lib" -L"C:\sdk\ORBIS SDKs\4.500\target\lib" --start-group ORBIS_Debug\ftps4.o ORBIS_Debug\mount.o ORBIS_Debug\UnityPrxPlugin.o ORBIS_Debug\pluginLib.o ORBIS_Debug\pluginunjail.o ORBIS_Debug\prx.o ORBIS_Debug\syscall.o ORBIS_Debug\unjail.o "-lScePosix_stub_weak" "-lSceNet_stub_weak" "-lSceNetCtl_stub_weak" "-lSceNetDebug_stub_weak" "-lSceUsbd_stub_weak" --end-group
+         NativePluginPS4Example.vcxproj -> C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\..\Plugins\PS4\universal.prx
+     1>Done Building Project "C:\Users\zecoxao\Desktop\PS4_UnjailPlugin_Unity_NativeCode\NativePluginPS4Example.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.36

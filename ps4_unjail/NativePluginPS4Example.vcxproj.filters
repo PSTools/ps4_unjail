@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="prx.cpp" />
+    <ClCompile Include="PlayerInterface\UnityPrxPlugin.cpp">
+      <Filter>PlayerInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="pluginLib.cpp" />
+    <ClCompile Include="pluginunjail.cpp" />
+    <ClCompile Include="syscall.cpp" />
+    <ClCompile Include="unjail.c" />
+    <ClCompile Include="ftps4.c" />
+    <ClCompile Include="mount.c" />
+    <ClCompile Include="decrypt.c" />
+    <ClCompile Include="decryptio.c" />
+    <ClCompile Include="encryptsrv.c" />
+    <ClCompile Include="checkheaders.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="PlayerInterface">
+      <UniqueIdentifier>{1ef13144-7666-4633-b4e8-94c85a8a09b0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PlayerInterface\UnityPrxPlugin.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\IPluginPS3.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\IPluginPSP2.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\IPluginSceAppParams.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\IPluginSceNpParams.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\IPluginUnity.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\PrxPluginInterface.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInterface\UnityEventQueue.h">
+      <Filter>PlayerInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="syscall.h" />
+    <ClInclude Include="unjail.h" />
+    <ClInclude Include="pluginunjail.h" />
+    <ClInclude Include="ftps4.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="mount.h" />
+    <ClInclude Include="bls.h" />
+    <ClInclude Include="debug.h" />
+    <ClInclude Include="decrypt.h" />
+    <ClInclude Include="decryptio.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="encryptsrv.h" />
+    <ClInclude Include="encryptsrv_args.h" />
+    <ClInclude Include="pup.h" />
+  </ItemGroup>
+</Project>

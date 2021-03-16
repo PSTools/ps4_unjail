@@ -1,0 +1,75 @@
+﻿Build started 18/12/2020 00:04:51.
+     1>Project "C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\NativePluginPS4Example.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         checkheaders.cpp
+         orbis-clang.exe -o ORBIS_Release\checkheaders.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\checkheaders.cpp
+         decrypt.c
+         orbis-clang.exe -o ORBIS_Release\decrypt.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decrypt.c
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decrypt.c(218,27): warning : format specifies type 'unsigned long long' but the argument has type 'unsigned long' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decrypt.c(218,47): warning : format specifies type 'unsigned long long' but the argument has type 'unsigned long' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decrypt.c(225,44): warning : format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decrypt.c(234,48): warning : format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decrypt.c(285,75): warning : format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+         decryptio.c
+         orbis-clang.exe -o ORBIS_Release\decryptio.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\decryptio.c
+         encryptsrv.c
+         orbis-clang.exe -o ORBIS_Release\encryptsrv.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\encryptsrv.c
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\encryptsrv.c(44,10): warning : implicit declaration of function 'syscall' is invalid in C99 [-Wimplicit-function-declaration]
+         ftps4.c
+         orbis-clang.exe -o ORBIS_Release\ftps4.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(182,3): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'const SceNetSockaddr *' (aka 'const struct SceNetSockaddr *') [-Wincompatible-pointer-types]
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(150,50):  note: passing argument to parameter 'addr' here
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(192,41): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'SceNetSockaddr *' (aka 'struct SceNetSockaddr *') [-Wincompatible-pointer-types]
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(156,51):  note: passing argument to parameter 'name' here
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(199,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(200,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(201,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(202,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(203,3): warning : format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(204,3): warning : format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(281,4): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'const SceNetSockaddr *' (aka 'const struct SceNetSockaddr *') [-Wincompatible-pointer-types]
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(152,53):  note: passing argument to parameter 'name' here
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(289,4): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'SceNetSockaddr *' (aka 'struct SceNetSockaddr *') [-Wincompatible-pointer-types]
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(148,51):  note: passing argument to parameter 'addr' here
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(397,21): warning : implicit declaration of function 'getdents' is invalid in C99 [-Wimplicit-function-declaration]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(788,37): warning : format specifies type 'long long' but the argument has type 'off_t' (aka 'long') [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(1013,34): warning : incompatible pointer types passing 'struct sockaddr *' to parameter of type 'const SceNetSockaddr *' (aka 'const struct SceNetSockaddr *') [-Wincompatible-pointer-types]
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(150,50):  note: passing argument to parameter 'addr' here
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\ftps4.c(1028,47): warning : incompatible pointer types passing 'struct sockaddr *' to parameter of type 'SceNetSockaddr *' (aka 'struct SceNetSockaddr *') [-Wincompatible-pointer-types]
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(148,51):  note: passing argument to parameter 'addr' here
+         mount.c
+         orbis-clang.exe -o ORBIS_Release\mount.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\mount.c
+         UnityPrxPlugin.cpp
+         orbis-clang.exe -o ORBIS_Release\UnityPrxPlugin.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\PlayerInterface\UnityPrxPlugin.cpp
+         pluginLib.cpp
+         orbis-clang.exe -o ORBIS_Release\pluginLib.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\pluginLib.cpp
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\pluginLib.cpp(37,19): warning : missing terminating '"' character [-Winvalid-pp-token]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\pluginLib.cpp(37,19): warning : extra tokens at end of #include directive [-Wextra-tokens]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\pluginLib.cpp(132,24): warning : more '%' conversions than data arguments [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\pluginLib.cpp(126,8): warning : unused variable 'info' [-Wunused-variable]
+         pluginunjail.cpp
+         orbis-clang.exe -o ORBIS_Release\pluginunjail.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\pluginunjail.cpp
+         prx.cpp
+         orbis-clang.exe -o ORBIS_Release\prx.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp(43,19): warning : missing terminating '"' character [-Winvalid-pp-token]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp(43,19): warning : extra tokens at end of #include directive [-Wextra-tokens]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp(82,19): warning : unused variable 'data' [-Wunused-variable]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp(81,11): warning : unused variable 'size' [-Wunused-variable]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp(209,24): warning : more '%' conversions than data arguments [-Wformat]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\prx.cpp(203,8): warning : unused variable 'info' [-Wunused-variable]
+         syscall.cpp
+         orbis-clang.exe -o ORBIS_Release\syscall.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\syscall.cpp
+         unjail.c
+         orbis-clang.exe -x c -o ORBIS_Release\unjail.o -c -MD -MV -fdiagnostics-format=msvc -I.\tauon\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -DNDEBUG -Wall -fno-caret-diagnostics -O2 C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\unjail.c
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\unjail.c(35,14): warning : implicit declaration of function 'sceKernelGetCpuTemperature' is invalid in C99 [-Wimplicit-function-declaration]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\unjail.c(35,9): warning : unused variable 'hi' [-Wunused-variable]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\unjail.c(42,12): warning : implicit declaration of function 'sceKernelSetFanShit' is invalid in C99 [-Wimplicit-function-declaration]
+     1>C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\unjail.c(42,6): warning : unused variable 'hii' [-Wunused-variable]
+       Link:
+         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\bin\orbis-ld.exe -o "C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx" --oformat=prx --prx-stub-output-dir="C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\..\Plugins\PS4" -LC:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\\tauon\lib -L"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\lib" -L"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\lib" --start-group ORBIS_Release\checkheaders.o ORBIS_Release\decrypt.o ORBIS_Release\decryptio.o ORBIS_Release\encryptsrv.o ORBIS_Release\ftps4.o ORBIS_Release\mount.o ORBIS_Release\UnityPrxPlugin.o ORBIS_Release\pluginLib.o ORBIS_Release\pluginunjail.o ORBIS_Release\prx.o ORBIS_Release\syscall.o ORBIS_Release\unjail.o "-lkernel_tau_stub" "-lkernel_tau_stub_weak" "-lScePosix_stub_weak" "-lSceNet_stub_weak" "-lSceNetCtl_stub_weak" "-lSceNetDebug_stub_weak" "-lSceUsbd_stub_weak" "-lSceUsbStorage_tau_stub_weak" "-lSceSysmodule_tau_stub_weak" "-lSceSysmodule_stub_weak" --end-group
+         NativePluginPS4Example.vcxproj -> C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx
+     1>Done Building Project "C:\Users\zecoxao\Desktop\ps4_unjail\ps4_unjail\NativePluginPS4Example.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.98
