@@ -1,7 +1,8 @@
 # ps4_unjail
 ![image](https://i.imgur.com/qTGhdSY.png)
 
- PS4 Universal Plugin
+PS4 Universal Plugin
+Orhinally by @zecoxao
 
 
 ### Using Universal
