@@ -60,5 +60,6 @@
     <ClInclude Include="encryptsrv.h" />
     <ClInclude Include="encryptsrv_args.h" />
     <ClInclude Include="pup.h" />
+    <ClInclude Include="UserService.h" />
   </ItemGroup>
 </Project>

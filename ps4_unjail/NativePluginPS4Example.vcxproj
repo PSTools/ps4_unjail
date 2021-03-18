@@ -119,6 +119,7 @@
     <ClInclude Include="syscall.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="unjail.h" />
+    <ClInclude Include="UserService.h" />
   </ItemGroup>
   <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
