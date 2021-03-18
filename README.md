@@ -48,3 +48,9 @@ To start you will need to do a DLL Import in unity (universal.prx needs to be pl
    //Allows full rw
 ```
 
+### SetTemperature
+```c#
+    private static extern void SetTemperature(int celsius);
+    //allows you to set the temprature
+```
+
