@@ -27,6 +27,7 @@ extern "C" {
 #include <libnetctl.h>
 #include <_types.h>
 #include <unistd.h>
+#include <fcntl.h>           /* Definition of AT_* constants */
 #include <net.h>
 #include <libhttp.h>
 #include <sys/socket.h>
@@ -42,6 +43,7 @@ extern "C" {
 #include <kernel_ex.h>
 #include "types.h""
 #include "UserService.h"
+#include <fcntl.h>
 
 extern int run;
 
@@ -60,7 +62,7 @@ extern int get_ip_address(char *ip_address);
 struct OnEntitlementUpdate { SceSystemServiceEvent params; };
 REGISTER_EVENT_ID(0xDE76F015C0DE4BE8ULL, 0x9046B1153C877E39ULL, OnEntitlementUpdate)
 
-void OnEntitlementUpdateHandler(const OnEntitlementUpdate &eventData)
+	void OnEntitlementUpdateHandler(const OnEntitlementUpdate &eventData)
 {
 	Assert(eventData.params.eventType == SCE_SYSTEM_SERVICE_EVENT_ENTITLEMENT_UPDATE);
 
@@ -75,7 +77,7 @@ UnityEventQueue::StaticFunctionEventHandler<OnEntitlementUpdate>	g_OnEntitlement
 struct OnLaunchLink { SceSystemServiceEvent params; };
 REGISTER_EVENT_ID(0x477AFB5C1CA045D6ULL, 0x95E9C61B8365A66AULL, OnLaunchLink)
 
-void OnLaunchLinkHandler(const OnLaunchLink &eventData)
+	void OnLaunchLinkHandler(const OnLaunchLink &eventData)
 {
 	Assert(eventData.params.eventType == SCE_SYSTEM_SERVICE_EVENT_APP_LAUNCH_LINK);
 
@@ -179,6 +181,8 @@ PRX_EXPORT int FreeUnjail(int FWVersion)
 	return 0;
 }
 
+
+
 #define SCE_SYSMODULE_USB_STORAGE 0xD5
 
 PRX_EXPORT int FreeMountUsb(int offset)
@@ -245,7 +249,7 @@ PRX_EXPORT int PupDecrypt(const char* path){
 PRX_EXPORT int FreeMountUsbMuilti(){
 	//char version[50];
 	uint32_t fw = FW();
-		//firmware_version_libc(version);
+	//firmware_version_libc(version);
 
 
 	if (fw >= 0x672)
@@ -1709,6 +1713,21 @@ PRX_EXPORT const char* GetUserId()
 
 #pragma endregion << User Service Functions >>
 
+#pragma region << App 2 USB >>
+
+#define SYS_link        9
+#define SYS_unlink      10
+#define SYS_symlink     57
+#define SYS_readlink    58
+//big thanks to celestblue for helping me find the syscall numbers
+//the idea behind this is to link the files needed to unlock trophies
+//once linked we can change the actual trophy file (license file) then allow the console to unlock it via homebrew
+void LinkFile()
+{
+	//syscall(SYS_symlink,
+}
+#pragma endregion << App 2 USB >>
+
 #pragma region << Trophies >>
 
 
@@ -2109,7 +2128,7 @@ PRX_EXPORT int MountandLoad()
 
 
 
-//I can't even remember ho i got to this .... basically you can open up pkg's(trophies savedata games) using iovec .... u just need the ekpfs key
+//I can't even remember how i got to this .... basically you can open up pkg's(trophies savedata games) using iovec .... u just need the ekpfs key
 PRX_EXPORT int MountTrophy()
 {
 	struct iovec* iov = NULL;
@@ -2291,3 +2310,138 @@ PRX_EXPORT int TakeScreenShot()
 }
 
 #pragma endregion << Sceenshot class >>
+
+#pragma region << BGFT >>
+
+//Install PKG From Anywhere //use this to install pkg from homebrew
+
+enum bgft_task_option_t {
+	BGFT_TASK_OPTION_NONE = 0x0,
+	BGFT_TASK_OPTION_DELETE_AFTER_UPLOAD = 0x1,
+	BGFT_TASK_OPTION_INVISIBLE = 0x2,
+	BGFT_TASK_OPTION_ENABLE_PLAYGO = 0x4,
+	BGFT_TASK_OPTION_FORCE_UPDATE = 0x8,
+	BGFT_TASK_OPTION_REMOTE = 0x10,
+	BGFT_TASK_OPTION_COPY_CRASH_REPORT_FILES = 0x20,
+	BGFT_TASK_OPTION_DISABLE_INSERT_POPUP = 0x40,
+	BGFT_TASK_OPTION_DISABLE_CDN_QUERY_PARAM = 0x10000,
+};
+
+struct bgft_download_param {
+	int user_id;
+	int entitlement_type;
+	const char* id;
+	const char* content_url;
+	const char* content_ex_url;
+	const char* content_name;
+	const char* icon_path;
+	const char* sku_id;
+	enum bgft_task_option_t option;
+	const char* playgo_scenario_id;
+	const char* release_date;
+	const char* package_type;
+	const char* package_sub_type;
+	unsigned long package_size;
+};
+
+struct bgft_download_param_ex {
+	struct bgft_download_param param;
+	unsigned int slot;
+};
+
+struct bgft_task_progress_internal {
+	unsigned int bits;
+	int error_result;
+	unsigned long length;
+	unsigned long transferred;
+	unsigned long length_total;
+	unsigned long transferred_total;
+	unsigned int num_index;
+	unsigned int num_total;
+	unsigned int rest_sec;
+	unsigned int rest_sec_total;
+	int preparing_percent;
+	int local_copy_percent;
+};
+
+#define BGFT_INVALID_TASK_ID (-1)
+
+struct bgft_init_params {
+	void* mem;
+	unsigned long size;
+};
+int(*sceBgftInitialize)(struct bgft_init_params*);
+int(*sceBgftDownloadRegisterTaskByStorage)(struct bgft_download_param*, int*);
+int(*sceBgftDownloadStartTask)(int);
+int bgft;
+PRX_EXPORT int InstallPKG(char * path,char * name,char * imgpath)
+{
+	int rv;
+	//int sceScreenshotHandle = sceKernelLoadStartModule("/system/common/lib/libSceScreenShot.sprx", 0, NULL, 0, 0, 0);
+	//sceKernelDlsym(sceScreenshotHandle,"sceScreenShotSetParam",(void **)&sceScreenShotSetParam);  
+	bgft = sceKernelLoadStartModule("/system/common/lib/libSceBgft.sprx", 0,NULL,0,0,0);
+
+	sceKernelDlsym(bgft, "sceBgftServiceIntInit",(void **)&sceBgftInitialize);
+
+	sceKernelDlsym(bgft, "sceBgftServiceIntDownloadRegisterTaskByStorage",(void **)&sceBgftDownloadRegisterTaskByStorage);
+
+	sceKernelDlsym(bgft, "sceBgftServiceIntDownloadStartTask",(void **)&sceBgftDownloadStartTask);
+	struct bgft_init_params ip = {
+		.mem = mmap(NULL, 0x100000, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0),
+		.size = 0x100000,
+	};
+	rv = sceBgftInitialize(&ip);
+	struct bgft_download_param params = {
+		.entitlement_type = 5,
+		.id = "",
+		.content_url = path,
+		.content_name = name,
+		.icon_path = imgpath,
+		.playgo_scenario_id = "0",
+		.option = BGFT_TASK_OPTION_DISABLE_CDN_QUERY_PARAM,
+	};
+	int task = BGFT_INVALID_TASK_ID;
+	rv = sceBgftDownloadRegisterTaskByStorage(&params, &task);
+	rv = sceBgftDownloadStartTask(task);
+	return 0;
+}
+
+PRX_EXPORT int UnloadPKGModule()
+{
+	if(bgft)
+	{
+		int ret = sceKernelStopUnloadModule(bgft,0, NULL, 0, NULL, NULL);
+		return ret;
+	}
+	return 1;
+}
+
+#pragma endregion << BGFT >>
+
+#pragma region agnostic jailbreak
+
+bool(*Jailbreak)();
+
+//for some reason it does not avtually execute the way i wanted it to mght just be for unity apps that it freaks out
+
+PRX_EXPORT bool JailbreakMe()
+{
+	//initSysUtil();
+
+	int ModuleHandle_libjbc = sceKernelLoadStartModule("/app0/sce_module/libjbc.sprx", 0, nullptr, 0, nullptr, nullptr);
+	if (ModuleHandle_libjbc == 0) {
+		//notify("Failed to load libjbc Library.\n");
+		//klog("Failed to load libjbc Library.\n");
+		return false;
+	}
+
+	sceKernelDlsym(ModuleHandle_libjbc, "Jailbreak", (void**)&Jailbreak);
+	if (Jailbreak == nullptr) {
+		//klog("Failed to load Jailbreak Import.\n");
+		//notify("Failed to load Jailbreak Import.\n");
+		return false;
+	}
+	return true;
+}
+
+#pragma endregion agnostic jailbreak
