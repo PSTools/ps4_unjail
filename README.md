@@ -50,6 +50,21 @@ To start you will need to do a DLL Import in unity (universal.prx needs to be pl
     //allows you to set the temprature
 
 ```
+
+# Debug 
+<details>
+  <summary>Click to expand</summary>
+    
+### Debug notifications
+```c#
+    private static extern void SetDebuggerTrue()
+    //Shows a debug notifications good old printf testing
+```
+
+</details>
+
+ 
+
 # Notifications 
 <details>
   <summary>Click to expand</summary>
