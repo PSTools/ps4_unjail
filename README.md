@@ -2,7 +2,7 @@
 ![image](https://i.imgur.com/qTGhdSY.png)
 
 PS4 Universal Plugin
-Orhinally by @zecoxao
+Originally by @zecoxao
 
 
 ### Using Universal
