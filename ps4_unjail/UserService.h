@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <user_service\user_service_defs.h>
 
 /*Error Defenitions*/
 #define USER_SERVICE_ERROR_ALREADY_INITIALIZED -2137653245	/* 0x80960003 */
@@ -19,12 +20,16 @@ typedef struct UserServiceInitializeParams {
 } UserServiceInitializeParams;
 
 
-int32_t (*sceUserServiceGetInitialUser)(int *userId);
-//int32_t (*sceUserServiceGetUserName)(int32_t, char *, const size_t);
-int32_t (*sceUserServiceInitialize)(UserServiceInitializeParams *initParams);
-int32_t (*sceUserServiceInitialize2)(int threadPriority,SceKernelCpumask cpuAffinityMask);
-int32_t (*sceUserServiceInitializeForShellCore)(int32_t *initParams);
-int32_t (*sceUserServiceGetUserName)(const SceUserServiceUserId userId, char *userName, const size_t size);
-int32_t (*sceUserServiceGetHomeDirectory)(char* userfolder, size_t size,SceUserServiceUserId userId);
+extern SceUserServiceUserId userId;
+
+
+void initsysUserService(void);
+int InitlizieUserService();
+int GetInitialUser();
+int32_t GetUserName(const SceUserServiceUserId userId, char *userName, const size_t size);
+
+const char* UserServiceGetUserId();
+
+char* UserServiceGetUserName();
 
 #endif

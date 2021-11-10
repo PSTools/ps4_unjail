@@ -41,9 +41,19 @@ extern "C" {
 #include <string>
 #include <sys/time.h>
 #include <kernel_ex.h>
-#include "types.h""
-#include "UserService.h"
+#include "types.h"
+
 #include <fcntl.h>
+
+
+
+#include "UserService.h"
+#include "Saves.h"
+#include "SysUtil.h"
+#include "SystemService.h"
+#include "Kernel.h"
+
+//do this to resolve items
 
 extern int run;
 
@@ -108,13 +118,28 @@ extern "C" int module_start(size_t sz, const void* arg)
 	return 0;
 }
 
-// Var is used for debugging
-int DEBUGENABlED = 0;
+//int (*KLOG)(const char *_Restrict, ...);
+//
+//void loadAndImportLibC()
+//{
+//	int kernel_lib = sceKernelLoadStartModule("/system/common/lib/libc.sprx", 0, NULL, 0, NULL, NULL);
+//	sceKernelDlsym(kernel_lib, "printf", (void **)&KLOG);//this just returns some fed up info
+//}
+
+
 
 //Call this funciton if you want to show debug messages everywhere
 PRX_EXPORT void SetDebuggerTrue()
 {
 	DEBUGENABlED =1;
+	//loadAndImportLibC();
+	//if(KLOG != nullptr)
+	//{
+	//	//initSysUtil();
+	//	//notify("Klog found");
+	//	//SendMessageToPS4("");
+	//	//KLOG("test");
+	//}
 }
 
 #pragma region << Original Functions >>
@@ -174,8 +199,10 @@ PRX_EXPORT int FreeUnjail(int FWVersion)
 		return Sys::kexec((void *)&unjail672, &td);
 	}else if (FWVersion == 702){
 		return Sys::kexec((void *)&unjail702, &td);
+	}else if (FWVersion == 751){
+		return Sys::kexec((void *)&unjail751, &td);
 	}else if (FWVersion == 755){
-		return Sys::kexec((void *)&unjail75X, &td);
+		return Sys::kexec((void *)&unjail755, &td);
 	}
 
 	return 0;
@@ -269,9 +296,13 @@ PRX_EXPORT int FreeMount()
 	mount_large_fs("/dev/da0x1.crypt", "/preinst2", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x4.crypt", "/system", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x5.crypt", "/system_ex", "exfatfs", "511", MNT_UPDATE);
-
+	mount_large_fs("/dev/sbram0", "/system_sam", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflah0.crypt", "/flash0", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflah1.crypt", "/flash1", "exfatfs", "511", MNT_UPDATE);
 	return 0;
 }
+
+
 
 PRX_EXPORT int GetPid(void)
 {
@@ -310,184 +341,78 @@ enum{ ModulesSize = 1024 };
 
 #pragma region  <<Notification Class >>
 
-int (*sceSysUtilSendSystemNotificationWithText)(int messageType, char* message);
-int (*customsceSystemServiceLoadExec)(const char* path, char* const argv[]);
+/*Has been moved*/
 
-void initSysUtil(void)
-{
-	int ret = 0;
-
-	int sysUtilHandle = sceKernelLoadStartModule("/system/common/lib/libSceSysUtil.sprx", 0, NULL, 0, 0, 0);
-	if(sysUtilHandle > 0)
-	{
-		ret =sceKernelDlsym(sysUtilHandle, "sceSysUtilSendSystemNotificationWithText", (void **)&sceSysUtilSendSystemNotificationWithText);
-		if(ret < 0)
-		{
-			//we couldn't load libscesysutil
-		}
-		sceKernelDlsym(sysUtilHandle, "sceSystemServiceLoadExec",(void **)&customsceSystemServiceLoadExec);
-	}
-	else
-	{
-
-	}
-}
-
-void notify(char *message)
-{
-	//int lenghtofmessage = sizeof(message);
-	char buffer[5120];
-	sprintf(buffer, "%s", message);//dont want all those enters
-	//sceSysUtilSendSystemNotificationWithText(0x81, buffer);
-	sceSysUtilSendSystemNotificationWithText(222, buffer);
-}
+//int (*sceSysUtilSendSystemNotificationWithText)(int messageType, char* message);
+//int (*customsceSystemServiceLoadExec)(const char* path, char* const argv[]);
+//
+//void initSysUtil(void)
+//{
+//	int ret = 0;
+//
+//	int sysUtilHandle = sceKernelLoadStartModule("/system/common/lib/libSceSysUtil.sprx", 0, NULL, 0, 0, 0);
+//	if(sysUtilHandle > 0)
+//	{
+//		ret =sceKernelDlsym(sysUtilHandle, "sceSysUtilSendSystemNotificationWithText", (void **)&sceSysUtilSendSystemNotificationWithText);
+//		if(ret < 0)
+//		{
+//			//we couldn't load libscesysutil
+//		}
+//		sceKernelDlsym(sysUtilHandle, "sceSystemServiceLoadExec",(void **)&customsceSystemServiceLoadExec);
+//	}
+//	else
+//	{
+//
+//	}
+//}
+//
+//void notify(char *message)
+//{
+//	//int lenghtofmessage = sizeof(message);
+//	char buffer[5120];
+//	sprintf(buffer, "%s", message);//dont want all those enters
+//	//sceSysUtilSendSystemNotificationWithText(0x81, buffer);
+//	sceSysUtilSendSystemNotificationWithText(222, buffer);
+//}
 
 #pragma endregion <<Notification Class >>
 
-#pragma region << KernelClasss >>
+//#define STORE_LOG "/user/app/NPXS39041/logs/log.txt"
 
-typedef struct Process{
-	int process_id;
-	char process_name[100];
-} Process;
-
-typedef struct {
-	uint64_t unk1;
-	char version_string[0x1C];
-	uint32_t version;
-} SceFwInfo;
-
-typedef mode_t SceKernelMode;
-int (*sceKernelGetIdPs)(char* ret);
-int (*sceKernelGetOpenPsIdForSystem)(void* ret);
-int (*sceKernelGetOpenPsId)(void* ret);
-//int (*sysctlbyname)(const char *name, void *oldp,size_t *oldlenp,const void *newp, size_t newlen);
-//(__int64 a1, __int64 a2, __int64 a3, __int64 a4, __int64 a5)
-int (*sysctlbyname)(const char *, void *, size_t *, const void *, size_t);
-int (*sysctl)(const int *, u_int, void *, size_t *, const void *, size_t);
-//int (*sceKernelGetSystemSwVersion)(char* ret);
-int (*sysctlnametomib)(const char *name, int *mibp, size_t *sizep);
-// returns sandbox random word - used to load system modules by filepath.
-//const char (*sceKernelGetFsSandboxRandomWord)(void *);
-
-char* (*sceKernelGetFsSandboxRandomWord_1)() = NULL;
-int (*sceKernelGetSystemSwVersion1)(SceFwInfo* fw_info) = NULL;
-
-/*intsysctl(const int *, u_int, void *, size_t *, const void *, size_t);
-int	sysctlbyname(const char *, void *, size_t *, const void *, size_t);
-int	sysctlnametomib(const char *, int *, size_t *);*/
-
-//Loads and imports the scekernel functions
-void loadAndImport()
-{
-	int kernel_lib = sceKernelLoadStartModule("/system/common/lib/libkernel.sprx", 0, NULL, 0, NULL, NULL);
-	sceKernelDlsym(kernel_lib, "sceKernelGetIdPs", (void **)&sceKernelGetIdPs);//this just returns some fed up info
-	sceKernelDlsym(kernel_lib, "sceKernelGetOpenPsIdForSystem", (void **)&sceKernelGetOpenPsIdForSystem);
-	sceKernelDlsym(kernel_lib, "sceKernelGetOpenPsId", (void **)&sceKernelGetOpenPsId);
-	sceKernelDlsym(kernel_lib, "sysctlbyname", (void **)&sysctlbyname);
-	sceKernelDlsym(kernel_lib,"sysctl",(void **)&sysctl);
-	sceKernelDlsym(kernel_lib, "sceKernelGetSystemSwVersion",(void **)&sceKernelGetSystemSwVersion1);
-	sceKernelDlsym(kernel_lib, "sysctlnametomib",(void **)&sysctlnametomib);
-	sceKernelDlsym(kernel_lib, "sceKernelGetFsSandboxRandomWord",(void **)&sceKernelGetFsSandboxRandomWord_1);
-}
-
-int loadModule(const char *name, int *idDestination) {
-	return syscall(594, name, 0, idDestination, 0);
-}
-
-#define RESOLVE(module, name) getFunctionAddressByName(module, #name, &name)
-
-int getFunctionAddressByName(int loadedModuleID, char *name, void *destination);
+//void klog(const char *format, ...)  
+//{
+//	if(strlen(format) < 300)
+//	{
+//		char buff[300];
+//		memset(&buff[0], 0, sizeof(buff));
+//
+//		va_list args;
+//		va_start(args, format);
+//		vsprintf(&buff[0], format, args);
+//		va_end(args);
+//
+//		printf("%s", buff);
+//
+//		/*int fd = sceKernelOpen(STORE_LOG, O_WRONLY | O_CREAT | O_APPEND, 0777);
+//		if (fd >= 0)
+//		{
+//		if(Lastlogcheck == 10) {
+//		CheckLogSize(); Lastlogcheck = 0; }
+//		else
+//		Lastlogcheck++;
+//
+//		sceKernelWrite(fd, buff, strlen(buff));
+//		sceKernelClose(fd);
+//		}*/
+//
+//
+//	}
+//	else
+//		printf("DEBUG: input is too large!\n");
+//
+//}
 
 
-void loadKernel()
-{
-	int kernel_lib;
-	uint16_t ret;            // Numerical representation of the firmware version. ex: 505 for 5.05, 702 for 7.02, etc
-	/*if (loadModule("libkernel.sprx", &kernel_lib)) {
-	if (loadModule("libkernel_web.sprx", &kernel_lib)) {
-	loadModule("libkernel_sys.sprx", &kernel_lib);
-	}
-	}*/
-
-	kernel_lib = sceKernelLoadStartModule("libkernel_sys.sprx", 0, 0, 0, 0, 0);
-
-
-	//RESOLVE(kernel_lib, sceKernelGetFsSandboxRandomWord);
-
-	//sceKernelDlsym(kernel_lib, "sceKernelGetSystemSwVersion",(void **)&sceKernelGetSystemSwVersion);
-	ret  = sceKernelDlsym(kernel_lib, "sceKernelGetFsSandboxRandomWord",(void **)&sceKernelGetFsSandboxRandomWord_1);
-
-	if (ret)
-	{
-
-		kernel_lib = sceKernelLoadStartModule("libkernel.sprx", 0, 0, 0, 0, 0);
-		ret = sceKernelDlsym(kernel_lib, "sceKernelGetFsSandboxRandomWord", (void**)&sceKernelGetFsSandboxRandomWord_1);
-		if (ret) 
-			return;
-
-
-	}
-}
-
-#pragma endregion << KernelClass >>
-
-#pragma region << User Service Class >>
-
-//Init SCE User Service Funcitons
-void initsysUserService(void)
-{
-	int sysUserService = sceKernelLoadStartModule("libSceUserService.sprx", 0, NULL, 0, NULL, NULL);
-	sceKernelDlsym(sysUserService, "sceUserServiceInitialize", (void **)&sceUserServiceInitialize);
-	sceKernelDlsym(sysUserService, "sceUserServiceInitialize2", (void **)&sceUserServiceInitialize2);
-	sceKernelDlsym(sysUserService, "sceUserServiceInitializeForShellCore", (void **)&sceUserServiceInitializeForShellCore);
-	sceKernelDlsym(sysUserService, "sceUserServiceGetInitialUser", (void **)&sceUserServiceGetInitialUser);
-	sceKernelDlsym(sysUserService, "sceUserServiceGetUserName", (void **)&sceUserServiceGetUserName);
-	sceKernelDlsym(sysUserService, "sceUserServiceGetHomeDirectory", (void **)&sceUserServiceGetHomeDirectory);
-}
-
-#pragma endregion << User Service Class >>
-
-SceUserServiceUserId userId = SCE_USER_SERVICE_USER_ID_INVALID;
-
-int InitlizieUserService()
-{
-	int ret=0;
-	(void)ret;
-	initSysUtil();
-	//Initilize sce functions from lib
-	initsysUserService();
-
-	//E Initialize UserService.
-	//J UserService の初期化。
-	UserServiceInitializeParams params;
-	//set it in memory
-	memset(&params, 0, sizeof(params));
-	params.priority = 256;
-	//do this
-	ret = sceUserServiceInitialize(NULL);
-	if(ret < 0)
-	{
-		//__int32_t errordisplay ;
-		//memcpy(&errordisplay,(void*)ret,sizeof(int32_t));
-
-		if (ret == USER_SERVICE_ERROR_ALREADY_INITIALIZED)
-		{
-			//notify("USER SERVICE ERROR ALREADY INITIALIZED");
-			ret =0;
-
-		}
-		else
-		{
-			notify("Coult not Initilize User Service");
-			return ret;
-		}
-
-		//error has come up on itilize
-		return ret;
-	}	
-	return ret;
-}
 
 #pragma region << Pad Functions >>
 
@@ -624,388 +549,6 @@ void initSceScreenshot(void)
 
 
 #pragma endregion << Screenshot Util >>
-
-#pragma region << Save Data Class>>
-
-typedef struct SceSaveDataMemorySetupResult {
-	size_t    existedMemorySize;
-	uint8_t   reserved[16];
-} SceSaveDataMemorySetupResult;
-
-typedef struct _SceSaveDataInitParams3 SceSaveDataInitParams3;
-int (*sceSaveDataInitialize3)(const SceSaveDataInitParams3 *initParam);
-
-typedef struct SceSaveDataTitleId {
-	char data[10];				
-
-	char padding[6];											
-
-} SceSaveDataTitleId;
-
-#define SCE_SAVE_DATA_FINGERPRINT_DATA_SIZE			65
-
-
-typedef struct SceSaveDataFingerprint {
-	char data[SCE_SAVE_DATA_FINGERPRINT_DATA_SIZE];
-	char padding[15];
-} SceSaveDataFingerprint;
-
-typedef uint64_t SceSaveDataBlocks;
-typedef uint32_t SceSaveDataMountMode;
-
-#define SCE_SAVE_DATA_DIRNAME_DATA_MAXSIZE				(32)
-
-typedef struct SceSaveDataDirName {
-	char data[SCE_SAVE_DATA_DIRNAME_DATA_MAXSIZE];
-} SceSaveDataDirName;
-
-typedef struct SceSaveDataTransferringMount {
-	SceUserServiceUserId userId;
-	const SceSaveDataTitleId *titleId;
-	const SceSaveDataDirName *dirName;
-	const SceSaveDataFingerprint *fingerprint;
-	uint8_t reserved[32];
-} SceSaveDataTransferringMount;
-typedef uint64_t SceSaveDataBlocks;
-typedef uint32_t SceSaveDataMountStatus;
-#define SCE_SAVE_DATA_MOUNT_STATUS_CREATED (0x00000001)
-#define SCE_SAVE_DATA_MOUNT_POINT_DATA_MAXSIZE			(16)
-
-typedef struct SceSaveDataMountPoint {
-	char data[SCE_SAVE_DATA_MOUNT_POINT_DATA_MAXSIZE];
-} SceSaveDataMountPoint;
-
-typedef struct SceSaveDataMountResult2 {
-	SceSaveDataMountPoint mountPoint;
-	SceSaveDataBlocks requiredBlocks;
-	uint32_t unused;
-	SceSaveDataMountStatus mountStatus;
-	uint8_t reserved[28];
-	int :32;
-} SceSaveDataMountResult2;
-
-typedef struct SceSaveDataMountResult {
-	SceSaveDataMountPoint mountPoint;
-	SceSaveDataBlocks requiredBlocks;
-	uint32_t progress;
-	uint8_t reserved[32];
-} SceSaveDataMountResult;
-
-typedef struct SceSaveDataMount {
-	SceUserServiceUserId userId;
-	const SceSaveDataTitleId *titleId;
-	const SceSaveDataDirName *dirName;
-	const SceSaveDataFingerprint *fingerprint;
-	SceSaveDataBlocks blocks;
-	SceSaveDataMountMode mountMode;
-	uint8_t reserved[32];
-} SceSaveDataMount;
-
-typedef struct SceSaveDataMount2 {
-	SceUserServiceUserId userId;
-	int :32;
-	const SceSaveDataDirName *dirName;
-	SceSaveDataBlocks blocks;
-	SceSaveDataMountMode mountMode;
-	uint8_t reserved[32];
-	int :32;
-} SceSaveDataMount2;
-
-int32_t (*sceSaveDataMount)(
-	const SceSaveDataMount *mount,
-	SceSaveDataMountResult *mountResult
-	);
-
-
-
-#define SCE_SAVE_DATA_TITLE_MAXSIZE						(128)
-#define SCE_SAVE_DATA_SUBTITLE_MAXSIZE					(128)
-#define SCE_SAVE_DATA_DETAIL_MAXSIZE					(1024)
-
-typedef uint32_t SceSaveDataSaveDataMemoryOption;
-#define SCE_SAVE_DATA_MEMORY_OPTION_NONE				(0x00000000)
-
-#define SCE_SAVE_DATA_MEMORY_OPTION_SET_PARAM			(0x00000001 << 0)
-
-#define SCE_SAVE_DATA_MEMORY_OPTION_DOUBLE_BUFFER		(0x00000001 << 1)
-
-#define SCE_SAVE_DATA_ICON_WIDTH						(228)		
-
-#define SCE_SAVE_DATA_ICON_HEIGHT						(128)	
-
-#define SCE_SAVE_DATA_ICON_FILE_MAXSIZE					(SCE_SAVE_DATA_ICON_WIDTH * SCE_SAVE_DATA_ICON_HEIGHT * 4)
-
-typedef struct SceSaveDataIcon {
-	void *buf;
-	size_t bufSize;
-	size_t dataSize;
-	uint8_t reserved[32];
-} SceSaveDataIcon;
-typedef struct SceSaveDataParam {
-	char title[SCE_SAVE_DATA_TITLE_MAXSIZE];
-	char subTitle[SCE_SAVE_DATA_SUBTITLE_MAXSIZE];
-	char detail[SCE_SAVE_DATA_DETAIL_MAXSIZE];
-	uint32_t userParam;
-	int :32;
-	time_t mtime;
-	uint8_t reserved[32];
-} SceSaveDataParam;
-
-typedef uint32_t SceSaveDataSaveDataMemoryOption;
-
-typedef struct SceSaveDataMemorySetup2 {
-	SceSaveDataSaveDataMemoryOption option;
-	SceUserServiceUserId userId;
-	size_t memorySize;
-	size_t iconMemorySize;
-	const SceSaveDataParam *initParam;
-	const SceSaveDataIcon *initIcon;
-	uint8_t reserved[24];
-} SceSaveDataMemorySetup2;
-
-typedef uint32_t SceSaveDataMountMode;
-#define SCE_SAVE_DATA_MOUNT_MODE_RDONLY					(0x00000001)/*J 読み込みモードでマウント */
-/*E read only mount */
-
-#define SCE_SAVE_DATA_MOUNT_MODE_RDWR					(0x00000002)/*J 読み書きモードでマウント */
-/*E read write mount */
-#define SCE_SAVE_DATA_MOUNT_MODE_CREATE					(0x00000004)/*J 新規作成 */
-/*E create */
-#define SCE_SAVE_DATA_MOUNT_MODE_DESTRUCT_OFF			(0x00000008)/*J 破損化モード OFF */
-/*E destruction mode off */
-#define SCE_SAVE_DATA_MOUNT_MODE_COPY_ICON				(0x00000010)/*J SCE_SAVE_DATA_MOUNT_MODE_CREATE 設定時 アプリケーションの sce_sys/save_data.png をセーブデータにコピーする */
-/*E When setting SCE_SAVE_DATA_MOUNT_MODE_CREATE,
-copy sce_sys/save_data.png in the application to the save data. */
-#define SCE_SAVE_DATA_MOUNT_MODE_CREATE2				(0x00000020)/*J セーブデータが存在すると読み書きモードでマウント、存在しないと新規作成してから読み書きモードでマウント */
-/*E If save data exists, mount in read / write mode.
-if it does not exist, mount it in read-write mode after creating a new one */
-typedef uint64_t SceSaveDataBlocks;
-#define SCE_SAVE_DATA_BLOCK_SIZE						(32768)		/*J ブロックサイズ(byte) */
-/*E block size(byte) */
-#define SCE_SAVE_DATA_BLOCKS_MIN2						(96)		/*J 最小ブロック数(システム予約ブロック数を含む) */
-/*E minimum block num(include system reserved) */
-#define SCE_SAVE_DATA_BLOCKS_MAX						(32768)		/*J 最大ブロック数(システム予約ブロック数を含む) */
-/*E maximum block num(include system reserved) */			
-
-typedef uint32_t SceSaveDataSortKey;
-typedef uint32_t SceSaveDataSortOrder;
-
-typedef struct SceSaveDataDirNameSearchCond {
-	SceUserServiceUserId userId;
-	int :32;
-	const SceSaveDataTitleId *titleId;
-	const SceSaveDataDirName *dirName;
-	SceSaveDataSortKey key;
-	SceSaveDataSortOrder order;
-	uint8_t reserved[32];
-} SceSaveDataDirNameSearchCond;
-
-typedef uint64_t SceSaveDataBlocks;
-typedef struct SceSaveDataSearchInfo {
-	SceSaveDataBlocks blocks;
-	SceSaveDataBlocks freeBlocks;
-	uint8_t reserved[32];
-} SceSaveDataSearchInfo;
-
-typedef struct SceSaveDataDirNameSearchResult {
-	uint32_t hitNum;
-	int :32;
-	SceSaveDataDirName *dirNames;
-	uint32_t dirNamesNum;
-	uint32_t setNum;
-	SceSaveDataParam *params;
-	SceSaveDataSearchInfo *infos;
-	uint8_t reserved[12];
-	int :32;
-} SceSaveDataDirNameSearchResult;
-
-
-
-int32_t (*sceSaveDataDirNameSearch)(const SceSaveDataDirNameSearchCond *cond,SceSaveDataDirNameSearchResult *result);
-int32_t (*sceSaveDataTransferringMount)(const SceSaveDataTransferringMount *mount,SceSaveDataMountResult *mountResult);
-int32_t (*sceSaveDataUmount)(const SceSaveDataMountPoint *mountPoint);
-void initSaveData(void)
-{
-	int sysSavaData = sceKernelLoadStartModule("/system/common/lib/libSceSaveData.sprx", 0, NULL, 0, 0, 0);
-	sceKernelDlsym(sysSavaData, "sceSaveDataInitialize3", (void **)&sceSaveDataInitialize3);
-	//sceKernelDlsym(sysSavaData, "sceSaveDataSetupSaveDataMemory2",(void **)&sceSaveDataSetupSaveDataMemory2);
-	sceKernelDlsym(sysSavaData, "sceSaveDataMount",(void **)&sceSaveDataMount);
-	sceKernelDlsym(sysSavaData, "sceSaveDataDirNameSearch",(void**)&sceSaveDataDirNameSearch);
-	sceKernelDlsym(sysSavaData, "sceSaveDataTransferringMount",(void**)&sceSaveDataTransferringMount);
-	sceKernelDlsym(sysSavaData, "sceSaveDataUmount",(void**)&sceSaveDataUmount);
-}
-static inline uint32_t ceil(uint32_t x, uint32_t a)
-{
-	return (((x) + ((a) - 1)) & ~((a) - 1));
-}
-
-#define SCE_SAVE_DATA_ERROR_NO_SPACE_FS			-2137063414	/* 0x809F000A */
-
-#define SCE_SAVE_DATA_SORT_KEY_DIRNAME			0 
-#define SAVE_DATA_SORT_KEY_USER_PARAM			1
-#define SCE_SAVE_DATA_SORT_KEY_BLOCKS			2
-#define SCE_SAVE_DATA_SORT_KEY_MTIME			3
-#define SCE_SAVE_DATA_SORT_KEY_FREE_BLOCKS		4
-
-#define SCE_SAVE_DATA_SORT_ORDER_ASCENT			0
-#define SCE_SAVE_DATA_SORT_ORDER_DESCENT		1
-#define SCE_SAVE_DATA_DIRNAME_MAX_COUNT			1024
-
-
-#define SCE_SAVE_DATA_ERROR_MOUNT_FULL			-2137063412
-#define SCE_SAVE_DATA_ERROR_PARAMETER			-2137063424
-int saveDataMount(const SceSaveDataMount *mount, SceSaveDataMountResult *mountResult)
-{
-
-	int ret = sceSaveDataMount(mount, mountResult);
-	char buffer [150];
-	sprintf(buffer,"%d",ret);
-	notify(buffer);
-	if (ret == SCE_SAVE_DATA_ERROR_NO_SPACE_FS) {
-		true;
-		mountResult->requiredBlocks;
-	} else {
-		false;
-	}
-	return ret;
-}
-
-int TotalSavesMounted =0;
-SceSaveDataMountPoint SaveDataMountPoints[15];//max save ammount accourding to the dev documentation
-
-int SaveDataTest(char* TITLEID,char* testfingerprint)//CUSA12345
-{
-	int32_t ret;
-	initSysUtil();
-	char buffer[180];
-	ret =InitlizieUserService();
-	if(ret < 0)
-	{
-		sprintf(buffer, "UserServiceError\n%d", ret);
-		notify(buffer);
-		//notify("InitlizieUserService error");
-		return ret;
-	}
-	if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
-	{
-		ret = sceUserServiceGetInitialUser(&userId);
-		if(ret < 0)
-		{
-			notify("sceUserServiceGetInitialUser failed");
-			return ret;
-		}
-	}
-	initSaveData();
-	ret = sceSaveDataInitialize3(NULL);//call it with a null
-	if(ret < 0)
-	{
-		//error 
-		notify("sceSaveDataInitialize3 failed");
-		return ret;
-	}
-
-
-
-	// Obtain all save data directory names under the save data title ID
-	if(DEBUGENABlED == 1)	
-	{
-		notify("Building Save Data Handler");
-	}
-	SceSaveDataTitleId titleId;
-	//SceSaveDataDirName dirName;
-	SceSaveDataFingerprint fingerprint;
-	memset(&titleId, 0x00, sizeof(titleId));
-	strlcpy(titleId.data, TITLEID, sizeof(titleId.data));
-	/*memset(&dirName, 0x00, sizeof(dirName));
-	strlcpy(dirName.data, "SYSTEM", sizeof(dirName.data));*/
-	memset(titleId.padding, 0x00, sizeof(titleId.padding));
-	memset(&fingerprint, 0x00, sizeof(fingerprint));
-	//294a5ed06db170618f2eed8c424b9d828879c080cc66fbc4864f69e974deb856
-	strlcpy(fingerprint.data, testfingerprint, sizeof(fingerprint.data));
-
-
-	SceSaveDataDirNameSearchCond cond;
-	memset(&cond, 0x00, sizeof(SceSaveDataDirNameSearchCond));
-	cond.userId = userId;
-	//cond.dirName = NULL;
-	//cond.key = SCE_SAVE_DATA_SORT_KEY_DIRNAME;
-	//cond.order = SCE_SAVE_DATA_SORT_ORDER_ASCENT;
-	cond.titleId = &titleId;
-
-	SceSaveDataDirNameSearchResult result;
-	memset(&result, 0x00, sizeof(result));
-
-	result.dirNames = new SceSaveDataDirName[SCE_SAVE_DATA_DIRNAME_MAX_COUNT];
-	// SCE_SAVE_DATA_DIRNAME_MAX_COUNT can be the maximum number of save data directories the application will create
-	if ( result.dirNames == NULL ) 
-	{
-		// Error handling
-	}
-	result.dirNamesNum = SCE_SAVE_DATA_DIRNAME_MAX_COUNT;
-
-	if ( sceSaveDataDirNameSearch(&cond, &result) < 0 ) 
-	{
-		// Error handling
-		delete [] result.dirNames;
-		result.dirNames = NULL;
-		notify("Name Search Failed");
-		ret -1;
-	}
-	buffer[1024];
-	if(DEBUGENABlED == 1)	
-	{
-		for (int i = 0; i < result.hitNum; i++)
-		{   
-			sprintf(buffer, "SaveDir %s", result.dirNames[i].data);//dont want all those enters
-			notify(buffer);
-		}
-	}
-
-	/*Set the save data mount points for unmounting later*/
-
-	SaveDataMountPoints[result.hitNum];
-	TotalSavesMounted = result.hitNum;
-	for (int i = 0; i < result.hitNum; i++)
-	{   
-		SceSaveDataDirName dirName;
-		strlcpy(dirName.data,result.dirNames[i].data, sizeof(dirName.data));
-		SceSaveDataMount mount;
-		memset(&mount, 0x00, sizeof (mount));
-
-		mount.userId = userId;
-		mount.dirName = &dirName;
-		mount.fingerprint = &fingerprint;
-		mount.titleId = &titleId;
-		mount.blocks = 32768;
-		mount.mountMode = SCE_SAVE_DATA_MOUNT_MODE_RDONLY ;//(SCE_SAVE_DATA_MOUNT_MODE_DESTRUCT_OFF | SCE_SAVE_DATA_MOUNT_MODE_RDWR);
-
-		SceSaveDataMountResult mountResult;
-		memset(&mountResult, 0x00, sizeof(mountResult));
-
-		ret = sceSaveDataMount(&mount, &mountResult);
-		if (ret < 0) {
-			if(DEBUGENABlED == 1)	
-			{
-				sprintf(buffer, "saveDataMount failed\n\n0x%08x", ret);
-				//we dont want to display the error
-				notify(buffer);
-			}
-		}
-		SaveDataMountPoints[i] = mountResult.mountPoint;//set each mount points value
-
-		//free memory
-		//free(&dirName);
-		/*if(DEBUGENABlED == 1)	
-		{
-		notify("Memory Freed");
-		}*/
-	}
-
-	return ret;
-}
-
-
-#pragma endregion << Save Data Class >>
 
 #pragma region << Trophy Class >>
 
@@ -1159,6 +702,9 @@ void PatchShellCore()
 
 }
 
+
+
+
 PRX_EXPORT int MountSaveData(char* TITLEID,char* fingerprint)
 {
 	int ret = 0;
@@ -1209,6 +755,108 @@ PRX_EXPORT int MountSaveData(char* TITLEID,char* fingerprint)
 	return ret;
 }
 
+PRX_EXPORT int MountSaveData_Path(char* TITLEID,char* SaveToMount,char* fingerprint)
+{
+	int ret = 0;
+	initSysUtil();
+
+	//SetDebuggerTrue();
+
+	//this is no longer required as it seems to mount perfectly fine
+
+
+	char buffer[1024];
+	//notify("");//not sure why i had a blank notification here anyway
+	if(DEBUGENABlED ==1)
+	{
+		sprintf(buffer,"Info %s %s",TITLEID,fingerprint);
+		notify(buffer);
+	}
+
+	if ((fingerprint != NULL) && (fingerprint[0] == '\0')) 
+	{
+		printf("Fingerprint is empty assigning defualt\n");
+		fingerprint = "00000000000000000000000000000000000000000";
+		//if you dont want to do the keystone verification process use the below
+		//294a5ed06db170618f2eed8c424b9d828879c080cc66fbc4864f69e974deb856 ////tis will only work for debug games
+	}
+
+	/*This structure sets the fingerprint of the passcode to use when mounting a save data directory.
+
+	A fingerprint is a key for protecting save data from access by other applications. When a passcode (character string comprised of "a" to "z", "A" to "Z", and "0" to "9") is specified during application package creation, the fingerprint can be obtained as a hash value of the passcode (for details, refer to the "Package Generator User's Guide" document. When another application mounts this application's save data, this fingerprint must be specified and then read only mode must be specified.
+
+	On the other hand, there is no need for a fingerprint to be specified when an application mounts its own save data.
+
+	*/
+
+	ret =SaveDataTest(TITLEID,SaveToMount,fingerprint);//not sure if this is the sealed key or not 
+	if(ret < 0)
+	{
+		if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
+		{
+			notify("Save Mount Full");
+			return ret;
+		}
+		else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
+		{
+			notify("Save Mounted");
+		}
+	}
+	return ret;
+}
+
+PRX_EXPORT int MountSaveData2(char* TITLEID,char* SaveToMount)
+{
+	//SaveDataTestMount2
+
+	int ret = 0;
+	initSysUtil();
+
+	//SetDebuggerTrue();
+
+	//this is no longer required as it seems to mount perfectly fine
+
+
+	char buffer[1024];
+	//notify("");//not sure why i had a blank notification here anyway
+	//if(DEBUGENABlED ==1)
+	//{
+	//	sprintf(buffer,"Info %s %s",TITLEID,fingerprint);
+	//	notify(buffer);
+	//}
+
+	//if ((fingerprint != NULL) && (fingerprint[0] == '\0')) 
+	//{
+	//	printf("Fingerprint is empty assigning defualt\n");
+	//	fingerprint = "00000000000000000000000000000000000000000";
+	//	//if you dont want to do the keystone verification process use the below
+	//	//294a5ed06db170618f2eed8c424b9d828879c080cc66fbc4864f69e974deb856 ////tis will only work for debug games
+	//}
+
+	/*This structure sets the fingerprint of the passcode to use when mounting a save data directory.
+
+	A fingerprint is a key for protecting save data from access by other applications. When a passcode (character string comprised of "a" to "z", "A" to "Z", and "0" to "9") is specified during application package creation, the fingerprint can be obtained as a hash value of the passcode (for details, refer to the "Package Generator User's Guide" document. When another application mounts this application's save data, this fingerprint must be specified and then read only mode must be specified.
+
+	On the other hand, there is no need for a fingerprint to be specified when an application mounts its own save data.
+
+	*/
+
+	ret =SaveDataTestMount2(TITLEID,SaveToMount);//not sure if this is the sealed key or not 
+	if(ret < 0)
+	{
+		if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
+		{
+			notify("Save Mount Full");
+			return ret;
+		}
+		else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
+		{
+			notify("Save Mounted");
+		}
+	}
+	return ret;
+
+}
 
 PRX_EXPORT int UnMountSaveData()
 {
@@ -1220,7 +868,7 @@ PRX_EXPORT int UnMountSaveData()
 		SceSaveDataMountPoint mountPoint ;
 		mountPoint = SaveDataMountPoints[i];
 
-		if (sceSaveDataUmount(&mountPoint) < 0 ) {
+		if (SaveDataUnmount(&mountPoint) < 0 ) {
 			// Error handling
 			notify("Error Unmounting Save Data");
 		}
@@ -1228,21 +876,87 @@ PRX_EXPORT int UnMountSaveData()
 	return ret;
 }
 
+
+PRX_EXPORT int DeleteSaveData(char* SaveToDelete)
+{
+	return SaveDataDelete(SaveToDelete);
+}
+
+PRX_EXPORT int DeletAllSavesForUser(int UserId)
+{
+
+}
+
 #pragma endregion << Save Data >>
 
 #pragma region << Kernel Calls >>
+
+
+#pragma region << Patch Stuff >>
+
+//the idea here is to enable the system to allow patching to kernel via our 
+//static inline int proc_write_mem(struct proc *p, void *ptr, size_t size, void *data, size_t *n) 
+//{
+//	return proc_rw_mem(p, ptr, size, data, n, 1);
+//}
+//
+//
+//static int proc_rw_mem(struct proc *p, void *ptr, size_t size, void *data, size_t *n, int write)
+//{
+//	struct thread *td = curthread();
+//	struct iovec iov;
+//	struct uio uio;
+//	int r = 0;
+//
+//	if (!p)
+//		return -1;
+//
+//	if (size == 0) {
+//		if (n)
+//			*n = 0;
+//
+//		return 0;
+//	}
+//
+//	memset(&iov, 0, sizeof(iov));
+//	iov.iov_base = (uint64_t)data;
+//	iov.iov_len = size;
+//
+//	memset(&uio, 0, sizeof(uio));
+//	uio.uio_iov = (uint64_t)&iov;
+//	uio.uio_iovcnt = 1;
+//	uio.uio_offset = (uint64_t)ptr;
+//	uio.uio_resid = (uint64_t)size;
+//	uio.uio_segflg = UIO_SYSSPACE;
+//	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
+//	uio.uio_td = td;
+//
+//	r = proc_rwmem(p, &uio);
+//
+//	if (n)
+//		*n = (size_t)((uint64_t)size - uio.uio_resid);
+//
+//	return r;
+//}
+
+
+#pragma endregion << Patch Stuff >>
+
+#define RESOLVE(module, name) getFunctionAddressByName(module, #name, &name)
+
+int getFunctionAddressByName(int loadedModuleID, char *name, void *destination);
+
+
+PRX_EXPORT bool LaunchApp(char * titleId)
+{
+	SystemServiceLaunchApp(titleId);
+}
 
 PRX_EXPORT bool LoadExec(const char *path, char *const *argv)
 {
 	initSysUtil();
 
-	if (path == nullptr) return false;
-	if (path[0] == '\0') return false;
-	printf("hello from xdpx");
-	int ret = 1;
-	ret = customsceSystemServiceLoadExec(path, NULL);
-	if (ret == SCE_OK) return true;
-	return false;
+	SysLoadExec(path,argv);
 }
 
 PRX_EXPORT const char* GetCallableList()
@@ -1257,7 +971,7 @@ PRX_EXPORT const char* GetCallableList()
 
 
 
-	sceKernelGetModuleList(modules,ModulesSize,&moduleCount);
+	//sceKernelGetModuleList(modules,ModulesSize,&moduleCount);
 	//now our code should give us the total modules
 
 	//char mess [180];
@@ -1308,71 +1022,12 @@ PRX_EXPORT const char* GetListOfServices()
 
 PRX_EXPORT const char* GetIDPS()
 {
-	char* IDPS;
-
-	int ret = -1;
-
-	loadAndImport();
-
-	initSysUtil();
-	char* idps = (char *)malloc(64);//dont knwo why its being a little bitch
-	memset(idps, 0, 64);
-	ret = sceKernelGetIdPs(idps);
-	if(ret < 0)
-	{
-		notify("SCE Kernel Get IDPS Failed");
-	}
-
-	//small test 
-	char* idpsholder = (char *)malloc(64);
-	memset(idpsholder,0,64);
-	size_t bufferlen  = 64;
-	ret = sysctlbyname("machdep.idps",idpsholder,&bufferlen, NULL, NULL);//just to bypass the ps4 control namne
-	if(ret < 0)
-	{
-		notify("sysctl IDPS Failed");
-		return IDPS;//all wne to hell 
-	}	
-
-	char idps_buf[255];
-	for (int i = 0; i<64; i++) {
-		sprintf(idps_buf+i, "%x", idps[i]);
-	}
-
-	char idps_buf2[255];
-	for (int i = 0; i<64; i++) {
-		sprintf(idps_buf2+i, "%x", idpsholder[i]);
-	}
-
-	char buffer[1024];
-	sprintf(buffer, "IDPS: %s", idps_buf);
-	sprintf(buffer, "%s", idps_buf2);
-	return buffer;
+	return KernelGetIDPS();
 }
 
 PRX_EXPORT const char* GetPSID()
 {
-	char* PSID;
-	loadAndImport();	
-	initSysUtil();
-	int ret = -1;
-	char* psid = (char *)malloc(16);
-	memset(psid, 0, 16);
-	ret = sceKernelGetOpenPsIdForSystem(psid);
-	if(ret < 0)
-	{
-		notify("SCE Kernel Get PSID Failed");
-		return PSID;
-	}
-	char psid_buf[255];
-	for (int i = 0; i<16; i++) {
-		sprintf(psid_buf+i, "%x", psid[i]);
-	}
-	char buffer[1024];
-	sprintf(buffer, "%s", psid_buf);
-	PSID = buffer;
-
-	return buffer;
+	return KernelGetPSID();
 }
 
 //this calls sceKernelGetSystemSwVersion
@@ -1404,45 +1059,14 @@ PRX_EXPORT const char* GetPSID()
 
 PRX_EXPORT const char* KernelGetOpenPsId()
 {
-	//this one migt be different ? not sure why there is two 
-	char* PSID;
-	loadAndImport();	
-	initSysUtil();
-	int ret = -1;
-	char* psid = (char *)malloc(250);
-	memset(psid, 0, 250);
-	ret =sceKernelGetOpenPsId(psid);
-	if(ret < 0)
-	{
-		notify("SCE Kernel Get PSID Failed");
-		return PSID;
-	}
-
-	char psid_buf[255];
-	for (int i = 0; i<250; i++) {
-		sprintf(psid_buf+i, "%x", psid[i]);
-	}
-	char buffer[1024];
-	sprintf(buffer, "%s", psid_buf);
-	notify(buffer);
-	return buffer;
+	return KernelGetOpenPSID();
 }
 
-struct firmware {
-	uint32_t build : 12;
-	uint32_t minor : 12;
-	uint32_t major :  8;
-};
-struct firmware version;
+
 //gets the version as an int
 PRX_EXPORT int get_fw()
 {
-	size_t fwlen = sizeof(struct firmware);
-	if (sysctlbyname("kern.sdk_version", (char *)&version, &fwlen, NULL, 0) == 0) {
-		return version.major * 0x100 + ((version.minor & 0xFF0) / 0x10);
-	}
-
-	return -1;
+	return Kernel_Get_Fw();
 }
 
 //uint16_t g_firmware;
@@ -1474,115 +1098,19 @@ PRX_EXPORT int get_fw()
 
 // Get the firmware version on the kernel (but can be spoofed !)
 PRX_EXPORT const char* firmware_version_kernel() {
-	SceFwInfo fw_info;
-	sceKernelGetSystemSwVersion1(&fw_info);
-	static char version[28];
-	snprintf(version, 0x1C, "%s", fw_info.version_string);
-	return version;
+	return Kernel_Firmware_Version();
 }
 
-uint16_t g_firmware = 0;
+
 PRX_EXPORT uint16_t get_firmware() {
-	if (g_firmware) {
-		return g_firmware;
-	}
-	uint16_t ret;            // Numerical representation of the firmware version. ex: 505 for 5.05, 702 for 7.02, etc
-	uint32_t offset;         // Offset for ealier firmware's version location
-	char binary_fw[2] = {0}; // 0x0000
-	char string_fw[5] = {0}; // "0000\0"
-	char sandbox_path[33];   // `/XXXXXXXXXX/common/lib/libc.sprx` [Char count of 32 + nullterm]
-	int sys;
-
-
-	sys = sceKernelLoadStartModule("libkernel_sys.sprx", 0, 0, 0, 0, 0);
-	ret = sceKernelDlsym(sys, "sceKernelGetFsSandboxRandomWord", (void**)&sceKernelGetFsSandboxRandomWord_1);
-	if (ret)
-	{
-
-		sys = sceKernelLoadStartModule("libkernel.sprx", 0, 0, 0, 0, 0);
-		ret = sceKernelDlsym(sys, "sceKernelGetFsSandboxRandomWord", (void**)&sceKernelGetFsSandboxRandomWord_1);
-		if (ret) return -2;
-
-	}
-
-
-
-	snprintf(sandbox_path, sizeof(sandbox_path), "/%s/common/lib/libc.sprx", sceKernelGetFsSandboxRandomWord_1());
-
-	int fd = open(sandbox_path, O_RDONLY, 0);
-	if (fd < 0) {
-		// Assume it's currently jailbroken
-		fd = open("/system/common/lib/libc.sprx", O_RDONLY, 0);
-		if (fd < 0) {
-			// It's really broken
-			return -1;
-		}
-	}
-
-	lseek(fd, 0x240, SEEK_SET); // 0x240 for 1.01 -> ?.??, 0x2B0 for ?.?? (5.05) -> ???
-	read(fd, &offset, sizeof(offset));
-
-	if (offset == 0x50E57464) { // "Påtd"
-		lseek(fd, 0x334, SEEK_SET);
-	} else {
-		lseek(fd, 0x374, SEEK_SET);
-	}
-
-	read(fd, &binary_fw,  sizeof(binary_fw));
-	close(fd);
-
-	snprintf_s(string_fw, sizeof(string_fw), "%02x%02x", binary_fw[1], binary_fw[0]);
-
-	ret = atoi(string_fw);
-
-	g_firmware = ret;
-	return ret;
+	return Kernel_Get_FW_Version();
 }
 
 //Get the firmware version by libc (for prevent from kernel spoof)
 //Should no longer be required thanks to LM
 PRX_EXPORT char* firmware_version_libc()
 {
-	loadAndImport();
-	initSysUtil();
-	//loadKernel();
-	//notify("User Function Called");
-	char version[5] = {0};
-	static char* sandboxWord = NULL;
-	char fw[2] = {0};
-	//notify("Setting Sanbox Path");
-	static char sandbox_path[50];
-	sandboxWord = sceKernelGetFsSandboxRandomWord_1();
-	char buffer[520];
-	sprintf(buffer, "Sandbox Word is \n%s", sandboxWord);
-	//notify(buffer);
-	snprintf(sandbox_path, 50, "/%s/system/common/lib/libc.sprx", sandboxWord);
-	//notify(sandbox_path);
-	int fd = sceKernelOpen(sandbox_path, 0, 0);
-	if (!fd)
-		//notify("Opening LibC");
-			fd = sceKernelOpen("/system/common/lib/libc.sprx", 0, 0);
-
-	if (fd) {
-		//notify("SEEK");
-		sceKernelLseek(fd, 0x374, SEEK_CUR);
-		sceKernelRead(fd, &fw, 2);
-		sceKernelClose(fd);
-		//notify("Version");
-		snprintf_s(version,sizeof(version), "%02x%02x", fw[1], fw[0]);
-		sprintf(buffer, "Version is \n%s", version);
-		//notify(buffer);
-
-		char ch[5];
-		(void)memset(ch, 0, sizeof(ch));
-		//notify("char copied");
-		char * a = new char[1024];
-		strcpy(a, version);
-		return (a);
-		return 0;
-	} else {
-		return "";
-	}
+	return Kernel_firmware_version_libc();
 }
 
 //this is needed for mono uses the same argumnents it seems
@@ -1607,109 +1135,62 @@ return result;
 
 
 
+PRX_EXPORT char* GetSandboxPath()
+{
+	return Kernel_GetSandboxPath();
+}
+
+
+//int (*sceKernelDebugOutText)(int dbg_channel, const char* text, ...);
+////Finally we should now have the KLOG funciton
+//void klog(const char* fmt, ...)
+//{
+//	/*From now on I want to do it this way*/
+//	int kernel_lib = sceKernelLoadStartModule("/system/common/lib/libkernel.sprx", 0, NULL, 0, NULL, NULL);
+//	sceKernelDlsym(kernel_lib, "sceKernelDebugOutText", (void **)&sceKernelDebugOutText);//this will hook into the libkernel and get the call for us
+//
+//	char Buffer[0x200];
+//
+//	//Create full string from va list.
+//	va_list args;
+//	va_start(args, fmt);
+//	vsprintf(Buffer, fmt, args);
+//	va_end(args);
+//
+//	sceKernelDebugOutText(0, Buffer);
+//}
+
 #pragma endregion << Kernel Calls >>
 
 #pragma region << User Service Functions >>
 
 PRX_EXPORT char* GetUsername()
 {
-	char* rtnchar;
-	//memset(rtnchar,0,sizeof(rtnchar));
-	int ret = -1;
-	if(sceSysUtilSendSystemNotificationWithText == nullptr)
+	try
 	{
-		//initilize util
-		initSysUtil();
+		return  UserServiceGetUserName();
 	}
-	char username[32];
-	//memset(username, 0, 32);
-	//memset(username, 0, 32);
-	char buffer[520];
-	if(DEBUGENABlED == 1)
+	catch(std::exception e)
 	{
-		notify("Ilitilize User Service");
+		notify((char*)e.what());
+		return "";
 	}
-	ret =InitlizieUserService();
-	if(ret < 0)
-	{
-		sprintf(buffer, "UserServiceError\n%d", ret);
-		notify(buffer);
-		//notify("InitlizieUserService error");
-		return buffer;
-	}
-	if(DEBUGENABlED == 1)
-	{
-		notify("Getting username");
-	}
-	if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
-	{
-		ret = sceUserServiceGetInitialUser(&userId);
-		if(ret < 0)
-		{
-			notify("sceUserServiceGetInitialUser failed");
-			return buffer;
-		}
-	}
-
-
-
-	(void)memset(username, 0, sizeof(username));
-
-	if (sceUserServiceGetUserName(userId, username, sizeof(username) - 1) < 0)
-	{
-		notify("[DEBUG] [ERROR] Failed to get username!\n");
-		return buffer;
-	}
-	//memcpy(rtnchar,username,sizeof(username));
-	//strcpy( rtnchar,username);
-	if(DEBUGENABlED == 1)
-	{
-		notify(username);
-	}
-	/*sprintf(buffer,"Username is %s",username);
-	notify(buffer);
-	rtnchar = username;
-	*/
-	char * a = new char[1024];
-	strcpy(a, username);
-	return (a);
 }
 
 PRX_EXPORT const char* GetUserId()
 {
-	char rtnchar[32];
-	int ret = -1;
-	initSysUtil();
-	char buffer[520];
-	memset(buffer,0,sizeof(buffer));
-	if(DEBUGENABlED == 1)
-	{
-		notify("Getting UserID");
+	try
+	{	
+		return UserServiceGetUserId();
 	}
-	ret =InitlizieUserService();
-	if(ret < 0)
+	catch(std::exception e)
 	{
-		sprintf(buffer, "UserServiceError\n\n0x%08x", ret);
-		notify(buffer);
-		//notify("InitlizieUserService error");
-		return buffer;
+		notify((char*)e.what());
+		return "";
 	}
-	if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
-	{
-		ret = sceUserServiceGetInitialUser(&userId);
-		if(ret < 0)
-		{
-			notify("sceUserServiceGetInitialUser failed");
-			return buffer;
-		}
-	}
-	//notify("Got Userid");
-	sprintf(buffer, "%d", userId);
-	char * a = new char[1024];
-	strcpy(a, buffer);
-	return (a);
 
 }
+
 
 #pragma endregion << User Service Functions >>
 
@@ -1865,7 +1346,7 @@ PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
 
 	if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
 	{
-		ret = sceUserServiceGetInitialUser(&userId);
+		ret = GetInitialUser();
 		if(ret < 0)
 		{
 			notify("sceUserServiceGetInitialUser failed");
@@ -1874,7 +1355,7 @@ PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
 	}
 	(void)memset(username, 0, sizeof(username));
 
-	if (sceUserServiceGetUserName(userId, username, sizeof(username) - 1) < 0)
+	if (GetUserName(userId, username, sizeof(username) - 1) < 0)
 	{
 		notify("[DEBUG] [ERROR] Failed to get username!\n");
 		return -1;
@@ -2029,6 +1510,7 @@ PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
 
 
 int (*sceFsMountTrophyData)(int a1, char path, int a3, int a4, int a5);
+
 /*Research this more in depth*/
 //SceFsMountGameDataOpt
 ////pfsImgFile
@@ -2075,12 +1557,50 @@ int (*sceFsMountGamePkg)(
 //errors 
 /*    if (mountpath == 0) {
 pcVar11 = "%s(%d)\t***ERR*** Mount path not specified.\n";*/
+
+//now read it to another location (Dump to use)
+#define READ_SIZE	(256)
+#define NB_PAGES	(256)
+
+
+/* UTILS **********************************************************************/
+void hexprint(const uint8_t *input, const int input_length)
+{
+	int i = 0;
+
+	for (i = 0; i < input_length; i++) {
+		if (i%16 == 0) {
+			printf("\n");
+		}
+		printf("%02x ", input[i]);
+	}
+	printf("\n");
+}
+
+void dump_to_file(const char *output_file_path,
+				  const char *buffer, const int buffer_length)
+{
+	int output_file = open(output_file_path, O_RDWR|O_APPEND|O_CREAT);
+	if (output_file < 0) {
+		printf("Failed opening output file %s\n", output_file_path);
+		return;
+	}
+
+	write(output_file, buffer, buffer_length);
+}
+
+
+
+
 PRX_EXPORT int MountandLoad()
 {
-	//even if it just mounts im going to be flippen happy
 
 	loadAndImport();
 	initSysUtil();
+	notify("Loading authmgr");
+
+
+
 	if(DEBUGENABlED == 1)
 	{
 		notify("Loading libSceFsInternalForVsh");
@@ -2128,9 +1648,13 @@ PRX_EXPORT int MountandLoad()
 
 
 
+
 //I can't even remember how i got to this .... basically you can open up pkg's(trophies savedata games) using iovec .... u just need the ekpfs key
 PRX_EXPORT int MountTrophy()
 {
+
+
+
 	struct iovec* iov = NULL;
 	int iovlen = 0;
 	int ret = 0 ;
@@ -2148,6 +1672,8 @@ PRX_EXPORT int MountTrophy()
 	//ret = nmount(iov, iovlen, flags);
 }
 //sceFsMountGamePkg
+
+
 
 #pragma endregion << Mount Stuff >>
 
@@ -2185,7 +1711,7 @@ PRX_EXPORT int Change_Controller_Color(int r,int g,int b)
 	if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
 	{
 
-		ret = sceUserServiceGetInitialUser(&userId);
+		ret = GetInitialUser();
 		if(ret < 0)
 		{
 			notify("sceUserServiceGetInitialUser failed");
@@ -2344,6 +1870,28 @@ struct bgft_download_param {
 	unsigned long package_size;
 };
 
+struct OrbisBgftDownloadParam {
+	int userId;
+	int entitlementType;
+	const char* id; /* max size = 0x30 */
+	const char* contentUrl; /* max size = 0x800 */
+	const char* contentExUrl;
+	const char* contentName; /* max size = 0x259 */
+	const char* iconPath; /* max size = 0x800 */
+	const char* skuId;
+	bgft_task_option_t option;
+	const char* playgoScenarioId;
+	const char* releaseDate;
+	const char* packageType;
+	const char* packageSubType;
+	unsigned long packageSize;
+};
+
+struct OrbisBgftDownloadParamEx {
+	OrbisBgftDownloadParam params;
+	unsigned int slot;
+};
+
 struct bgft_download_param_ex {
 	struct bgft_download_param param;
 	unsigned int slot;
@@ -2370,39 +1918,199 @@ struct bgft_init_params {
 	void* mem;
 	unsigned long size;
 };
+struct OrbisBgftInitParams {
+	void* heap;
+	size_t heapSize;
+};
 int(*sceBgftInitialize)(struct bgft_init_params*);
-int(*sceBgftDownloadRegisterTaskByStorage)(struct bgft_download_param*, int*);
+int(*sceBgftServiceIntInit)(struct OrbisBgftInitParams*);
+//int sceBgftServiceIntDownloadRegisterTaskByStorageEx(OrbisBgftDownloadParamEx* params, OrbisBgftTaskId* taskId);
+int(*sceBgftServiceIntDownloadRegisterTaskByStorageEx)(OrbisBgftDownloadParamEx* params, int* taskId);
 int(*sceBgftDownloadStartTask)(int);
 int bgft;
+
+int(*sceAppInstUtilInitialize)(void);
+int (*sceAppInstUtilAppInstallPkg)(const char* file_path, int reserved);
+int (*sceAppInstUtilGetTitleIdFromPkg)(const char* pkg_path, char* title_id, int* is_app);
+int (*sceAppInstUtilCheckAppSystemVer)(const char* title_id, uint64_t buf, uint64_t bufs);
+int (*sceAppInstUtilAppPrepareOverwritePkg)(const char* pkg_path);
+int (*sceAppInstUtilGetPrimaryAppSlot)(const char* title_id, unsigned int* slot);
+int (*sceAppInstUtilAppUnInstall)(const char* title_id);
+int (*sceAppInstUtilAppGetSize)(const char* title_id, uint64_t buf);
+int (*sceAppInstUtilAppExists)(const char* title_id,unsigned int flag);
+
+bool AppInstUtil_Initialized = false;
+bool AppInstUtil_Init()
+{
+	int ret = 0;
+
+	if (AppInstUtil_Initialized)
+		return true;
+	//"/system/common/lib/libSceAppInstUtil.sprx"
+	ret = sceKernelLoadStartModule("/system/common/lib/libSceAppInstUtil.sprx", 0,NULL,0,0,0);
+	sceKernelDlsym(ret, "sceAppInstUtilInitialize",(void **)&sceAppInstUtilInitialize);
+	sceKernelDlsym(ret, "sceAppInstUtilAppInstallPkg",(void **)&sceAppInstUtilAppInstallPkg);
+	sceKernelDlsym(ret, "sceAppInstUtilGetTitleIdFromPkg",(void **)&sceAppInstUtilGetTitleIdFromPkg);
+	sceKernelDlsym(ret, "sceAppInstUtilCheckAppSystemVer",(void **)&sceAppInstUtilCheckAppSystemVer);
+	sceKernelDlsym(ret, "sceAppInstUtilAppPrepareOverwritePkg",(void **)&sceAppInstUtilAppPrepareOverwritePkg);
+	sceKernelDlsym(ret, "sceAppInstUtilGetPrimaryAppSlot",(void **)&sceAppInstUtilGetPrimaryAppSlot);
+	sceKernelDlsym(ret, "sceAppInstUtilAppUnInstall",(void **)&sceAppInstUtilAppUnInstall);
+	sceKernelDlsym(ret, "sceAppInstUtilAppGetSize",(void **)&sceAppInstUtilAppGetSize);
+	sceKernelDlsym(ret, "sceAppInstUtilAppExists",(void **)&sceAppInstUtilAppExists);
+
+	ret = sceAppInstUtilInitialize();
+	if (ret)
+	{
+		SendMessageToPS4("sceAppInstUtilInitialize failed:");
+		//klog("sceAppInstUtilInitialize failed: 0x%08X", ret);
+
+		AppInstUtil_Initialized = false;
+
+		return false;
+	}
+
+	AppInstUtil_Initialized = true;
+
+	return true;
+}
+
+
+static OrbisBgftInitParams s_bgft_init_params;
+
+#define BGFT_HEAP_SIZE (1 * 1024 * 1024)
+
+static bool s_bgft_initialized = false;
+
+int bgft_init(void) {
+	int ret;
+
+	if (s_bgft_initialized) {
+		goto done;
+	}
+
+	memset(&s_bgft_init_params, 0, sizeof(s_bgft_init_params));
+	{
+		s_bgft_init_params.heapSize = BGFT_HEAP_SIZE;
+		s_bgft_init_params.heap = (uint8_t*)malloc(s_bgft_init_params.heapSize);
+		if (!s_bgft_init_params.heap) {
+			printf("No memory for BGFT heap.\n");
+			goto err;
+		}
+		memset(s_bgft_init_params.heap, 0, s_bgft_init_params.heapSize);
+	}
+
+	ret = sceBgftServiceIntInit(&s_bgft_init_params);
+	if (ret) {
+		printf("sceBgftServiceIntInit failed: 0x%08X\n", ret);
+		goto err_bgft_heap_free;
+	}
+
+	s_bgft_initialized = true;
+
+done:
+	return 0;
+
+err_bgft_heap_free:
+	if (s_bgft_init_params.heap) {
+		free(s_bgft_init_params.heap);
+		s_bgft_init_params.heap = NULL;
+	}
+
+	memset(&s_bgft_init_params, 0, sizeof(s_bgft_init_params));
+
+err:
+	s_bgft_initialized = false;
+
+	return -1;
+}
 PRX_EXPORT int InstallPKG(char * path,char * name,char * imgpath)
 {
-	int rv;
-	//int sceScreenshotHandle = sceKernelLoadStartModule("/system/common/lib/libSceScreenShot.sprx", 0, NULL, 0, 0, 0);
-	//sceKernelDlsym(sceScreenshotHandle,"sceScreenShotSetParam",(void **)&sceScreenShotSetParam);  
+	int is_app,rv;
+
+	char title_id[16];//placeholder for titleid
+
+
 	bgft = sceKernelLoadStartModule("/system/common/lib/libSceBgft.sprx", 0,NULL,0,0,0);
 
-	sceKernelDlsym(bgft, "sceBgftServiceIntInit",(void **)&sceBgftInitialize);
+	sceKernelDlsym(bgft, "sceBgftServiceIntInit",(void **)&sceBgftServiceIntInit);
 
-	sceKernelDlsym(bgft, "sceBgftServiceIntDownloadRegisterTaskByStorage",(void **)&sceBgftDownloadRegisterTaskByStorage);
+	sceKernelDlsym(bgft,"sceBgftServiceIntInit",(void **)&sceBgftInitialize);
+
+	sceKernelDlsym(bgft, "sceBgftServiceIntDownloadRegisterTaskByStorageEx",(void **)&sceBgftServiceIntDownloadRegisterTaskByStorageEx);
 
 	sceKernelDlsym(bgft, "sceBgftServiceIntDownloadStartTask",(void **)&sceBgftDownloadStartTask);
+
+	AppInstUtil_Init();
+
+	rv = sceAppInstUtilGetTitleIdFromPkg(path, title_id, &is_app);
 	struct bgft_init_params ip = {
 		.mem = mmap(NULL, 0x100000, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0),
 		.size = 0x100000,
 	};
-	rv = sceBgftInitialize(&ip);
-	struct bgft_download_param params = {
-		.entitlement_type = 5,
-		.id = "",
-		.content_url = path,
-		.content_name = name,
-		.icon_path = imgpath,
-		.playgo_scenario_id = "0",
-		.option = BGFT_TASK_OPTION_DISABLE_CDN_QUERY_PARAM,
-	};
-	int task = BGFT_INVALID_TASK_ID;
-	rv = sceBgftDownloadRegisterTaskByStorage(&params, &task);
-	rv = sceBgftDownloadStartTask(task);
+	//rv = sceBgftInitialize(&ip);
+	//trying what LM's did in his store open the path then close the path
+	int fd = sceKernelOpen(path, 0000, 0x0000);
+	if (fd >= 0)
+	{
+
+		if(DEBUGENABlED == 1)
+			SendMessageToPS4("opening path and closing");
+		sceKernelClose(fd);
+		//initilize the bf stuff
+		if(DEBUGENABlED == 1)
+			SendMessageToPS4("bgft_init");
+		rv = bgft_init();
+		struct bgft_download_param params = {
+			.entitlement_type = 5,
+			.id = "",
+			.content_url = path,
+			.content_name = name,
+			.icon_path = imgpath,
+			.playgo_scenario_id = "0",
+			.option = BGFT_TASK_OPTION_DISABLE_CDN_QUERY_PARAM,
+		};
+		int task = BGFT_INVALID_TASK_ID;
+		//rv = sceBgftServiceIntDownloadRegisterTaskByStorageEx(&params, &task);
+		OrbisBgftDownloadParamEx download_params;
+		memset(&download_params, 0, sizeof(download_params));
+		{
+			download_params.params.entitlementType = 5;
+			download_params.params.id = "";
+			download_params.params.contentUrl = path;
+			download_params.params.contentName = name;
+			download_params.params.iconPath = imgpath;
+			download_params.params.playgoScenarioId = "0";
+			download_params.params.option = BGFT_TASK_OPTION_DISABLE_CDN_QUERY_PARAM;
+			download_params.slot = 0;
+		}
+		if(DEBUGENABlED == 1)
+			SendMessageToPS4("sceBgftServiceIntDownloadRegisterTaskByStorageEx");
+
+		rv = sceBgftServiceIntDownloadRegisterTaskByStorageEx(&download_params, &task);
+		if (rv == 0x80990088)
+		{
+			if(DEBUGENABlED == 1)
+				SendMessageToPS4("0x80990088");
+			rv = sceAppInstUtilAppUnInstall(title_id);
+			if(rv!=0)
+			{				
+				SendMessageToPS4("Error Uninstalling");
+				return 0;
+			}
+
+			if(DEBUGENABlED == 1)
+				SendMessageToPS4("sceBgftServiceIntDownloadRegisterTaskByStorageEx");
+			rv = sceBgftServiceIntDownloadRegisterTaskByStorageEx(&download_params, &task);
+		}
+		/*else if (rv) 
+		{
+		SendMessageToPS4("sceBgftServiceIntDownloadRegisterTaskByStorageEx Error");
+		return 0;
+		}*/if(DEBUGENABlED == 1)
+			SendMessageToPS4("sceBgftDownloadStartTask");
+		rv = sceBgftDownloadStartTask(task);
+		return 0;
+	}
 	return 0;
 }
 
@@ -2445,3 +2153,206 @@ PRX_EXPORT bool JailbreakMe()
 }
 
 #pragma endregion agnostic jailbreak
+
+#pragma region << Drive Spcae >>
+
+typedef struct statvfs {
+	unsigned long  f_bsize;    /* filesystem block size */
+	unsigned long  f_frsize;   /* fragment size */
+	fsblkcnt_t     f_blocks;   /* size of fs in f_frsize units */
+	fsblkcnt_t     f_bfree;    /* # free blocks */
+	fsblkcnt_t     f_bavail;   /* # free blocks for unprivileged users */
+	fsfilcnt_t     f_files;    /* # inodes */
+	fsfilcnt_t     f_ffree;    /* # free inodes */
+	fsfilcnt_t     f_favail;   /* # free inodes for unprivileged users */
+	unsigned long  f_fsid;     /* filesystem ID */
+	unsigned long  f_flag;     /* mount flags */
+	unsigned long  f_namemax;  /* maximum filename length */
+};
+PRX_EXPORT int calculate_storage_size( )
+{
+
+	char *temp_char_ptr = (char *)NULL;
+	int storage_size_percent = -1;  
+	FILE *fp ;
+	fp = fopen ("disk.stat" , "r");
+	if (fp != (FILE *)NULL)
+	{
+		temp_char_ptr = (char*) calloc ( 6 , 1 );
+		fscanf( fp,"%s %s %s %s %d", temp_char_ptr, temp_char_ptr, temp_char_ptr, temp_char_ptr, &storage_size_percent);
+	}
+	free (temp_char_ptr);
+	fclose(fp);
+	return storage_size_percent;
+
+}
+
+long GetDiscStat(const char* path)
+{
+
+}
+
+/*Powered By LM's homebrew store*/
+static const char     *sizes[] = { "EiB", "PiB", "TiB", "GiB", "MiB", "KiB", "B" };
+static const uint64_t  exbibytes = 1024ULL * 1024ULL * 1024ULL *
+	1024ULL * 1024ULL * 1024ULL;
+#define DIM(x)  (sizeof(x)/sizeof(*(x)))
+
+char *calculateSize(uint64_t size)
+{
+	char     *result = (char *)malloc(sizeof(char) * 20);
+	uint64_t  multiplier = exbibytes;
+	int i;
+
+	for (i = 0; i < DIM(sizes); i++, multiplier /= 1024)
+	{
+		if (size < multiplier)
+			continue;
+		if (size % multiplier == 0)
+			sprintf(result, "%" PRIu64 " %s", size / multiplier, sizes[i]);
+		else
+			sprintf(result, "%.1f %s", (float)size / multiplier, sizes[i]);
+		return result;
+	}
+	strcpy(result, "0");
+	return result;
+
+}
+
+
+
+PRX_EXPORT char *CalcAppsize(char *path)
+{
+
+	return calculateSize(0);
+
+	/* FILE *fp = NULL;
+	long off;
+
+	fp = fopen(path, "r");
+	if (fp == NULL)
+	printf("failed to fopen %s\n", path);
+
+	printf("DEBUG: app fd = %s", path);
+
+	if (fseek(fp, 0, SEEK_END) == -1)
+	printf("DEBUG: failed to fseek %s\n", path);
+
+	off = ftell(fp);
+	if (off == (long)-1)
+	printf("DEBUG: failed to ftell %s\n", path);
+
+
+	printf("[*] fseek_filesize - file: %s, size: %ld\n", path, off);
+
+	if (fclose(fp) != 0)
+	printf("DEBUG: failed to fclose %s\n", path);
+
+
+	if(off)
+	return calculateSize(off);
+	else
+	return NULL;*/
+
+}
+
+PRX_EXPORT char* GetAvailableSpace(const char* path)
+{
+	//char* Space;
+
+	loadAndImport();
+	_statfs bstat;
+
+	//memset(&bstat, 0, sizeof(bstat));
+	//SendMessageToPS4("Setting Stat");
+
+	// int statfs(const char *path, struct statfs *buf);
+	//fstatfs(int fd, struct statfs *buf);
+	int ret = syscall(396,path,&bstat);
+	if(ret)
+	{
+		int err = errno;
+		char buffer [150];
+		sprintf(buffer,"Error %d",err);
+		SendMessageToPS4(buffer);
+		return 0;
+	}
+	SendMessageToPS4("Stat found");
+	//char buffer [150];
+	//sprintf(buffer,"%d",bstat.f_bsize);
+	//SendMessageToPS4(buffer);
+	//sprintf(buffer,"%d",bstat.f_bavail);
+	//SendMessageToPS4(buffer);
+
+	long available = (bstat.f_bavail * bstat.f_bsize);
+	char buffer [15000];
+
+	sprintf(buffer,"%llu",available);
+	SendMessageToPS4(buffer);
+	//free(Space);
+	SendMessageToPS4("Returning Buffer");
+	//memcpy(RTNval, available,sizeof(available)+1);
+	return buffer;
+
+	//free(&bstat);
+	//return &available;
+	/*unsigned long blksize, blocks, freeblks, disk_size, used, free;
+	blksize = bstat.f_bsize;
+	blocks = bstat.f_blocks;
+	freeblks = bstat.f_bfree;
+
+	disk_size = blocks*blksize;
+	free = freeblks*blksize;
+	used = disk_size - free;
+
+	sprintf(buffer,"disk_size %f",disk_size);
+	SendMessageToPS4(buffer);
+	sprintf(buffer,"free %f",free);
+	SendMessageToPS4(buffer);	
+	sprintf(buffer,"used %f",used);
+	SendMessageToPS4(buffer);
+
+	float freeBytes = bstat.f_bavail * bstat.f_frsize;
+	sprintf(buffer,"free %f",freeBytes);
+	SendMessageToPS4(buffer);
+	return freeBytes;
+
+	return free;*/
+
+
+	//return (long)(bstat.f_blocks * bstat.f_bavail);
+
+
+
+
+	//return calculate_storage_size();
+
+	//struct stat sb;
+	//if((stat(path,&sb))==0)
+	//{
+	//	//SendMessageToPS4(sb.st_size);
+	//	return sb.st_size;
+	//}
+	return 0;
+}
+
+#pragma endregion << Drive Space >>
+
+#pragma region << Mono Stuff >>
+
+//
+// this is all thanks to OSM
+//
+PRX_EXPORT bool Unity_Plugin()
+{
+	//klog("Hooking Mono");
+
+	//init Mono
+	//Mono::Init();//here we should be winning
+
+	//notify("We hooked into UNITY !");
+
+	return true;
+}
+
+#pragma endregion << Mono Stuff >>

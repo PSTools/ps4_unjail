@@ -55,6 +55,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CppExceptions>true</CppExceptions>
     </ClCompile>
     <Link />
     <Link />
@@ -86,15 +87,20 @@
       <CLanguageStd Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
       </CLanguageStd>
     </ClCompile>
+    <ClCompile Include="Kernel.cpp" />
     <ClCompile Include="mount.c" />
     <ClCompile Include="PlayerInterface\UnityPrxPlugin.cpp" />
     <ClCompile Include="pluginLib.cpp" />
     <ClCompile Include="pluginunjail.cpp" />
     <ClCompile Include="prx.cpp" />
+    <ClCompile Include="Saves.cpp" />
     <ClCompile Include="syscall.cpp" />
+    <ClCompile Include="SystemService.cpp" />
+    <ClCompile Include="SysUtil.cpp" />
     <ClCompile Include="unjail.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">CompileAsC</CompileAs>
     </ClCompile>
+    <ClCompile Include="UserService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bls.h" />
@@ -105,6 +111,7 @@
     <ClInclude Include="encryptsrv.h" />
     <ClInclude Include="encryptsrv_args.h" />
     <ClInclude Include="ftps4.h" />
+    <ClInclude Include="Kernel.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="PlayerInterface\IPluginPS3.h" />
     <ClInclude Include="PlayerInterface\IPluginPSP2.h" />
@@ -116,7 +123,10 @@
     <ClInclude Include="PlayerInterface\UnityPrxPlugin.h" />
     <ClInclude Include="pluginunjail.h" />
     <ClInclude Include="pup.h" />
+    <ClInclude Include="Saves.h" />
     <ClInclude Include="syscall.h" />
+    <ClInclude Include="SystemService.h" />
+    <ClInclude Include="SysUtil.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="unjail.h" />
     <ClInclude Include="UserService.h" />

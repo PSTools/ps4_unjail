@@ -15,6 +15,11 @@
     <ClCompile Include="decryptio.c" />
     <ClCompile Include="encryptsrv.c" />
     <ClCompile Include="checkheaders.cpp" />
+    <ClCompile Include="Saves.cpp" />
+    <ClCompile Include="SysUtil.cpp" />
+    <ClCompile Include="UserService.cpp" />
+    <ClCompile Include="SystemService.cpp" />
+    <ClCompile Include="Kernel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayerInterface">
@@ -61,5 +66,9 @@
     <ClInclude Include="encryptsrv_args.h" />
     <ClInclude Include="pup.h" />
     <ClInclude Include="UserService.h" />
+    <ClInclude Include="Saves.h" />
+    <ClInclude Include="SysUtil.h" />
+    <ClInclude Include="SystemService.h" />
+    <ClInclude Include="Kernel.h" />
   </ItemGroup>
 </Project>

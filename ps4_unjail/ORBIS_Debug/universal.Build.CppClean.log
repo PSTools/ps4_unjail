@@ -1,18 +1,34 @@
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\unityprxplugin.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\ftps4.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\mount.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\pluginunjail.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\syscall.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\unjail.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\pluginlib.o
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\prx.o
-c:\users\zecoxao\desktop\plugins\ps4\universal_stub_weak.a
-c:\users\zecoxao\desktop\plugins\ps4\universal_stub.a
-c:\users\zecoxao\desktop\plugins\ps4\universal.prx
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\..\plugins\ps4\universal.prx
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\universal.tlog\orbis-clang-cl.command.1.tlog
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\universal.tlog\orbis-clang-cl.read.1.tlog
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\universal.tlog\orbis-clang-cl.write.1.tlog
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\universal.tlog\orbis-ld.command.1.tlog
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\universal.tlog\orbis-ld.read.1.tlog
-c:\users\zecoxao\desktop\ps4_unjailplugin_unity_nativecode\orbis_debug\universal.tlog\orbis-ld.write.1.tlog
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\CHECKHEADERS.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\DECRYPT.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\DECRYPTIO.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\ENCRYPTSRV.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\FTPS4.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\UNITYPRXPLUGIN.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\SYSCALL.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\MOUNT.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\PLUGINLIB.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\UNJAIL.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\PLUGINUNJAIL.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PS4_UNJAIL\ORBIS_DEBUG\PRX.O
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PLUGINS\PS4\UNIVERSAL_STUB_WEAK.A
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PLUGINS\PS4\UNIVERSAL_STUB.A
+C:\USERS\3DE ECHELON\DOWNLOADS\PS4_UNJAIL\PLUGINS\PS4\UNIVERSAL.PRX
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\checkheaders.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\decrypt.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\decryptio.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\encryptsrv.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\ftps4.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\mount.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\pluginLib.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\pluginunjail.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\prx.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\syscall.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\UnityPrxPlugin.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\unjail.o
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\orbis-clang-cl.command.1.tlog
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\orbis-clang-cl.read.1.tlog
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\orbis-clang-cl.write.1.tlog
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\orbis-ld.command.1.tlog
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\orbis-ld.read.1.tlog
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ORBIS_Debug\orbis-ld.write.1.tlog
+C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx

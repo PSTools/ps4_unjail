@@ -77,8 +77,12 @@ int FreeUnjail(int FWVersion)
 		return Sys::kexec((void *)&unjail672, &td);
 	}else if (FWVersion == 702){
 		return Sys::kexec((void *)&unjail702, &td);
+	}else if (FWVersion == 750){
+		return Sys::kexec((void *)&unjail750, &td);
+	}else if (FWVersion == 751){
+		return Sys::kexec((void *)&unjail751, &td);
 	}else if (FWVersion == 755){
-		return Sys::kexec((void *)&unjail75X, &td);
+		return Sys::kexec((void *)&unjail755, &td);
 	}
 
 	return 0;
