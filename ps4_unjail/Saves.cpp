@@ -481,6 +481,15 @@ int SaveDataDelete(char* DataDir)
 		}
 	}
 
+	initSaveData();
+	ret = sceSaveDataInitialize3(NULL);//call it with a null
+	if(ret < 0)
+	{
+		//error 
+		notify("sceSaveDataInitialize3 failed");
+		return ret;
+	}
+
 
 	SceSaveDataDirName dirName;
 
@@ -490,7 +499,7 @@ int SaveDataDelete(char* DataDir)
 	memset(&del, 0x00, sizeof(del));
 	del.userId = userId;
 	del.dirName = &dirName;
-
+	
 	ret = sceSaveDataDelete(&del);
 	if(ret != 0)
 	{
@@ -621,5 +630,33 @@ int SaveDataDeleteGame(char* TitleId)
 
 int SaveDataDeleteAllForUser()
 {
-	
+	int ret = 0;
+	initSysUtil();
+	char buffer[180];
+	ret =InitlizieUserService();
+	if(ret < 0)
+	{
+		sprintf(buffer, "UserServiceError\n%d", ret);
+		notify(buffer);
+		//notify("InitlizieUserService error");
+		return ret;
+	}
+
+	initSaveData();
+	ret = sceSaveDataInitialize3(NULL);//call it with a null
+	if(ret < 0)
+	{
+		//error 
+		notify("sceSaveDataInitialize3 failed");
+		return ret;
+	}
+
+	ret = sceSaveDataDeleteAllUser();
+	if(ret < 0)
+	{
+		//error 
+		notify("sceSaveDataDeleteAllUser failed");
+		return ret;
+	}
+	return ret;
 }

@@ -877,14 +877,40 @@ PRX_EXPORT int UnMountSaveData()
 }
 
 
-PRX_EXPORT int DeleteSaveData(char* SaveToDelete)
+PRX_EXPORT bool DeleteSaveData(char* SaveToDelete)
 {
-	return SaveDataDelete(SaveToDelete);
+	if(SaveDataDelete(SaveToDelete) ==0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-PRX_EXPORT int DeletAllSavesForUser(int UserId)
+PRX_EXPORT bool DeleteSaveDataGame(char* TitleId)
 {
+	if(SaveDataDeleteGame(TitleId) ==0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
+PRX_EXPORT bool DeletAllSavesForUser()
+{
+	if(SaveDataDeleteAllForUser() == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 #pragma endregion << Save Data >>
