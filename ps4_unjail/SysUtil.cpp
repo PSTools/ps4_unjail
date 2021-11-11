@@ -4,7 +4,7 @@
 
 #include "SysUtil.h"
 #include <stdio.h>
-
+#include "syscall.h"
 
 int (*sceSysUtilSendSystemNotificationWithText)(int messageType, char* message);
 int (*customsceSystemServiceLoadExec)(const char* path, char* const argv[]);
@@ -45,6 +45,52 @@ void notify(char *message)
 	sceSysUtilSendSystemNotificationWithText(222, buffer);
 }
 
+
+int loadmsg(char* format, ...)
+{
+
+	return 0;
+	/*sceSysmoduleLoadModule(ORBIS_SYSMODULE_MESSAGE_DIALOG);
+
+	sceMsgDialogInitialize();
+
+	char* buff[1024];
+	memset(buff, 0, 1024);
+
+	va_list args;
+	va_start(args, format);
+	vsprintf(buff, format, args);
+	va_end(args);
+
+	OrbisMsgDialogButtonsParam buttonsParam;
+	OrbisMsgDialogUserMessageParam messageParam;
+	OrbisMsgDialogParam dialogParam;
+
+	OrbisMsgDialogParamInitialize(&dialogParam);
+
+	memset(&buttonsParam, 0x00, sizeof(buttonsParam));
+	memset(&messageParam, 0x00, sizeof(messageParam));
+
+	dialogParam.userMsgParam = &messageParam;
+	dialogParam.mode = ORBIS_MSG_DIALOG_MODE_USER_MSG;
+
+	messageParam.buttonType = ORBIS_MSG_DIALOG_BUTTON_TYPE_WAIT;
+
+	messageParam.msg = buff;
+
+	sceMsgDialogOpen(&dialogParam);
+
+	return 0;*/
+}
+
+
+int sys_dynlib_dlsym(int loadedModuleID, const char *name, void *destination) {
+	return syscall(591, loadedModuleID, name, destination);
+}
+
+int sys_dynlib_load_prx(const char *name, int *idDestination) {
+	return syscall(594, name, 0, idDestination, 0);
+}
 
 int SysLoadExec(const char *path, char *const *argv)
 {

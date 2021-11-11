@@ -687,6 +687,12 @@ PRX_EXPORT int SendMessageToPS4(char* Message)
 	return SCE_OK;
 }
 
+
+PRX_EXPORT int ShowLoadingDialog(char* Message)
+{
+
+}
+
 #pragma endregion << Send notification on the ps4 >>
 
 #pragma region << Save Data >>
@@ -980,13 +986,140 @@ PRX_EXPORT bool LaunchApp(char * titleId)
 
 PRX_EXPORT bool LoadExec(const char *path, char *const *argv)
 {
-	initSysUtil();
+	try
+	{
+		initSysUtil();
 
-	SysLoadExec(path,argv);
+		SysLoadExec(path,argv);
+	}
+	catch(std::exception e)
+	{
+		notify((char*)e.what());
+
+	}
+	return true;
 }
+
+int _sceKernelGetModuleInfoEx(SceKernelModule handle, SceKernelModuleInfoEx* info) {
+	int ret;
+
+	if (!info) {
+		ret = SCE_KERNEL_ERROR_EFAULT;
+		goto err;
+	}
+
+	memset(info, 0, sizeof(*info));
+	{
+		info->size = sizeof(*info);
+	}
+
+	ret = syscall(SYS_dynlib_get_info_ex, handle, info); /* TODO: make proper error code */
+
+err:
+	return ret;
+}
+
+int(*sceKernelDebugOutText)(int dbg_channel, const char* text);
+void(*kprintf)(const char* fmt, ...) = 0;
+//Finally we should now have the KLOG funciton
+void klog(const char* fmt, ...)
+{
+
+	try
+
+	{
+		if(sceKernelDebugOutText)
+		{
+			char buffer[0x400] = { 0 };
+			va_list args;
+			va_start(args, fmt);
+			vsprintf(buffer, fmt, args);
+			va_end(args);
+
+			char buffer2[0x400] = { 0 };
+			sprintf(buffer2, "[universal] %s\n", buffer);
+
+			sceKernelDebugOutText(0, buffer2);
+		}
+		else
+		{
+			int Libkernel_library = 0;
+			if (sys_dynlib_load_prx("/system/common/lib/libkernel.sprx", &Libkernel_library))
+				if (sys_dynlib_load_prx("libkernel_web.sprx", &Libkernel_library))
+					sys_dynlib_load_prx("libkernel_sys.sprx", &Libkernel_library);
+			/*From now on I want to do it this way*/
+			//int kernel_lib = sceKernelLoadStartModule("/system/common/lib/libkernel.sprx", 0, NULL, 0, NULL, NULL);
+			//sceKernelDlsym(kernel_lib, "sceKernelDebugOutText", (void **)&sceKernelDebugOutText);//this will hook into the libkernel and get the call for us
+
+			sys_dynlib_dlsym(Libkernel_library, "sceKernelDebugOutText", &sceKernelDebugOutText);
+
+			char buffer[0x400] = { 0 };
+			va_list args;
+			va_start(args, fmt);
+			vsprintf(buffer, fmt, args);
+			va_end(args);
+
+			char buffer2[0x400] = { 0 };
+			sprintf(buffer2, "[universal] %s\n", buffer);
+
+			sceKernelDebugOutText(0, buffer2);
+		}
+	}
+	catch(std::exception e)
+	{
+		notify((char*)e.what());
+	}
+}
+
+void logshit(char* format, ...)
+{
+	char buffer[0x400] = { 0 };
+
+	va_list args;
+	va_start(args, format);
+	vsprintf(buffer, format, args);
+	va_end(args);
+
+	//sceKernelDebugOutText(DGB_CHANNEL_TTYL, buff);
+	
+
+	int fd = sceKernelOpen("/user/app/XDPX20004/logs/loader.log", O_WRONLY | O_CREAT | O_APPEND, 0777);
+	if (fd >= 0)
+	{
+		//read first
+		char buffer1[4096];
+		int bytes_read = sceKernelRead(fd, buffer1, sizeof(buffer1));
+		strcat(buffer1,buffer); // append string two to string one.
+		sceKernelWrite(fd, buffer1, strlen(buffer1));
+		sceKernelClose(fd);
+	}
+}
+
+//void logshit(char* format, ...)
+//{
+//	char* buff[1024];
+//	memset(buff, 0, sizeof(buff));
+//
+//	va_list args;
+//	va_start(args, format);
+//	vsprintf(buff, format, args);
+//	va_end(args);
+//
+//	sceKernelDebugOutText(DGB_CHANNEL_TTYL, buff);
+//
+//	int fd = sceKernelOpen("/user/app/NPXS39041/logs/loader.log", O_WRONLY | O_CREAT | O_APPEND, 0777);
+//	if (fd >= 0)
+//	{
+//		sceKernelWrite(fd, buff, strlen(buff));
+//		sceKernelClose(fd);
+//	}
+//}
 
 PRX_EXPORT const char* GetCallableList()
 {
+	mkdir("/user/app/XDPX20004/logs/", 0777);
+	unlink("/user/app/XDPX20004/logs/loader.log");
+	mkdir("/user/app/XDPX20004/", 0777);
 	initSysUtil();
 
 	//int sceKernelGetModuleList(SceKernelModule *array, size_t numArray, size_t *actualNum);
@@ -995,33 +1128,51 @@ PRX_EXPORT const char* GetCallableList()
 	SceKernelModule modules [1];
 	modules[0] = kernel_lib;
 
+	//ofstream outfile("myfile.txt", ofstream::binary);
 
-
-	//sceKernelGetModuleList(modules,ModulesSize,&moduleCount);
+	sceKernelGetModuleList(modules,ModulesSize,&moduleCount);
 	//now our code should give us the total modules
 
-	//char mess [180];
-	//sprintf(mess,"<Module List (%d modules)>\n", moduleCount);
-	//notify(mess);
-	//for(int ix = 0; ix < moduleCount; ix++)
-	//{
-	//	int ret, opt = sizeof(opt), reload_mod;
-	//	SceKernelModuleInfoEx info = {0};
-	//	info.size = sizeof(info);
-	//	if ((ret = sceKernelGetModuleInfoEx(kernel_lib, &info)) < 0) {
-	//		sprintf(mess,"Failed to get module info for UID %08x, ret %08x\n", kernel_lib, ret);
-	//		notify(mess);
-	//		return mess;
-	//	}
-	//	//else we have info lets display them
-	//	for (int i = 0; i < info.numSegments; i++)
-	//	{
-	//		sprintf(mess,"Module Info 0x%08x_%s_%d",info.segmentInfo[i].baseAddr,info.name,i );
-	//		notify(mess);
-	//	}
+	char mess [180];
+	sprintf(mess,"<Module List (%d modules)>\n", moduleCount);
+	notify(mess);
+	logshit(mess);
+	for(int ix = 0; ix < moduleCount; ix++)
+	{
+		sprintf(mess,"<Module %d Loaded>\n", ix);
+		notify(mess);
+		int ret, opt = sizeof(opt), reload_mod;
+		SceKernelModuleInfoEx info = {0};
+		info.size = sizeof(info);
+		if ((ret = _sceKernelGetModuleInfoEx(kernel_lib, &info)) < 0) {
+			sprintf(mess,"Failed to get module info for UID %08x, ret %08x\n", kernel_lib, ret);
+			notify(mess);
 
-	//	//print_modinfo(ids[i], verbose);
-	//}
+			logshit(mess);
+			return mess;
+		}
+		else
+		{
+
+			sprintf(mess,"Got module info for UID %08x, ret %08x\n",info.name, ret);
+			notify(mess);
+			//logshit(mess);
+
+			sprintf(mess,"Module %d info \n *Module Name %s\n *Module Refs %s",ix,info.name,info.numRefs);
+			notify(mess);
+			logshit(mess);
+		}
+		//else we have info lets display them
+		for (int i = 0; i < info.numSegments; i++)
+		{
+			sprintf(mess,"Module Info 0x%08x_%s_%d",info.segmentInfo[i].baseAddr,info.name,i );
+			notify(mess);
+			logshit(mess);
+		}
+
+		//print_modinfo(ids[i], verbose);
+	}
+	return mess;
 }
 
 PRX_EXPORT const char* GetListOfServices()
@@ -1167,24 +1318,7 @@ PRX_EXPORT char* GetSandboxPath()
 }
 
 
-//int (*sceKernelDebugOutText)(int dbg_channel, const char* text, ...);
-////Finally we should now have the KLOG funciton
-//void klog(const char* fmt, ...)
-//{
-//	/*From now on I want to do it this way*/
-//	int kernel_lib = sceKernelLoadStartModule("/system/common/lib/libkernel.sprx", 0, NULL, 0, NULL, NULL);
-//	sceKernelDlsym(kernel_lib, "sceKernelDebugOutText", (void **)&sceKernelDebugOutText);//this will hook into the libkernel and get the call for us
-//
-//	char Buffer[0x200];
-//
-//	//Create full string from va list.
-//	va_list args;
-//	va_start(args, fmt);
-//	vsprintf(Buffer, fmt, args);
-//	va_end(args);
-//
-//	sceKernelDebugOutText(0, Buffer);
-//}
+
 
 #pragma endregion << Kernel Calls >>
 

@@ -67,7 +67,7 @@ int InitlizieUserService()
 
 int GetInitialUser()
 {
-	notify("Get Initial User");
+	//notify("Get Initial User");
 	int ret =0;
 	//if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
 
@@ -106,7 +106,7 @@ const char* UserServiceGetUserId()
 	}
 	if(userId == SCE_USER_SERVICE_USER_ID_INVALID)
 	{
-		ret = GetInitialUser();
+		ret = sceUserServiceGetInitialUser(&userId);
 		if(ret < 0)
 		{
 			notify("sceUserServiceGetInitialUser failed");
@@ -159,7 +159,7 @@ char* UserServiceGetUserName()
 		}
 	}
 
-	notify("Getting Username");
+	//notify("Getting Username");
 
 	(void)memset(username, 0, sizeof(username));
 

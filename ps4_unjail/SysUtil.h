@@ -20,4 +20,7 @@ int SysLoadExec(const char *path, char *const *argv);
 
 bool IS_ERROR(uint32_t a1);
 
+int sys_dynlib_load_prx(const char *name, int *idDestination);
+
+int sys_dynlib_dlsym(int loadedModuleID, const char *name, void *destination);
 #endif

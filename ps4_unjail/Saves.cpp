@@ -499,7 +499,7 @@ int SaveDataDelete(char* DataDir)
 	memset(&del, 0x00, sizeof(del));
 	del.userId = userId;
 	del.dirName = &dirName;
-	
+
 	ret = sceSaveDataDelete(&del);
 	if(ret != 0)
 	{
@@ -609,7 +609,7 @@ int SaveDataDeleteGame(char* TitleId)
 		ret = sceSaveDataDelete(&del);
 		if(ret != 0)
 		{
-			
+
 			char result[255];   // array to hold the result.
 
 			strcpy(result,"Error Deleting Save\n"); // copy string one into the result.
@@ -620,7 +620,10 @@ int SaveDataDeleteGame(char* TitleId)
 		}
 		else
 		{
-			notify("Save Deleted");
+			if(DEBUGENABlED)
+			{
+				notify("Save Deleted");
+			}
 		}
 
 	}

@@ -4,13 +4,16 @@
 #include "SystemService.h"
 #include "SysUtil.h"
 #include "UserService.h"
+//#include <lnc_util.h>
+
+/*some fixes from LM*/
 
 
 int (*sceSystemServiceLaunchApp)(const char* titleId, const char* argv[], LaunchAppParam* param);
 int (*sceLncUtilStartLaunchAppByTitleId)(const char* titleId, const char* argv[], LaunchAppParam* param);
 int (*sceLncUtilStartLaunchApp)(const char* titleId, const char* argv[], LaunchAppParam* param);
 
-int (*sceLncUtilInitialize)(void);
+int (*sceLncUtilInitialize)();
 
 
 
@@ -73,22 +76,27 @@ bool SystemServiceLaunchApp(char * titleId)
 	if (!IS_ERROR(serres))
 	{
 		//notify("Found");
+		serres =sceKernelDlsym(serres, "sceLncUtilLaunchApp", (void**)&sceLncUtilStartLaunchApp);
+
 		serres = sceKernelDlsym(serres, "sceLncUtilInitialize", (void**)&sceLncUtilInitialize);
 		/*serres =sceKernelDlsym(serres, "sceSystemServiceLaunchApp", (void**)&sceSystemServiceLaunchApp);
 		serres =sceKernelDlsym(serres, "sceLncUtilStartLaunchAppByTitleId", (void**)&sceLncUtilStartLaunchAppByTitleId);*/
-		serres =sceKernelDlsym(serres, "sceLncUtilLaunchApp", (void**)&sceLncUtilStartLaunchApp);
-		if(serres != 0)
+
+		if(serres != 0)//sce_ok
 		{
 			if(sceLncUtilInitialize == nullptr)
 			{
-				//no pointer
-				notify("No Pointer for Initlialize");
-				return false;
-				//sceLncUtilInitialize = (void**)(&sceLncUtilStartLaunchApp +0x1110);
+				//sceLncUtilInitialize = *(&sceLncUtilInitialize + 0x1110);
+				if(sceLncUtilInitialize == nullptr)
+				{				//no pointer
+					notify("No Pointer for Initlialize");
+					return false;
+				}
+				//(void**)&sceLncUtilInitialize = (void**)(&sceLncUtilStartLaunchApp +0x1110);
 			}
 		}
 
-		if(serres != 0)
+		if(serres == 0)
 		{
 			/*sceLncUtilInitialize = (void*)(serres + 0x1110);
 			sceLncUtilLaunchApp = (void*)(serres + 0x1130);
@@ -109,7 +117,7 @@ bool SystemServiceLaunchApp(char * titleId)
 				notify("Error could not initlize user service");
 				return false;
 			}
-
+			notify("Getting Initial User");
 			ret = GetInitialUser();
 			if(ret != 0)
 			{
@@ -133,7 +141,7 @@ bool SystemServiceLaunchApp(char * titleId)
 				return false;
 			}
 			notify("Launcing");
-			uint64_t l2 = sceSystemServiceLaunchApp(titleId, 0, &param);
+			uint64_t l2 = sceLncUtilStartLaunchApp(titleId, 0, &param);
 			if(l2 != 0)
 			{
 				switch (l2) {
