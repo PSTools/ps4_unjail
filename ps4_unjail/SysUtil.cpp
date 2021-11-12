@@ -170,6 +170,20 @@ int msgok(char* format, ...)
 }
 
 
+int hidemsg()
+{
+	int ret = 0;
+
+	int sceSysModuleMessageDialog = sceKernelLoadStartModule("/system/common/lib/libSceMsgDialog.sprx", 0, NULL, 0, 0, 0);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog, "sceMsgDialogTerminate", (void **)&sceMsgDialogTerminate);
+	//sceSysmoduleLoadModule(SCE_SYSMODULE_MESSAGE_DIALOG);
+
+	sceMsgDialogTerminate();
+
+	return ret;
+}
+
+
 
 
 int sys_dynlib_dlsym(int loadedModuleID, const char *name, void *destination) {

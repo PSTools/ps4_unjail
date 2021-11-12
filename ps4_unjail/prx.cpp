@@ -687,6 +687,10 @@ PRX_EXPORT int SendMessageToPS4(char* Message)
 	return SCE_OK;
 }
 
+PRX_EXPORT int HideDialog()
+{
+	return hidemsg();
+}
 
 PRX_EXPORT int ShowLoadingDialog(char* Message)
 {
