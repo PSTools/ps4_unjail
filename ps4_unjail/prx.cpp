@@ -690,7 +690,12 @@ PRX_EXPORT int SendMessageToPS4(char* Message)
 
 PRX_EXPORT int ShowLoadingDialog(char* Message)
 {
+	return loadmsg(Message);
+}
 
+PRX_EXPORT int ShowMessageDialog(char* Message)
+{
+	return msgok(Message);
 }
 
 #pragma endregion << Send notification on the ps4 >>
@@ -974,9 +979,9 @@ PRX_EXPORT bool DeletAllSavesForUser()
 
 #pragma endregion << Patch Stuff >>
 
-#define RESOLVE(module, name) getFunctionAddressByName(module, #name, &name)
-
-int getFunctionAddressByName(int loadedModuleID, char *name, void *destination);
+//#define RESOLVE(module, name) getFunctionAddressByName(module, #name, &name)
+//
+//int getFunctionAddressByName(int loadedModuleID, char *name, void *destination);
 
 
 PRX_EXPORT bool LaunchApp(char * titleId)
@@ -1367,6 +1372,7 @@ void LinkFile()
 {
 	//syscall(SYS_symlink,
 }
+
 #pragma endregion << App 2 USB >>
 
 #pragma region << Trophies >>

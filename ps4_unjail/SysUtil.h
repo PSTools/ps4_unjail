@@ -23,4 +23,9 @@ bool IS_ERROR(uint32_t a1);
 int sys_dynlib_load_prx(const char *name, int *idDestination);
 
 int sys_dynlib_dlsym(int loadedModuleID, const char *name, void *destination);
+
+
+int msgok(char* format, ...);
+int loadmsg(char* format, ...);
+
 #endif

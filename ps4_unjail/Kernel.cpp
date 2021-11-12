@@ -8,6 +8,8 @@
 #include <_fs.h>
 #include <unistd.h>
 
+
+
 int (*sysctlbyname)(const char *, void *, size_t *, const void *, size_t);
 
 int (*sceKernelGetIdPs)(char* ret);

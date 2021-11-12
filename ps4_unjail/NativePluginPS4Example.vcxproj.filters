@@ -20,10 +20,22 @@
     <ClCompile Include="UserService.cpp" />
     <ClCompile Include="SystemService.cpp" />
     <ClCompile Include="Kernel.cpp" />
+    <ClCompile Include="Module.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayerInterface">
       <UniqueIdentifier>{1ef13144-7666-4633-b4e8-94c85a8a09b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module">
+      <UniqueIdentifier>{d6755afd-8026-467b-9771-54e1ac723674}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MessageDialog">
+      <UniqueIdentifier>{b7440d47-de44-464d-9928-bbc91f75ccee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BGFT">
+      <UniqueIdentifier>{392ed1de-9e32-4452-8ad5-cddf991a5b68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,5 +82,11 @@
     <ClInclude Include="SysUtil.h" />
     <ClInclude Include="SystemService.h" />
     <ClInclude Include="Kernel.h" />
+    <ClInclude Include="Module.h">
+      <Filter>Module</Filter>
+    </ClInclude>
+    <ClInclude Include="MsgDialog.h">
+      <Filter>MessageDialog</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
