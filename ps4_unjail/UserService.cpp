@@ -3,6 +3,8 @@
 #include <_kernel.h>
 
 
+
+
 int32_t (*sceUserServiceGetInitialUser)(int *userId);
 //int32_t (*sceUserServiceGetUserName)(int32_t, char *, const size_t);
 int32_t (*sceUserServiceInitialize)(UserServiceInitializeParams *initParams);
@@ -10,6 +12,13 @@ int32_t (*sceUserServiceInitialize2)(int threadPriority,SceKernelCpumask cpuAffi
 int32_t (*sceUserServiceInitializeForShellCore)(int32_t *initParams);
 int32_t (*sceUserServiceGetUserName)(const SceUserServiceUserId userId, char *userName, const size_t size);
 int32_t (*sceUserServiceGetHomeDirectory)(char* userfolder, size_t size,SceUserServiceUserId userId);
+
+int32_t (*sceUserServiceGetLoginUserIdList)(OrbisUserServiceLoginUserIdList *userIdList);
+
+int32_t (*sceUserServiceGetUserColor)(const SceUserServiceUserId userId, OrbisUserServiceUserColor *color);
+
+int32_t (*sceUserServiceGetEvent)(OrbisUserServiceEvent *event);
+
 
 SceUserServiceUserId userId = SCE_USER_SERVICE_USER_ID_INVALID;
 
@@ -23,6 +32,10 @@ void initsysUserService(void)
 	sceKernelDlsym(sysUserService, "sceUserServiceGetInitialUser", (void **)&sceUserServiceGetInitialUser);
 	sceKernelDlsym(sysUserService, "sceUserServiceGetUserName", (void **)&sceUserServiceGetUserName);
 	sceKernelDlsym(sysUserService, "sceUserServiceGetHomeDirectory", (void **)&sceUserServiceGetHomeDirectory);
+	sceKernelDlsym(sysUserService,"sceUserServiceGetLoginUserIdList",(void **)&sceUserServiceGetLoginUserIdList);
+	sceKernelDlsym(sysUserService,"sceUserServiceGetUserColor",(void **)&sceUserServiceGetUserColor);
+	sceKernelDlsym(sysUserService,"sceUserServiceGetEvent",(void **)&sceUserServiceGetEvent);
+
 }
 
 int InitlizieUserService()
@@ -186,4 +199,21 @@ char* UserServiceGetUserName()
 int32_t GetUserName(const SceUserServiceUserId userId, char *userName, const size_t size)
 {
 	return sceUserServiceGetUserName(userId,userName,size);
+}
+
+int32_t orbisUserServiceGetUserColor(const SceUserServiceUserId userId, OrbisUserServiceUserColor *color)
+{
+	return sceUserServiceGetUserColor(userId,color);
+}
+
+
+
+int32_t orbisUserServiceGetEvent(OrbisUserServiceEvent *event)
+{
+	return sceUserServiceGetEvent(event);
+}
+
+int32_t orbisUserServiceGetLoginUserIdList(OrbisUserServiceLoginUserIdList *userIdList)
+{
+	return sceUserServiceGetLoginUserIdList(userIdList);
 }

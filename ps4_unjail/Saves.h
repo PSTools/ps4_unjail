@@ -118,7 +118,7 @@ typedef struct SceSaveDataParam {
 	char detail[SCE_SAVE_DATA_DETAIL_MAXSIZE];
 	uint32_t userParam;
 	int :32;
-	time_t mtime;
+	int64_t mtime;
 	uint8_t reserved[32];
 } SceSaveDataParam;
 
@@ -224,6 +224,8 @@ extern SceSaveDataMountPoint SaveDataMountPoints[];//max save ammount accourding
 //
 //int TotalSavesMounted;
 //SceSaveDataMountPoint SaveDataMountPoints[15];//max save ammount accourding to the dev documentation
+
+int orbisSaveDataInitialize3(const SceSaveDataInitParams3 *initParam);
 
 void initSaveData(void);
 static inline uint32_t ceil(uint32_t x, uint32_t a);

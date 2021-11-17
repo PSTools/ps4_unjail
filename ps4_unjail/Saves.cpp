@@ -22,7 +22,10 @@ int32_t (*sceSaveDataDirNameSearch)(const SceSaveDataDirNameSearchCond *cond,Sce
 int32_t (*sceSaveDataTransferringMount)(const SceSaveDataTransferringMount *mount,SceSaveDataMountResult *mountResult);
 int32_t (*sceSaveDataUmount)(const SceSaveDataMountPoint *mountPoint);
 int (*sceSaveDataInitialize3)(const SceSaveDataInitParams3 *initParam);
-
+int orbisSaveDataInitialize3(const SceSaveDataInitParams3 *initParam)
+{
+	return sceSaveDataInitialize3(initParam);
+}
 int (*sceSaveDataInitialize2)(const SceSaveDataInitParams3 *initParam);
 
 int (*sceSaveDataInitialize5)(const SceSaveDataInitParams3 *initParam);

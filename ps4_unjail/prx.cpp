@@ -43,6 +43,7 @@ extern "C" {
 #include <kernel_ex.h>
 #include "types.h"
 
+
 #include <fcntl.h>
 
 
@@ -52,8 +53,8 @@ extern "C" {
 #include "SysUtil.h"
 #include "SystemService.h"
 #include "Kernel.h"
-
-//do this to resolve items
+#include "SoundUtil.h"
+#include "SaveDataDialog.h"
 
 extern int run;
 
@@ -928,6 +929,29 @@ PRX_EXPORT bool DeletAllSavesForUser()
 	}
 }
 
+
+PRX_EXPORT bool ShowSaveDataDialog()
+{
+	int ret =0;
+	//things to initilize
+	initSysUtil();
+	InitlizieUserService();
+	InitilizeSaveDataDialog();
+	initSaveData();
+	ret = orbisSaveDataInitialize3(NULL);//call it with a null
+
+
+	if ( orbisSaveDataDialogInitialize() < 0 ) {
+		// Error handling
+		notify("Could not Initialize save Data Dialog");
+	}
+
+
+	return true;
+
+}
+
+
 #pragma endregion << Save Data >>
 
 #pragma region << Kernel Calls >>
@@ -1090,7 +1114,7 @@ void logshit(char* format, ...)
 	va_end(args);
 
 	//sceKernelDebugOutText(DGB_CHANNEL_TTYL, buff);
-	
+
 
 	int fd = sceKernelOpen("/user/app/XDPX20004/logs/loader.log", O_WRONLY | O_CREAT | O_APPEND, 0777);
 	if (fd >= 0)
@@ -2526,3 +2550,24 @@ PRX_EXPORT bool Unity_Plugin()
 }
 
 #pragma endregion << Mono Stuff >>
+
+
+
+#pragma region << Sound Stuff >>
+
+
+PRX_EXPORT void PlaySoundControler(char* Path)
+{
+	try
+	{
+		//SetDebuggerTrue();
+		PlaySound(Path);
+	}
+	catch(std::exception ex)
+	{
+		notify((char*)ex.what());
+	}
+}
+
+
+#pragma endregion << Sound Stuff >>

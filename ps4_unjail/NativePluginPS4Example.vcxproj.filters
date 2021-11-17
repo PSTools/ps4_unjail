@@ -23,6 +23,18 @@
     <ClCompile Include="Module.cpp">
       <Filter>Module</Filter>
     </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundUtil.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveDataDialog.cpp">
+      <Filter>SaveDataDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonDialog.cpp">
+      <Filter>CommonDialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayerInterface">
@@ -36,6 +48,15 @@
     </Filter>
     <Filter Include="BGFT">
       <UniqueIdentifier>{392ed1de-9e32-4452-8ad5-cddf991a5b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{512bbd7c-d275-4192-9f2b-7b6d498a898f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SaveDataDialog">
+      <UniqueIdentifier>{0c8f8239-a4a4-4bca-8db5-9166f75894fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CommonDialog">
+      <UniqueIdentifier>{7946256d-8cec-4e92-bcf7-51ba668d912f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +108,15 @@
     </ClInclude>
     <ClInclude Include="MsgDialog.h">
       <Filter>MessageDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundUtil.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveDataDialog.h">
+      <Filter>SaveDataDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonDialog.h">
+      <Filter>CommonDialog</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
