@@ -60,7 +60,7 @@
     <Link />
     <Link />
     <Link>
-      <AdditionalDependencies>-lScePosix_stub_weak;-lSceNet_stub_weak;-lSceNetCtl_stub_weak;-lSceNetDebug_stub_weak;-lSceUsbd_stub_weak;-lSceUsbStorage_tau_stub_weak;-lSceSysmodule_tau_stub_weak;-lSceSysmodule_stub_weak;-lSceSystemService_tau_stub_weak;-lkernel_tau_stub_weak</AdditionalDependencies>
+      <AdditionalDependencies>-lScePosix_stub_weak;-lSceNet_stub_weak;-lSceNetCtl_stub_weak;-lSceNetDebug_stub_weak;-lSceUsbd_stub_weak;-lSceUsbStorage_tau_stub_weak;-lSceSysmodule_tau_stub_weak;-lSceSysmodule_stub_weak;-lSceSystemService_tau_stub_weak;-lkernel_tau_stub_weak;-lSceLncUtil_tau_stub_weak</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\tauon2\lib;$(SCE_ORBIS_SDK_DIR)\lib;$(SCE_ORBIS_SDK_DIR)\target\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

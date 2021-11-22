@@ -43,7 +43,6 @@ extern "C" {
 #include <kernel_ex.h>
 #include "types.h"
 
-
 #include <fcntl.h>
 
 
@@ -198,6 +197,9 @@ PRX_EXPORT int FreeUnjail(int FWVersion)
 		return Sys::kexec((void *)&unjail505, &td);
 	}else if(FWVersion == 672){
 		return Sys::kexec((void *)&unjail672, &td);
+	}else if(FWVersion == 65534)//not sure why the hell this is happening on 672
+	{
+		return Sys::kexec((void *)&unjail672, &td);
 	}else if (FWVersion == 702){
 		return Sys::kexec((void *)&unjail702, &td);
 	}else if (FWVersion == 751){
@@ -208,7 +210,6 @@ PRX_EXPORT int FreeUnjail(int FWVersion)
 
 	return 0;
 }
-
 
 
 #define SCE_SYSMODULE_USB_STORAGE 0xD5
@@ -273,7 +274,6 @@ PRX_EXPORT int PupDecrypt(const char* path){
 	return res;
 }
 
-
 PRX_EXPORT int FreeMountUsbMuilti(){
 	//char version[50];
 	uint32_t fw = FW();
@@ -293,17 +293,30 @@ PRX_EXPORT int FreeMountUsbMuilti(){
 
 PRX_EXPORT int FreeMount()
 {
+	initSysUtil();
+
 	mount_large_fs("/dev/da0x0.crypt", "/preinst", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x1.crypt", "/preinst2", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x4.crypt", "/system", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x5.crypt", "/system_ex", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/sbram0", "/system_sam", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflah0.crypt", "/flash0", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflah1.crypt", "/flash1", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash0.crypt", "/system_sam", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash1.crypt", "/flash1", "exfatfs", "511", MNT_UPDATE);
+
+	int fd = sceKernelOpen("/dev/npdrm", O_RDWR, 0);
+	if (fd < 0)
+	{
+		if(DEBUGENABlED)
+			notify("Could not open npdrm");
+	}
+	else
+	{
+		if(DEBUGENABlED)
+			notify("npdrm is open");
+	}
+
 	return 0;
 }
-
-
 
 PRX_EXPORT int GetPid(void)
 {
@@ -559,10 +572,14 @@ void initSceScreenshot(void)
 #define SCE_NP_TROPHY_ERROR_INVALID_NP_SERVICE_LABEL -2141907423 /*0x80551621*/
 #define SCE_NP_TROPHY_ERROR_INVALID_ARGUMENT	-2141907452
 #define SCE_NP_TROPHY_ERROR_INVALID_HANDLE	-2141907448
+#define SCE_NP_TROPHY_INVALID_TROPHY_ID		(-1)
 #define SCE_NP_TROPHY_ERROR_INVALID_NP_SERVICE_LABEL	-2141907423
 #define SCE_NP_TROPHY_ERROR_INVALID_NP_TITLE_ID	-2141907424
 #define SCE_NP_TROPHY_ERROR_INVALID_NPCOMMID	-2141907324
 #define SCE_NP_TROPHY_ERROR_INVALID_NPCOMMSIGN	-2141907323
+
+#define SCE_NP_TROPHY_ERROR_TROPHY_ALREADY_UNLOCKED -2141907444
+
 
 typedef struct SceNpTrophyGameDetails {
 	size_t size;
@@ -600,13 +617,14 @@ int (*sceNpTrophyCreateContext)(SceNpTrophyContext *context,SceUserServiceUserId
 int (*sceNpTrophySystemCreateContext)(SceNpTrophyContext *context,SceUserServiceUserId userId,SceNpTrophyHandle *handle,uint64_t options);
 int(*sceNpTrophyGetGameInfo)(SceNpTrophyContext context,SceNpTrophyHandle handle, SceNpTrophyGameDetails *details,SceNpTrophyGameData *GameData);
 int (*sceNpTrophyRegisterContext)(SceNpTrophyContext context,SceNpTrophyHandle handle,uint64_t options);
-
+int (*sceNpTrophyDestroyHandle)(SceNpTrophyHandle handle);
+int(*sceNpTrophyDestroyContext)(SceNpTrophyContext context);
 
 //__int64 __fastcall sceNpTrophyCreateContext(unsigned int *a1, unsigned int a2, unsigned int a3, __int64 a4)
 
 //__int64 __fastcall sceNpTrophyUnlockTrophy(unsigned int a1, unsigned int a2, unsigned int a3, _DWORD *a4)
-SceNpTrophyContext context = 1;
-SceNpTrophyHandle handle = 1;
+SceNpTrophyContext context = SCE_NP_TROPHY_INVALID_CONTEXT;
+SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
 
 //Init SCE Trophy Funcitons
 void initsysNpTrophy(void)
@@ -619,6 +637,8 @@ void initsysNpTrophy(void)
 	sceKernelDlsym(sysNpTrophy, "sceNpTrophySystemCreateContext",(void **)&sceNpTrophySystemCreateContext);
 	sceKernelDlsym(sysNpTrophy,"sceNpTrophyGetGameInfo",(void **)&sceNpTrophyGetGameInfo);
 	sceKernelDlsym(sysNpTrophy,"sceNpTrophyRegisterContext",(void **) &sceNpTrophyRegisterContext);
+	sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyHandle",(void **) &sceNpTrophyDestroyHandle);
+	sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyContext",(void **) &sceNpTrophyDestroyContext);
 }
 
 
@@ -1014,7 +1034,7 @@ PRX_EXPORT bool ShowSaveDataDialog()
 
 PRX_EXPORT bool LaunchApp(char * titleId)
 {
-	SystemServiceLaunchApp(titleId);
+	return SystemServiceLaunchApp(titleId);
 }
 
 PRX_EXPORT bool LoadExec(const char *path, char *const *argv)
@@ -1486,6 +1506,7 @@ PRX_EXPORT int MakeCusaAppReadWrite()
 	return 1;
 }
 
+
 /*Example code provided*/
 PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
 {
@@ -1696,6 +1717,192 @@ PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
 	//while(trophyId == 1 || ret >= 0 || ret == 0x8055160f );
 
 
+}
+
+
+/*Need to split this process for unity so we can make sure all items work as they are intended*/
+
+PRX_EXPORT bool CreateAndRegister()
+{
+	int ret = -1;
+	initSysUtil();
+	initsysNpTrophy();
+	initsysNpManager();
+	ret = InitlizieUserService();
+	if (ret < 0) {
+		if(DEBUGENABlED == 1)
+			notify("InitlizieUserService errored out");
+		// Error handling
+	}
+
+	UserServiceGetUserId();
+
+	//SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
+	ret = sceNpTrophySystemCreateHandle(&handle);
+	if (ret < 0) {
+		if(DEBUGENABlED == 1)
+			notify("NpTrophyCreateHandle errored out");
+
+		//return false;
+		// Error handling
+	}
+	char buffer[1000];
+	ret = sceNpTrophyCreateContext(&context,userId, 0, 0);
+	if (ret < 0) {
+		if(DEBUGENABlED == 1)
+		{
+			printf("sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
+			sprintf(buffer, "sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
+			notify(buffer);
+		}
+		//notify("sceNpTrophyCreateContext() failed");
+		//return false;
+	}
+
+
+	ret = sceNpTrophyRegisterContext(context, handle, 0);
+	if (ret < 0) {
+		if(DEBUGENABlED == 1)
+		{
+			printf("sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
+			sprintf(buffer, "sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
+			notify(buffer);
+		}
+		//changeState(manager, TROPHY_MANAGER_STATE_ERROR, ret);
+		//notify("sceNpTrophyRegisterContext() failed");
+		//return false;
+	}
+	return true;
+}
+
+PRX_EXPORT bool DestroyAndTerminate()
+{
+	int ret = -1;
+	initSysUtil();
+	initsysNpTrophy();
+	initsysNpManager();
+
+	ret = sceNpTrophyDestroyHandle(handle);
+	if (ret < 0) {
+		if(DEBUGENABlED == 1)
+		{
+			printf("sceNpTrophyDestroyHandle() failed. ret = 0x%x\n", ret);
+			notify("sceNpTrophyDestroyHandle() failed");
+		}
+		// Error handling
+		//return false;
+	}
+
+	ret = sceNpTrophyDestroyContext(context);
+	if (ret < 0) {
+		if(DEBUGENABlED == 1)
+		{
+			printf("sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
+			notify("sceNpTrophyDestroyContext() failed");
+		}
+		// Error handling
+		//return false;
+	}
+
+	return true;
+
+}
+
+PRX_EXPORT bool UnlockSpesificTrophy(SceNpTrophyId trophyId)
+{
+	int ret = -1;
+	initSysUtil();
+	initsysNpTrophy();
+	initsysNpManager();
+	SceNpTrophyId platinumId = SCE_NP_TROPHY_INVALID_TROPHY_ID;
+	ret = NpTrophyUnlockTrophy(context, handle,
+		trophyId, &platinumId);
+	char buffer[1000];
+
+	if (ret < 0) 
+	{
+		if(ret == SCE_NP_TROPHY_ERROR_TROPHY_ALREADY_UNLOCKED)
+		{
+			return true;
+		}
+		else
+		{
+			printf("sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
+			sprintf(buffer, "sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
+			notify(buffer);
+			return false;
+		}
+
+
+	}
+
+	return true;
+}
+
+bool symlink_exists(const char* path)
+{
+	struct stat buf;
+	int result;
+
+	result = syscall(40,path, &buf);
+
+	return (result == 0);
+}
+
+bool symlink_exists_readlink(const char* path)
+{
+	char buf[30];
+
+
+	int result;
+
+	result = syscall(58,path,buf, sizeof(buf));
+
+	if(result < 0)
+	{
+		notify("Symlink doesn't exist");
+	}
+	else
+	{
+		sprintf("readlink() returned '%s''\n", buf);
+
+		notify("Symlink exist\n");
+		notify(buf);
+	}
+	return (result == 0);
+}
+
+PRX_EXPORT int MakeSymLink(char* pathOrginal,char* PathPointer)
+{
+	//we want to have notifcations
+	initSysUtil();
+
+	if(!symlink_exists_readlink(pathOrginal))
+	{
+		notify("Syslink does not exist continue on");
+
+		syscall(10,pathOrginal);
+
+		syscall(57,PathPointer,pathOrginal);
+	}
+
+	return 1;
+}
+
+PRX_EXPORT int RelinkSymLink(char* pathOrginal, char* PathPointer)
+{
+	if(!symlink_exists_readlink(pathOrginal))
+	{
+		notify("Syslink does not exist can't relink");
+	}
+	else
+	{
+		syscall(10,PathPointer);
+
+		syscall(57,pathOrginal,PathPointer);
+	}
+
+	return 1;
 }
 
 #pragma endregion << Trophies >>

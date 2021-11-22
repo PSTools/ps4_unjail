@@ -50,6 +50,28 @@ int loadModule(const char *name, int *idDestination) {
 
 
 
+char* GetAllSysCtl()
+{
+	char RTNCHAR[1500];
+	int ret =-1;
+	loadAndImport();
+
+	initSysUtil();
+
+	void* idpsholder = (void *)malloc(1500);
+	memset(idpsholder,0,1500);
+	size_t bufferlen  = 1500;
+	//ret = sysctl(0,idpsholder,bufferlen, NULL, NULL);//just to bypass the ps4 control namne
+	//ret = -1;
+	if(ret < 0)
+	{
+		notify("sysctl List of services Failed");
+		return RTNCHAR;//all wne to hell 
+	}	
+	sprintf(RTNCHAR, "%s", idpsholder);
+	return RTNCHAR;
+}
+
 
 void loadKernel()
 {

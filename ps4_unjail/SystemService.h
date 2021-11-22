@@ -71,7 +71,7 @@ typedef struct _LaunchAppParam
 {
 	uint32_t size;
 	int32_t user_id;
-	int32_t app_attr;
+	App_Atr app_attr;
 	uint64_t  enable_crash_report;
 	CheckFlag check_flag;
 }
