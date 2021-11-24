@@ -18,6 +18,18 @@ int32_t (*sceMsgDialogOpen)(const OrbisMsgDialogParam *param);
 OrbisCommonDialogStatus (*sceMsgDialogUpdateStatus)(void);
 int32_t (*sceMsgDialogGetResult)(OrbisMsgDialogResult *result);
 
+//error dialog
+int32_t (*sceErrorDialogInitialize)(void);
+int32_t (*sceErrorDialogTerminate)(void);
+int32_t (*sceErrorDialogOpen)(const OrbisErrorMsgDialogParam *param);
+int32_t (*sceErrorDialogOpenWithReport)(const OrbisErrorMsgDialogParam *param,char* report);
+int32_t (*sceErrorDialogOpenDetail)(const OrbisErrorMsgDetailParam *param,char* report,char* message,char* defaultMessage,char* title);
+int32_t (*sceErrorDialogClose)(void);
+OrbisCommonDialogStatus (*sceErrorDialogUpdateStatus)(void);
+int32_t (*sceErrorDialogGetStatus)(void);
+int32_t (*sceErrorDialogParamInitialize)(const OrbisErrorMsgDialogParam *param);
+int32_t (*sceErrorDialogDetailParamInitialize)(const OrbisErrorMsgDetailParam *param);
+
 //void sceMsgDialogParamInitialize(OrbisMsgDialogParam *param)
 //{
 //	memset( param, 0x0, sizeof(OrbisMsgDialogParam) );
@@ -169,6 +181,38 @@ int msgok(char* format, ...)
 	return ret;
 }
 
+int errorMsg(char* format,...)
+{
+	int ret = 0;
+
+	int sceSysModuleMessageDialog = sceKernelLoadStartModule("/system/common/lib/libSceErrorDialog.sprx", 0, NULL, 0, 0, 0);
+	ret =sceKernelDlsym(sceSysModuleMessageDialog, "sceErrorDialogInitialize", (void **)&sceErrorDialogInitialize);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog, "sceErrorDialogTerminate", (void **)&sceErrorDialogTerminate);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog, "sceErrorDialogOpen", (void **)&sceErrorDialogOpen);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogOpenWithReport",(void **)&sceErrorDialogOpenWithReport);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogOpenDetail",(void **)&sceErrorDialogOpenDetail);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogClose",(void **)&sceErrorDialogClose);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogUpdateStatus",(void **)&sceErrorDialogUpdateStatus);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogGetStatus",(void **)&sceErrorDialogGetStatus);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogParamInitialize",(void **)&sceErrorDialogParamInitialize);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceErrorDialogDetailParamInitialize",(void **)&sceErrorDialogDetailParamInitialize);
+	//sceSysmoduleLoadModule(SCE_SYSMODULE_MESSAGE_DIALOG);
+	sceErrorDialogTerminate();
+
+
+	char buff[1024];
+	char buffer[1000];
+	memset(buff, 0, 1024);
+
+	va_list args;
+	va_start(args, format);
+	vsprintf(buff, format, args);
+	va_end(args);
+
+	strcpy(buffer, buff);
+
+
+}
 
 int hidemsg()
 {
@@ -182,8 +226,6 @@ int hidemsg()
 
 	return ret;
 }
-
-
 
 
 int sys_dynlib_dlsym(int loadedModuleID, const char *name, void *destination) {

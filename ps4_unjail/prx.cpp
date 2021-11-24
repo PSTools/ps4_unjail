@@ -619,6 +619,8 @@ int(*sceNpTrophyGetGameInfo)(SceNpTrophyContext context,SceNpTrophyHandle handle
 int (*sceNpTrophyRegisterContext)(SceNpTrophyContext context,SceNpTrophyHandle handle,uint64_t options);
 int (*sceNpTrophyDestroyHandle)(SceNpTrophyHandle handle);
 int(*sceNpTrophyDestroyContext)(SceNpTrophyContext context);
+int(*sceNpTrophySystemDestroyContext)(SceNpTrophyContext context);
+int (*sceNpTrophySystemDestroyHandle)(SceNpTrophyHandle handle);
 
 //__int64 __fastcall sceNpTrophyCreateContext(unsigned int *a1, unsigned int a2, unsigned int a3, __int64 a4)
 
@@ -626,19 +628,31 @@ int(*sceNpTrophyDestroyContext)(SceNpTrophyContext context);
 SceNpTrophyContext context = SCE_NP_TROPHY_INVALID_CONTEXT;
 SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
 
+
 //Init SCE Trophy Funcitons
 void initsysNpTrophy(void)
 {
-	int sysNpTrophy = sceKernelLoadStartModule("/system/common/lib/libSceNpTrophy.sprx", 0, NULL, 0, 0, 0);
-	sceKernelDlsym(sysNpTrophy, "sceNpTrophyUnlockTrophy", (void **)&NpTrophyUnlockTrophy);
-	sceKernelDlsym(sysNpTrophy, "sceNpTrophyCreateHandle", (void **)&NpTrophyCreateHandle);
-	sceKernelDlsym(sysNpTrophy, "sceNpTrophyCreateContext", (void **)&sceNpTrophyCreateContext);
-	sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemCreateHandle",(void **)&sceNpTrophySystemCreateHandle);
-	sceKernelDlsym(sysNpTrophy, "sceNpTrophySystemCreateContext",(void **)&sceNpTrophySystemCreateContext);
-	sceKernelDlsym(sysNpTrophy,"sceNpTrophyGetGameInfo",(void **)&sceNpTrophyGetGameInfo);
-	sceKernelDlsym(sysNpTrophy,"sceNpTrophyRegisterContext",(void **) &sceNpTrophyRegisterContext);
-	sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyHandle",(void **) &sceNpTrophyDestroyHandle);
-	sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyContext",(void **) &sceNpTrophyDestroyContext);
+	//if(sysNpTrophy == -1)
+	{
+		int sysNpTrophy = sceKernelLoadStartModule("/system/common/lib/libSceNpTrophy.sprx", 0, NULL, 0, 0, 0);
+		sceKernelDlsym(sysNpTrophy, "sceNpTrophyUnlockTrophy", (void **)&NpTrophyUnlockTrophy);
+		sceKernelDlsym(sysNpTrophy, "sceNpTrophyCreateHandle", (void **)&NpTrophyCreateHandle);
+		sceKernelDlsym(sysNpTrophy, "sceNpTrophyCreateContext", (void **)&sceNpTrophyCreateContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemCreateHandle",(void **)&sceNpTrophySystemCreateHandle);
+		sceKernelDlsym(sysNpTrophy, "sceNpTrophySystemCreateContext",(void **)&sceNpTrophySystemCreateContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyGetGameInfo",(void **)&sceNpTrophyGetGameInfo);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyRegisterContext",(void **) &sceNpTrophyRegisterContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyHandle",(void **) &sceNpTrophyDestroyHandle);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyContext",(void **) &sceNpTrophyDestroyContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemDestroyContext",(void **) &sceNpTrophySystemDestroyContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemDestroyHandle",(void **) &sceNpTrophySystemDestroyHandle);
+	}
+}
+
+void UnloacModule(void)
+{
+	//sceKernelStopUnloadModule(sysNpTrophy,0,NULL,0,0,0);
+	//sysNpTrophy = -1;
 }
 
 
@@ -843,52 +857,69 @@ PRX_EXPORT int MountSaveData_Path(char* TITLEID,char* SaveToMount,char* fingerpr
 
 PRX_EXPORT int MountSaveData2(char* TITLEID,char* SaveToMount)
 {
-	//SaveDataTestMount2
-
 	int ret = 0;
-	initSysUtil();
-
-	//SetDebuggerTrue();
-
-	//this is no longer required as it seems to mount perfectly fine
-
-
-	char buffer[1024];
-	//notify("");//not sure why i had a blank notification here anyway
-	//if(DEBUGENABlED ==1)
-	//{
-	//	sprintf(buffer,"Info %s %s",TITLEID,fingerprint);
-	//	notify(buffer);
-	//}
-
-	//if ((fingerprint != NULL) && (fingerprint[0] == '\0')) 
-	//{
-	//	printf("Fingerprint is empty assigning defualt\n");
-	//	fingerprint = "00000000000000000000000000000000000000000";
-	//	//if you dont want to do the keystone verification process use the below
-	//	//294a5ed06db170618f2eed8c424b9d828879c080cc66fbc4864f69e974deb856 ////tis will only work for debug games
-	//}
-
-	/*This structure sets the fingerprint of the passcode to use when mounting a save data directory.
-
-	A fingerprint is a key for protecting save data from access by other applications. When a passcode (character string comprised of "a" to "z", "A" to "Z", and "0" to "9") is specified during application package creation, the fingerprint can be obtained as a hash value of the passcode (for details, refer to the "Package Generator User's Guide" document. When another application mounts this application's save data, this fingerprint must be specified and then read only mode must be specified.
-
-	On the other hand, there is no need for a fingerprint to be specified when an application mounts its own save data.
-
-	*/
-
-	ret =SaveDataTestMount2(TITLEID,SaveToMount);//not sure if this is the sealed key or not 
-	if(ret < 0)
+	try
 	{
-		if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
+		//SaveDataTestMount2
+
+		initSysUtil();
+
+		//notify("Testing something else");
+
+		char buffer2[0x400] = { 0 };
+		sprintf(buffer2, "[Ps4 Unjial] %s\n", "Testing something else");
+		printf(buffer2);
+
+
+		//SetDebuggerTrue();
+
+		//this is no longer required as it seems to mount perfectly fine
+
+
+		char buffer[1024];
+		//notify("");//not sure why i had a blank notification here anyway
+		//if(DEBUGENABlED ==1)
+		//{
+		//	sprintf(buffer,"Info %s %s",TITLEID,fingerprint);
+		//	notify(buffer);
+		//}
+
+		//if ((fingerprint != NULL) && (fingerprint[0] == '\0')) 
+		//{
+		//	printf("Fingerprint is empty assigning defualt\n");
+		//	fingerprint = "00000000000000000000000000000000000000000";
+		//	//if you dont want to do the keystone verification process use the below
+		//	//294a5ed06db170618f2eed8c424b9d828879c080cc66fbc4864f69e974deb856 ////tis will only work for debug games
+		//}
+
+		/*This structure sets the fingerprint of the passcode to use when mounting a save data directory.
+
+		A fingerprint is a key for protecting save data from access by other applications. When a passcode (character string comprised of "a" to "z", "A" to "Z", and "0" to "9") is specified during application package creation, the fingerprint can be obtained as a hash value of the passcode (for details, refer to the "Package Generator User's Guide" document. When another application mounts this application's save data, this fingerprint must be specified and then read only mode must be specified.
+
+		On the other hand, there is no need for a fingerprint to be specified when an application mounts its own save data.
+
+		*/
+
+		ret =SaveDataTestMount2(TITLEID,SaveToMount);//not sure if this is the sealed key or not 
+		if(ret < 0)
 		{
-			notify("Save Mount Full");
-			return ret;
+			if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
+			{
+				notify("Save Mount Full");
+				return ret;
+			}
+			else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
+			{
+				notify("Save Mounted");
+			}
 		}
-		else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
-		{
-			notify("Save Mounted");
-		}
+
+	}
+	catch(std::exception ex)
+	{
+		char buffer2[0x400] = { 0 };
+		sprintf(buffer2, "Error %s\n", ex.what());
+		printf(buffer2);
 	}
 	return ret;
 
@@ -1724,120 +1755,160 @@ PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
 
 PRX_EXPORT bool CreateAndRegister()
 {
-	int ret = -1;
-	initSysUtil();
-	initsysNpTrophy();
-	initsysNpManager();
-	ret = InitlizieUserService();
-	if (ret < 0) {
-		if(DEBUGENABlED == 1)
-			notify("InitlizieUserService errored out");
-		// Error handling
-	}
-
-	UserServiceGetUserId();
-
-	//SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
-	ret = sceNpTrophySystemCreateHandle(&handle);
-	if (ret < 0) {
-		if(DEBUGENABlED == 1)
-			notify("NpTrophyCreateHandle errored out");
-
-		//return false;
-		// Error handling
-	}
-	char buffer[1000];
-	ret = sceNpTrophyCreateContext(&context,userId, 0, 0);
-	if (ret < 0) {
-		if(DEBUGENABlED == 1)
-		{
-			printf("sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
-			sprintf(buffer, "sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
+	try
+	{
+		int ret = -1;
+		initSysUtil();
+		initsysNpTrophy();
+		initsysNpManager();
+		char buffer[1000];
+		ret = InitlizieUserService();
+		if (ret < 0) {
+			//if(DEBUGENABlED == 1)
+			sprintf(buffer, "InitlizieUserService() failed. ret = 0x%x\n", ret);
 			notify(buffer);
+			// Error handling
 		}
-		//notify("sceNpTrophyCreateContext() failed");
-		//return false;
-	}
 
+		UserServiceGetUserId();
 
-	ret = sceNpTrophyRegisterContext(context, handle, 0);
-	if (ret < 0) {
-		if(DEBUGENABlED == 1)
-		{
-			printf("sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
-			sprintf(buffer, "sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
+		//SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
+		ret = NpTrophyCreateHandle(&handle);
+		if (ret < 0) {
+			//if(DEBUGENABlED == 1)
+			sprintf(buffer, "NpTrophyCreateHandle() failed. ret = 0x%x\n", ret);
 			notify(buffer);
+
+			//return false;
+			// Error handling
 		}
-		//changeState(manager, TROPHY_MANAGER_STATE_ERROR, ret);
-		//notify("sceNpTrophyRegisterContext() failed");
-		//return false;
+
+		ret = sceNpTrophyCreateContext(&context,userId, 0, 0);
+		if (ret < 0) {
+			//if(DEBUGENABlED == 1)
+			{
+				printf("sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
+				sprintf(buffer, "sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+			}
+			//notify("sceNpTrophyCreateContext() failed");
+			//return false;
+		}
+
+
+		ret = sceNpTrophyRegisterContext(context, handle, 0);
+		if (ret < 0) {
+			//if(DEBUGENABlED == 1)
+			{
+				printf("sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
+				sprintf(buffer, "sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+			}
+			//changeState(manager, TROPHY_MANAGER_STATE_ERROR, ret);
+			//notify("sceNpTrophyRegisterContext() failed");
+			//return false;
+		}
+	}
+	catch(std::exception ex)
+	{
+		char buffer[1000];
+		printf("Error %s",ex.what());
+		sprintf(buffer, "Error %s",ex.what());
+		notify(buffer);
 	}
 	return true;
 }
 
 PRX_EXPORT bool DestroyAndTerminate()
 {
-	int ret = -1;
-	initSysUtil();
-	initsysNpTrophy();
-	initsysNpManager();
+	try
+	{
+		int ret = -1;
+		initSysUtil();
+		initsysNpTrophy();
+		initsysNpManager();
 
-	ret = sceNpTrophyDestroyHandle(handle);
-	if (ret < 0) {
-		if(DEBUGENABlED == 1)
-		{
-			printf("sceNpTrophyDestroyHandle() failed. ret = 0x%x\n", ret);
-			notify("sceNpTrophyDestroyHandle() failed");
+		char buffer[1000];
+		ret = sceNpTrophyDestroyHandle(handle);
+		if (ret < 0) {
+			//	if(DEBUGENABlED == 1)
+			{
+				printf("sceNpTrophyDestroyHandle() failed. ret = 0x%x\n", ret);
+
+				sprintf(buffer, "sceNpTrophyDestroyHandle() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+			}
+			// Error handling
+			//return false;
 		}
-		// Error handling
-		//return false;
-	}
 
-	ret = sceNpTrophyDestroyContext(context);
-	if (ret < 0) {
-		if(DEBUGENABlED == 1)
-		{
-			printf("sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
-			notify("sceNpTrophyDestroyContext() failed");
+		ret = sceNpTrophyDestroyContext(context);
+		if (ret < 0) {
+			//	if(DEBUGENABlED == 1)
+			{
+				printf("sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
+				sprintf(buffer, "sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+			}
+			// Error handling
+			//return false;
 		}
-		// Error handling
-		//return false;
-	}
 
+
+		//UnloacModule();
+
+	}
+	catch(std::exception ex)
+	{
+		char buffer[1000];
+		printf("Error %s",ex.what());
+		sprintf(buffer, "Error %s",ex.what());
+		notify(buffer);
+	}
 	return true;
 
 }
 
 PRX_EXPORT bool UnlockSpesificTrophy(SceNpTrophyId trophyId)
 {
-	int ret = -1;
-	initSysUtil();
-	initsysNpTrophy();
-	initsysNpManager();
-	SceNpTrophyId platinumId = SCE_NP_TROPHY_INVALID_TROPHY_ID;
-	ret = NpTrophyUnlockTrophy(context, handle,
-		trophyId, &platinumId);
-	char buffer[1000];
-
-	if (ret < 0) 
+	try
 	{
-		if(ret == SCE_NP_TROPHY_ERROR_TROPHY_ALREADY_UNLOCKED)
+		int ret = -1;
+		initSysUtil();
+		initsysNpTrophy();
+		initsysNpManager();
+		SceNpTrophyId platinumId = SCE_NP_TROPHY_INVALID_TROPHY_ID;
+		ret = NpTrophyUnlockTrophy(context, handle,
+			trophyId, &platinumId);
+		char buffer[1000];
+
+		if (ret < 0) 
 		{
-			return true;
-		}
-		else
-		{
-			printf("sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
-			sprintf(buffer, "sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
-			notify(buffer);
-			return false;
-		}
+			if(ret == SCE_NP_TROPHY_ERROR_TROPHY_ALREADY_UNLOCKED)
+			{
+				return true;
+			}
+			else
+			{
+				printf("sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
+				sprintf(buffer, "sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+				return false;
+			}
 
 
+		}
 	}
-
+	catch(std::exception ex)
+	{
+		char buffer[1000];
+		printf("Error %s",ex.what());
+		sprintf(buffer, "Error %s",ex.what());
+		notify(buffer);
+	}
 	return true;
 }
+
 
 bool symlink_exists(const char* path)
 {
@@ -2550,6 +2621,7 @@ PRX_EXPORT bool JailbreakMe()
 		//notify("Failed to load Jailbreak Import.\n");
 		return false;
 	}
+	Jailbreak();
 	return true;
 }
 

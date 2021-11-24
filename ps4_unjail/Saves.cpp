@@ -15,12 +15,20 @@ int32_t (*sceSaveDataMount2)(
 	const SceSaveDataMount2 *mount,
 	SceSaveDataMountResult *mountResult
 	);
+int32_t (*sceSaveDataMount5)(
+	const SceSaveDataMount2 *mount,
+	SceSaveDataMountResult *mountResult
+	);
+
 
 int32_t (*sceSaveDataDelete)(const SceSaveDataDelete *del);
 
 int32_t (*sceSaveDataDirNameSearch)(const SceSaveDataDirNameSearchCond *cond,SceSaveDataDirNameSearchResult *result);
 int32_t (*sceSaveDataTransferringMount)(const SceSaveDataTransferringMount *mount,SceSaveDataMountResult *mountResult);
 int32_t (*sceSaveDataUmount)(const SceSaveDataMountPoint *mountPoint);
+
+int (*sceSaveDataInitialize)(const SceSaveDataInitParams3 *initParam);
+
 int (*sceSaveDataInitialize3)(const SceSaveDataInitParams3 *initParam);
 int orbisSaveDataInitialize3(const SceSaveDataInitParams3 *initParam)
 {
@@ -41,6 +49,7 @@ void initSaveData(void)
 	int sysSavaData = sceKernelLoadStartModule("/system/common/lib/libSceSaveData.sprx", 0, NULL, 0, 0, 0);
 	sceKernelDlsym(sysSavaData, "sceSaveDataInitialize3", (void **)&sceSaveDataInitialize3);
 	sceKernelDlsym(sysSavaData,"sceSaveDataInitialize2",(void **)&sceSaveDataInitialize2);
+	sceKernelDlsym(sysSavaData,"sceSaveDataInitialize",(void **)&sceSaveDataInitialize);
 	//sceKernelDlsym(sysSavaData, "sceSaveDataSetupSaveDataMemory2",(void **)&sceSaveDataSetupSaveDataMemory2);
 	sceKernelDlsym(sysSavaData, "sceSaveDataMount",(void **)&sceSaveDataMount);
 	sceKernelDlsym(sysSavaData, "sceSaveDataMount2",(void **)&sceSaveDataMount2);
@@ -72,6 +81,27 @@ int saveDataMount(const SceSaveDataMount *mount, SceSaveDataMountResult *mountRe
 }
 
 
+//int SaveDataMount_Internal(char *Path,int Holder,long Size,int* out)
+//{
+//
+//	int sysSavaData = sceKernelLoadStartModule("/system/priv/lib/libSceFsInternalForVsh.sprx", 0, NULL, 0, 0, 0);
+//	if(sysSavaData)
+//	sceKernelDlsym(sysSavaData, "sceSaveDataInitialize3", (void **)&sceSaveDataInitialize3);
+//	sceKernelDlsym(sysSavaData,"sceSaveDataInitialize2",(void **)&sceSaveDataInitialize2);
+//	sceKernelDlsym(sysSavaData,"sceSaveDataInitialize",(void **)&sceSaveDataInitialize);
+//	//sceKernelDlsym(sysSavaData, "sceSaveDataSetupSaveDataMemory2",(void **)&sceSaveDataSetupSaveDataMemory2);
+//	sceKernelDlsym(sysSavaData, "sceSaveDataMount",(void **)&sceSaveDataMount);
+//	sceKernelDlsym(sysSavaData, "sceSaveDataMount2",(void **)&sceSaveDataMount2);
+//	sceKernelDlsym(sysSavaData, "sceSaveDataDirNameSearch",(void**)&sceSaveDataDirNameSearch);
+//	sceKernelDlsym(sysSavaData, "sceSaveDataTransferringMount",(void**)&sceSaveDataTransferringMount);
+//	sceKernelDlsym(sysSavaData, "sceSaveDataUmount",(void**)&sceSaveDataUmount);
+//	sceKernelDlsym(sysSavaData,"sceSaveDataDelete",(void **)&sceSaveDataDelete);
+//	sceKernelDlsym(sysSavaData,"sceSaveDataDeleteAllUser",(void **)&sceSaveDataDeleteAllUser);
+//
+//
+//	/*void sceFsMountSaveData(char *param_1,undefined8 param_2,long param_3,undefined8 *param_4)*/
+//	
+//}
 
 int SaveDataUnmount(const SceSaveDataMountPoint *mountPoint)
 {
@@ -355,11 +385,11 @@ int SaveDataTestMount2(char* TITLEID,char* DataDir)
 		}
 	}
 	initSaveData();
-	ret = sceSaveDataInitialize2(NULL);//call it with a null
+	ret = sceSaveDataInitialize3(NULL);//call it with a null
 	if(ret < 0)
 	{
 		//error 
-		notify("sceSaveDataInitialize2 failed");
+		notify("sceSaveDataInitialize failed");
 		return ret;
 	}
 
@@ -411,7 +441,7 @@ int SaveDataTestMount2(char* TITLEID,char* DataDir)
 		ret -1;
 	}
 	buffer[1024];
-	if(DEBUGENABlED == 1)	
+	//if(DEBUGENABlED == 1)	
 	{
 		for (int i = 0; i < result.hitNum; i++)
 		{   
@@ -428,7 +458,7 @@ int SaveDataTestMount2(char* TITLEID,char* DataDir)
 	{   
 		SceSaveDataDirName dirName;
 		strlcpy(dirName.data,DataDir, sizeof(dirName.data));
-		SceSaveDataMount2 mount;
+		SceSaveDataMount mount;
 		memset(&mount, 0x00, sizeof (mount));
 
 		mount.userId = userId;
@@ -439,9 +469,9 @@ int SaveDataTestMount2(char* TITLEID,char* DataDir)
 		SceSaveDataMountResult mountResult;
 		memset(&mountResult, 0x00, sizeof(mountResult));
 
-		ret = sceSaveDataMount2(&mount, &mountResult);
+		ret = sceSaveDataMount(&mount, &mountResult);
 		if (ret < 0) {
-			if(DEBUGENABlED == 1)	
+			//if(DEBUGENABlED == 1)	
 			{
 				sprintf(buffer, "saveDataMount2 failed\n\n0x%08x", ret);
 				//we dont want to display the error

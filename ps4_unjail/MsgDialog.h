@@ -60,6 +60,36 @@ extern "C" {
 		int :32;										
 	} OrbisMsgDialogParam;
 
+	typedef struct OrbisErrorMsgDialogParam{
+		size_t size;
+		int32_t errorCode;
+		int32_t userId;		
+		int :32;	
+	} OrbisErrorMsgDialogParam;
+
+
+	typedef enum OrbisErroDialogTernary {
+		False					= 0,
+		True					= 1,
+		Inderterminate			= 2,
+	} OrbisErroDialogTernary;
+
+
+	typedef struct OrbisErrorMsgDetailParam
+	{
+		size_t size;
+		int32_t errorCode;
+		int32_t userId;		
+		OrbisErroDialogTernary showUserInfoPanel;
+		OrbisErroDialogTernary showCSCode;
+		OrbisErroDialogTernary logging;
+		bool enableActionError;
+		bool enableDimmer;
+		int :32;	
+	} OrbisErrorMsgDetailParam;
+
+
+
 
 
 	typedef struct OrbisMsgDialogResult {
@@ -85,11 +115,11 @@ extern "C" {
 
 
 	typedef enum OrbisCommonDialogStatus {
-	ORBIS_COMMON_DIALOG_STATUS_NONE				= 0,
-	ORBIS_COMMON_DIALOG_STATUS_INITIALIZED		= 1,
-	ORBIS_COMMON_DIALOG_STATUS_RUNNING			= 2,
-	ORBIS_COMMON_DIALOG_STATUS_FINISHED			= 3
-} OrbisCommonDialogStatus;
+		ORBIS_COMMON_DIALOG_STATUS_NONE				= 0,
+		ORBIS_COMMON_DIALOG_STATUS_INITIALIZED		= 1,
+		ORBIS_COMMON_DIALOG_STATUS_RUNNING			= 2,
+		ORBIS_COMMON_DIALOG_STATUS_FINISHED			= 3
+	} OrbisCommonDialogStatus;
 
 }
 #endif
