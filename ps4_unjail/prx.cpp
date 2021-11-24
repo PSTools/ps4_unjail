@@ -579,6 +579,8 @@ void initSceScreenshot(void)
 #define SCE_NP_TROPHY_ERROR_INVALID_NPCOMMSIGN	-2141907323
 
 #define SCE_NP_TROPHY_ERROR_TROPHY_ALREADY_UNLOCKED -2141907444
+#define SCE_NP_TROPHY_ERROR_PLATINUM_CANNOT_UNLOCK -2141907443
+#define SCE_NP_TROPHY_ERROR_CONTEXT_ALREADY_EXISTS -2141907437
 
 
 typedef struct SceNpTrophyGameDetails {
@@ -621,12 +623,13 @@ int (*sceNpTrophyDestroyHandle)(SceNpTrophyHandle handle);
 int(*sceNpTrophyDestroyContext)(SceNpTrophyContext context);
 int(*sceNpTrophySystemDestroyContext)(SceNpTrophyContext context);
 int (*sceNpTrophySystemDestroyHandle)(SceNpTrophyHandle handle);
+int (*sceNpTrophyAbortHandle)(SceNpTrophyHandle handle);
 
 //__int64 __fastcall sceNpTrophyCreateContext(unsigned int *a1, unsigned int a2, unsigned int a3, __int64 a4)
 
 //__int64 __fastcall sceNpTrophyUnlockTrophy(unsigned int a1, unsigned int a2, unsigned int a3, _DWORD *a4)
 SceNpTrophyContext context = SCE_NP_TROPHY_INVALID_CONTEXT;
-SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
+SceNpTrophyHandle handle = -1;
 
 
 //Init SCE Trophy Funcitons
@@ -641,11 +644,12 @@ void initsysNpTrophy(void)
 		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemCreateHandle",(void **)&sceNpTrophySystemCreateHandle);
 		sceKernelDlsym(sysNpTrophy, "sceNpTrophySystemCreateContext",(void **)&sceNpTrophySystemCreateContext);
 		sceKernelDlsym(sysNpTrophy,"sceNpTrophyGetGameInfo",(void **)&sceNpTrophyGetGameInfo);
-		sceKernelDlsym(sysNpTrophy,"sceNpTrophyRegisterContext",(void **) &sceNpTrophyRegisterContext);
-		sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyHandle",(void **) &sceNpTrophyDestroyHandle);
-		sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyContext",(void **) &sceNpTrophyDestroyContext);
-		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemDestroyContext",(void **) &sceNpTrophySystemDestroyContext);
-		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemDestroyHandle",(void **) &sceNpTrophySystemDestroyHandle);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyRegisterContext",(void **)&sceNpTrophyRegisterContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyHandle",(void **)&sceNpTrophyDestroyHandle);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyDestroyContext",(void **)&sceNpTrophyDestroyContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemDestroyContext",(void **)&sceNpTrophySystemDestroyContext);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophySystemDestroyHandle",(void **)&sceNpTrophySystemDestroyHandle);
+		sceKernelDlsym(sysNpTrophy,"sceNpTrophyAbortHandle",(void **)&sceNpTrophyAbortHandle);
 	}
 }
 
@@ -1761,7 +1765,11 @@ PRX_EXPORT bool CreateAndRegister()
 		initSysUtil();
 		initsysNpTrophy();
 		initsysNpManager();
+		//remove any leftovers
+
 		char buffer[1000];
+
+
 		ret = InitlizieUserService();
 		if (ret < 0) {
 			//if(DEBUGENABlED == 1)
@@ -1773,7 +1781,7 @@ PRX_EXPORT bool CreateAndRegister()
 		UserServiceGetUserId();
 
 		//SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
-		ret = NpTrophyCreateHandle(&handle);
+		ret = sceNpTrophySystemCreateHandle(&handle);
 		if (ret < 0) {
 			//if(DEBUGENABlED == 1)
 			sprintf(buffer, "NpTrophyCreateHandle() failed. ret = 0x%x\n", ret);
@@ -1785,6 +1793,13 @@ PRX_EXPORT bool CreateAndRegister()
 
 		ret = sceNpTrophyCreateContext(&context,userId, 0, 0);
 		if (ret < 0) {
+			if(ret == SCE_NP_TROPHY_ERROR_CONTEXT_ALREADY_EXISTS)
+			{
+				notify("Context already exists?");
+				//destroy and recreate ?
+				
+			}
+			else
 			//if(DEBUGENABlED == 1)
 			{
 				printf("sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
@@ -1829,9 +1844,22 @@ PRX_EXPORT bool DestroyAndTerminate()
 		initsysNpManager();
 
 		char buffer[1000];
-		ret = sceNpTrophyDestroyHandle(handle);
+
+		ret = sceNpTrophyAbortHandle(handle);
 		if (ret < 0) {
-			//	if(DEBUGENABlED == 1)
+			if(DEBUGENABlED == 1)
+			{
+				printf("sceNpTrophyAbortHandle() failed. ret = 0x%x\n", ret);
+
+				sprintf(buffer, "sceNpTrophyAbortHandle() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+			}
+			// Error handling
+			//return false;
+		}
+		ret = sceNpTrophySystemDestroyHandle(handle);
+		if (ret < 0) {
+			if(DEBUGENABlED == 1)
 			{
 				printf("sceNpTrophyDestroyHandle() failed. ret = 0x%x\n", ret);
 
@@ -1842,21 +1870,25 @@ PRX_EXPORT bool DestroyAndTerminate()
 			//return false;
 		}
 
-		ret = sceNpTrophyDestroyContext(context);
-		if (ret < 0) {
-			//	if(DEBUGENABlED == 1)
-			{
-				printf("sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
-				sprintf(buffer, "sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
-				notify(buffer);
-			}
-			// Error handling
-			//return false;
-		}
+		//ret = sceNpTrophyDestroyContext(context);
+		//if (ret < 0) {
+		//	if(DEBUGENABlED == 1)
+		//	{
+		//		printf("sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
+		//		sprintf(buffer, "sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
+		//		notify(buffer);
+		//	}
+		//	// Error handling
+		//	//return false;
+		//}
+
+		context = SCE_NP_TROPHY_INVALID_CONTEXT;
+		handle = -1;
+
 
 
 		//UnloacModule();
-
+		//notify("Unloaded");
 	}
 	catch(std::exception ex)
 	{
@@ -1886,6 +1918,12 @@ PRX_EXPORT bool UnlockSpesificTrophy(SceNpTrophyId trophyId)
 		{
 			if(ret == SCE_NP_TROPHY_ERROR_TROPHY_ALREADY_UNLOCKED)
 			{
+				notify("Trophy Already Unlocked");
+				return true;
+			}
+			else if(ret == SCE_NP_TROPHY_ERROR_PLATINUM_CANNOT_UNLOCK)
+			{
+				notify("You can't unlock this trophy just yet");
 				return true;
 			}
 			else

@@ -1,98 +1,14 @@
-﻿Build started 2021/11/24 10:02:47.
+﻿Build started 2021/11/24 12:33:32.
      1>Project "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\NativePluginPS4Example.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         checkheaders.cpp
-         orbis-clang.exe -o ORBIS_Debug\checkheaders.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\checkheaders.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         CommonDialog.cpp
-         orbis-clang.exe -o ORBIS_Debug\CommonDialog.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\CommonDialog.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         decrypt.c
-         orbis-clang.exe -o ORBIS_Debug\decrypt.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decrypt.c"
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decrypt.c(218,27): warning : format specifies type 'unsigned long long' but the argument has type 'unsigned long' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decrypt.c(218,47): warning : format specifies type 'unsigned long long' but the argument has type 'unsigned long' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decrypt.c(225,44): warning : format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decrypt.c(234,48): warning : format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decrypt.c(285,75): warning : format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-         decryptio.c
-         orbis-clang.exe -o ORBIS_Debug\decryptio.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\decryptio.c"
-         encryptsrv.c
-         orbis-clang.exe -o ORBIS_Debug\encryptsrv.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\encryptsrv.c"
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\encryptsrv.c(44,10): warning : implicit declaration of function 'syscall' is invalid in C99 [-Wimplicit-function-declaration]
-         ftps4.c
-         orbis-clang.exe -o ORBIS_Debug\ftps4.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c"
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(182,3): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'const SceNetSockaddr *' (aka 'const struct SceNetSockaddr *') [-Wincompatible-pointer-types]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(150,50):  note: passing argument to parameter 'addr' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(192,41): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'SceNetSockaddr *' (aka 'struct SceNetSockaddr *') [-Wincompatible-pointer-types]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(156,51):  note: passing argument to parameter 'name' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(199,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(200,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(201,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(202,3): warning : format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(203,3): warning : format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(204,3): warning : format specifies type 'unsigned char' but the argument has type 'int' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(281,4): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'const SceNetSockaddr *' (aka 'const struct SceNetSockaddr *') [-Wincompatible-pointer-types]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(152,53):  note: passing argument to parameter 'name' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(289,4): warning : incompatible pointer types passing 'const struct sceNetSockaddr *' to parameter of type 'SceNetSockaddr *' (aka 'struct SceNetSockaddr *') [-Wincompatible-pointer-types]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(148,51):  note: passing argument to parameter 'addr' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(397,21): warning : implicit declaration of function 'getdents' is invalid in C99 [-Wimplicit-function-declaration]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(788,37): warning : format specifies type 'long long' but the argument has type 'off_t' (aka 'long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(1013,34): warning : incompatible pointer types passing 'struct sockaddr *' to parameter of type 'const SceNetSockaddr *' (aka 'const struct SceNetSockaddr *') [-Wincompatible-pointer-types]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(150,50):  note: passing argument to parameter 'addr' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\ftps4.c(1028,47): warning : incompatible pointer types passing 'struct sockaddr *' to parameter of type 'SceNetSockaddr *' (aka 'struct SceNetSockaddr *') [-Wincompatible-pointer-types]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\libnet/socket.h(148,51):  note: passing argument to parameter 'addr' here
-         Kernel.cpp
-         orbis-clang.exe -o ORBIS_Debug\Kernel.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         In file included from C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp:4:
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail/Kernel.h(1,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail/Kernel.h(89,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(68,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(69,10): warning : address of stack memory associated with local variable 'RTNCHAR' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(72,9): warning : address of stack memory associated with local variable 'RTNCHAR' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(63,9): warning : unused variable 'bufferlen' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(124,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(131,65): warning : implicit conversion of NULL constant to 'size_t' (aka 'unsigned long') [-Wnull-conversion]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(134,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(152,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(135,10): warning : variable 'IDPS' is uninitialized when used here [-Wuninitialized]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(110,12):  note: initialize the variable 'IDPS' to silence this warning
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(166,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(177,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(167,10): warning : variable 'PSID' is uninitialized when used here [-Wuninitialized]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(157,12):  note: initialize the variable 'PSID' to silence this warning
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(220,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(317,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(328,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(318,10): warning : variable 'PSID' is uninitialized when used here [-Wuninitialized]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Kernel.cpp(308,12):  note: initialize the variable 'PSID' to silence this warning
-         Module.cpp
-         orbis-clang.exe -o ORBIS_Debug\Module.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Module.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         mount.c
-         orbis-clang.exe -o ORBIS_Debug\mount.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\mount.c"
-         UnityPrxPlugin.cpp
-         orbis-clang.exe -o ORBIS_Debug\UnityPrxPlugin.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\PlayerInterface\UnityPrxPlugin.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         pluginLib.cpp
-         orbis-clang.exe -o ORBIS_Debug\pluginLib.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(35,19): warning : missing terminating '"' character [-Winvalid-pp-token]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(35,19): warning : extra tokens at end of #include directive [-Wextra-tokens]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(137,24): warning : more '%' conversions than data arguments [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(142,58): warning : format specifies type 'unsigned int' but the argument has type 'uint64_t' (aka 'unsigned long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(131,8): warning : unused variable 'info' [-Wunused-variable]
-         pluginunjail.cpp
-         orbis-clang.exe -o ORBIS_Debug\pluginunjail.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginunjail.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
          prx.cpp
          orbis-clang.exe -o ORBIS_Debug\prx.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp"
      1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
          In file included from C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp:54:
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail/Kernel.h(1,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail/Kernel.h(89,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(95,19): warning : unused variable 'data' [-Wunused-variable]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(94,11): warning : unused variable 'size' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(95,19): warning : unused variable 'data' [-Wunused-variable]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(145,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(250,24): warning : more '%' conversions than data arguments [-Wformat]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(255,58): warning : format specifies type 'unsigned int' but the argument has type 'uint64_t' (aka 'unsigned long') [-Wformat]
@@ -109,269 +25,148 @@
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(547,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(565,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(567,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(659,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(661,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(700,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(702,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(702,26): warning : missing terminating ' character [-Winvalid-pp-token]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(710,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(713,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(717,6): warning : unused variable 'result' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(740,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(742,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(779,17): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(795,10): warning : using the result of an assignment as a condition without parentheses [-Wparentheses]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(795,10):  note: place parentheses around the assignment to silence this warning
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(795,10):  note: use '==' to turn this assignment into an equality comparison
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(797,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(802,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(829,17): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(845,10): warning : using the result of an assignment as a condition without parentheses [-Wparentheses]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(845,10):  note: place parentheses around the assignment to silence this warning
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(845,10):  note: use '==' to turn this assignment into an equality comparison
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(847,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(852,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(871,10): warning : format string is not a string literal (potentially insecure) [-Wformat-security]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(871,10):  note: treat the string as an argument to avoid this
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(906,11): warning : using the result of an assignment as a condition without parentheses [-Wparentheses]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(906,11):  note: place parentheses around the assignment to silence this warning
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(906,11):  note: use '==' to turn this assignment into an equality comparison
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(908,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(913,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(879,8): warning : unused variable 'buffer' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(922,10): warning : format string is not a string literal (potentially insecure) [-Wformat-security]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(922,10):  note: treat the string as an argument to avoid this
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(940,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(997,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1006,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1008,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1011,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1059,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1175,7): warning : unused variable 'bytes_read' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1221,47): warning : format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1236,11): warning : address of stack memory associated with local variable 'mess' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1241,60): warning : format specifies type 'unsigned int' but the argument has type 'char *' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1245,84): warning : format specifies type 'char *' but the argument has type 'uint32_t' (aka 'unsigned int') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1252,44): warning : format specifies type 'unsigned int' but the argument has type 'void *' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1228,31): warning : unused variable 'reload_mod' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1259,9): warning : address of stack memory associated with local variable 'mess' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1277,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1278,10): warning : address of stack memory associated with local variable 'RTNCHAR' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1281,9): warning : address of stack memory associated with local variable 'RTNCHAR' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1272,9): warning : unused variable 'bufferlen' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1407,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1409,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1420,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1439,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1441,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1455,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1457,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1515,6): warning : unused variable 'ret' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1525,15): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1531,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1550,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1565,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1598,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1606,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1610,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1615,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1645,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1659,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1673,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1679,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1695,15): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1689,14): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1719,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1725,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1735,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1632,12): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1650,12): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1664,12): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1585,25): warning : unused variable 's_npTitleSecret' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1731,16): warning : unused variable 'trophyId1' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1615,3): warning : array index 180 is past the end of the array (which contains 180 elements) [-Warray-bounds]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1551,2):  note: array 'buffer' declared here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1632,2): warning : array index 180 is past the end of the array (which contains 180 elements) [-Warray-bounds]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1551,2):  note: array 'buffer' declared here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1934,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1938,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1938,42): warning : format string is not a string literal (potentially insecure) [-Wformat-security]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1938,42):  note: treat the string as an argument to avoid this
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1940,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1953,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1967,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1979,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1981,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2009,1): warning : typedef requires a name [-Wmissing-declarations]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2015,1): warning : typedef requires a name [-Wmissing-declarations]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2072,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2078,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2098,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2099,36): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2114,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2150,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2152,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2145,1): warning : control reaches end of non-void function [-Wreturn-type]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2161,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2189,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2195,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2265,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2271,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2278,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2280,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2225,6): warning : unused variable 'isSupportedAudioFunction' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2299,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2310,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2312,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2436,20): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2529,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2533,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2559,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2565,22): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2569,22): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2574,22): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2582,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2535,30): warning : unused variable 'params' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2518,26): warning : unused variable 'ip' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2599,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2601,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2628,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2630,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2632,1): warning : typedef requires a name [-Wmissing-declarations]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2666,1): warning : control reaches end of non-void function [-Wreturn-type]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2753,19): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2763,24): warning : format specifies type 'unsigned long long' but the argument has type 'long' [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2766,19): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2768,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2812,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2814,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2831,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2835,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(663,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(665,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(704,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(706,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(706,26): warning : missing terminating ' character [-Winvalid-pp-token]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(714,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(717,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(721,6): warning : unused variable 'result' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(744,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(746,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(783,17): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(799,10): warning : using the result of an assignment as a condition without parentheses [-Wparentheses]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(799,10):  note: place parentheses around the assignment to silence this warning
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(799,10):  note: use '==' to turn this assignment into an equality comparison
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(801,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(806,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(833,17): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(849,10): warning : using the result of an assignment as a condition without parentheses [-Wparentheses]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(849,10):  note: place parentheses around the assignment to silence this warning
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(849,10):  note: use '==' to turn this assignment into an equality comparison
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(851,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(856,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(875,10): warning : format string is not a string literal (potentially insecure) [-Wformat-security]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(875,10):  note: treat the string as an argument to avoid this
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(910,11): warning : using the result of an assignment as a condition without parentheses [-Wparentheses]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(910,11):  note: place parentheses around the assignment to silence this warning
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(910,11):  note: use '==' to turn this assignment into an equality comparison
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(912,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(917,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(883,8): warning : unused variable 'buffer' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(926,10): warning : format string is not a string literal (potentially insecure) [-Wformat-security]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(926,10):  note: treat the string as an argument to avoid this
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(944,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1001,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1010,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1012,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1015,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1063,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1179,7): warning : unused variable 'bytes_read' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1225,47): warning : format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long') [-Wformat]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1240,11): warning : address of stack memory associated with local variable 'mess' returned [-Wreturn-stack-address]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1245,60): warning : format specifies type 'unsigned int' but the argument has type 'char *' [-Wformat]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1249,84): warning : format specifies type 'char *' but the argument has type 'uint32_t' (aka 'unsigned int') [-Wformat]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1256,44): warning : format specifies type 'unsigned int' but the argument has type 'void *' [-Wformat]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1232,31): warning : unused variable 'reload_mod' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1263,9): warning : address of stack memory associated with local variable 'mess' returned [-Wreturn-stack-address]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1281,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1282,10): warning : address of stack memory associated with local variable 'RTNCHAR' returned [-Wreturn-stack-address]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1285,9): warning : address of stack memory associated with local variable 'RTNCHAR' returned [-Wreturn-stack-address]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1276,9): warning : unused variable 'bufferlen' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1411,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1413,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1424,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1443,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1445,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1459,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1461,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1519,6): warning : unused variable 'ret' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1529,15): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1535,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1554,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1569,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1602,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1610,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1614,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1619,13): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1649,13): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1663,13): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1677,13): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1683,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1699,15): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1693,14): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1723,13): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1729,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1739,13): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1636,12): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1654,12): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1668,12): warning : expression result unused [-Wunused-value]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1589,25): warning : unused variable 's_npTitleSecret' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1735,16): warning : unused variable 'trophyId1' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1619,3): warning : array index 180 is past the end of the array (which contains 180 elements) [-Warray-bounds]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1555,2):  note: array 'buffer' declared here
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1636,2): warning : array index 180 is past the end of the array (which contains 180 elements) [-Warray-bounds]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1555,2):  note: array 'buffer' declared here
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1798,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1921,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1926,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1972,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1976,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1976,42): warning : format string is not a string literal (potentially insecure) [-Wformat-security]
+         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1976,42):  note: treat the string as an argument to avoid this
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1978,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(1991,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2005,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2017,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2019,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2047,1): warning : typedef requires a name [-Wmissing-declarations]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2053,1): warning : typedef requires a name [-Wmissing-declarations]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2110,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2116,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2136,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2137,36): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2152,9): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2188,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2190,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2183,1): warning : control reaches end of non-void function [-Wreturn-type]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2199,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2227,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2233,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2303,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2309,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2316,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2318,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2263,6): warning : unused variable 'isSupportedAudioFunction' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2337,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2348,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2350,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2474,20): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2567,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2571,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2597,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2603,22): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2607,22): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2612,22): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2620,21): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2573,30): warning : unused variable 'params' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2556,26): warning : unused variable 'ip' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2637,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2639,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2666,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2668,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2670,1): warning : typedef requires a name [-Wmissing-declarations]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2704,1): warning : control reaches end of non-void function [-Wreturn-type]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2791,19): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2801,24): warning : format specifies type 'unsigned long long' but the argument has type 'long' [-Wformat]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2804,19): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2806,9): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2850,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2852,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-         SaveDataDialog.cpp
-         orbis-clang.exe -o ORBIS_Debug\SaveDataDialog.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SaveDataDialog.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         Saves.cpp
-         orbis-clang.exe -o ORBIS_Debug\Saves.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(1,9): warning : #pragma once in main file [-Wpragma-once-outside-header]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(75,3): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(76,16): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(78,3): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(130,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(139,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(178,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(179,7): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(181,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(193,35): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(181,2): warning : array index 1024 is past the end of the array (which contains 180 elements) [-Warray-bounds]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(115,2):  note: array 'buffer' declared here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(252,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(261,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(270,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(309,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(310,7): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(312,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(324,23): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(312,2): warning : array index 1024 is past the end of the array (which contains 180 elements) [-Warray-bounds]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(238,2):  note: array 'buffer' declared here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(383,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(392,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(401,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(440,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(441,7): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(443,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(455,23): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(443,2): warning : array index 1024 is past the end of the array (which contains 180 elements) [-Warray-bounds]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(369,2):  note: array 'buffer' declared here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(512,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(522,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(540,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(544,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(546,1): warning : control may reach end of non-void function [-Wreturn-type]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(567,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(576,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(615,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(616,7): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(658,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(618,13): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(630,35): warning : expression result unused [-Wunused-value]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(618,2): warning : array index 1024 is past the end of the array (which contains 180 elements) [-Warray-bounds]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(552,2):  note: array 'buffer' declared here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(686,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(694,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Saves.cpp(62,24): warning : unused function 'ceil' [-Wunused-function]
-         Sound.cpp
-         orbis-clang.exe -o ORBIS_Debug\Sound.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Sound.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         SoundUtil.cpp
-         orbis-clang.exe -o ORBIS_Debug\SoundUtil.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(183,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(208,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(210,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(221,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(175,35): warning : unused variable 'loginUserList' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(497,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(519,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(528,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(827,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(835,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(846,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(857,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(863,1): warning : control may reach end of non-void function [-Wreturn-type]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(873,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(879,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SoundUtil.cpp(899,1): warning : control may reach end of non-void function [-Wreturn-type]
-         syscall.cpp
-         orbis-clang.exe -o ORBIS_Debug\syscall.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\syscall.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-         SystemService.cpp
-         orbis-clang.exe -o ORBIS_Debug\SystemService.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(1,9): warning : #pragma once in main file [-Wpragma-once-outside-header]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(119,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(125,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(129,13): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(146,12): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(155,13): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(159,13): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(163,13): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(167,13): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(171,14): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(175,14): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(192,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SystemService.cpp(198,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-         SysUtil.cpp
-         orbis-clang.exe -o ORBIS_Debug\SysUtil.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SysUtil.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SysUtil.cpp(2,9): warning : #pragma once in main file [-Wpragma-once-outside-header]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\SysUtil.cpp(215,1): warning : control reaches end of non-void function [-Wreturn-type]
-         unjail.c
-         orbis-clang.exe -o ORBIS_Debug\unjail.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c"
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(153,11): warning : implicit declaration of function 'sceKernelGetCpuTemperature' is invalid in C99 [-Wimplicit-function-declaration]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(153,6): warning : unused variable 'hi' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(160,12): warning : implicit declaration of function 'sceKernelSetFanShit' is invalid in C99 [-Wimplicit-function-declaration]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(160,6): warning : unused variable 'hii' [-Wunused-variable]
-         UserService.cpp
-         orbis-clang.exe -o ORBIS_Debug\UserService.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(70,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(90,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(94,9): warning : cast to 'char *' from smaller integer type 'SceUserServiceUserId' (aka 'int') [-Wint-to-pointer-cast]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(109,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(118,10): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(125,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(126,11): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(102,7): warning : unused variable 'rtnchar' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(151,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(159,10): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(163,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(170,11): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(171,11): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(181,10): warning : ISO C++11 does not allow conversion from string literal to 'char *' [-Wwritable-strings]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(182,10): warning : address of stack memory associated with local variable 'buffer' returned [-Wreturn-stack-address]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\UserService.cpp(139,8): warning : unused variable 'rtnchar' [-Wunused-variable]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2869,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2873,9): warning : unknown pragma ignored [-Wunknown-pragmas]
+     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2890,9): warning : unknown pragma ignored [-Wunknown-pragmas]
        Link:
          C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\bin\orbis-ld.exe -o "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx" --oformat=prx --prx-stub-output-dir="C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4" -LC:\tauon2\lib -L"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\lib" -L"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\lib" --start-group ORBIS_Debug\checkheaders.o ORBIS_Debug\CommonDialog.o ORBIS_Debug\decrypt.o ORBIS_Debug\decryptio.o ORBIS_Debug\encryptsrv.o ORBIS_Debug\ftps4.o ORBIS_Debug\Kernel.o ORBIS_Debug\Module.o ORBIS_Debug\mount.o ORBIS_Debug\UnityPrxPlugin.o ORBIS_Debug\pluginLib.o ORBIS_Debug\pluginunjail.o ORBIS_Debug\prx.o ORBIS_Debug\SaveDataDialog.o ORBIS_Debug\Saves.o ORBIS_Debug\Sound.o ORBIS_Debug\SoundUtil.o ORBIS_Debug\syscall.o ORBIS_Debug\SystemService.o ORBIS_Debug\SysUtil.o ORBIS_Debug\unjail.o ORBIS_Debug\UserService.o "-lScePosix_stub_weak" "-lSceNet_stub_weak" "-lSceNetCtl_stub_weak" "-lSceNetDebug_stub_weak" "-lSceUsbd_stub_weak" "-lSceUsbStorage_tau_stub_weak" "-lSceSysmodule_tau_stub_weak" "-lSceSysmodule_stub_weak" "-lSceSystemService_tau_stub_weak" "-lkernel_tau_stub_weak" "-lSceLncUtil_tau_stub_weak" --end-group
          NativePluginPS4Example.vcxproj -> C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx
@@ -379,4 +174,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.30
+Time Elapsed 00:00:00.89
