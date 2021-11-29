@@ -12,11 +12,13 @@ extern "C" {
 #define ORBIS_MSG_DIALOG_MODE_USER_MSG				(1)
 #define ORBIS_MSG_DIALOG_BUTTON_TYPE_WAIT			(5)
 #define ORBIS_MSG_DIALOG_BUTTON_TYPE_OK				(0)
+#define ORBIS_MSG_DIALOG_BUTTON_TYPE_2BUTTONS		(9)
 
 #define ORBIS_MSG_DIALOG_MODE_INVALID				(0)
 #define ORBIS_MSG_DIALOG_MODE_USER_MSG				(1)
 #define ORBIS_MSG_DIALOG_MODE_PROGRESS_BAR			(2)
 #define ORBIS_MSG_DIALOG_MODE_SYSTEM_MSG			(3)
+
 
 	typedef struct OrbisMsgDialogButtonsParam {
 		const char *msg1;					
@@ -102,6 +104,13 @@ extern "C" {
 		char reserved[32];								
 
 	} OrbisMsgDialogResult;
+
+#define ORBIS_MSG_DIALOG_BUTTON_ID_INVALID				(0)
+#define ORBIS_MSG_DIALOG_BUTTON_ID_OK					(1)
+#define ORBIS_MSG_DIALOG_BUTTON_ID_YES					(1)
+#define ORBIS_MSG_DIALOG_BUTTON_ID_NO					(2)
+#define ORBIS_MSG_DIALOG_BUTTON_ID_BUTTON1				(1)
+#define ORBIS_MSG_DIALOG_BUTTON_ID_BUTTON2				(2)
 
 
 	static inline

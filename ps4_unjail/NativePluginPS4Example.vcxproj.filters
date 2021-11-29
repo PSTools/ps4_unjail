@@ -35,6 +35,12 @@
     <ClCompile Include="CommonDialog.cpp">
       <Filter>CommonDialog</Filter>
     </ClCompile>
+    <ClCompile Include="DownloadHTTPS.cpp">
+      <Filter>HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="Patcher.c">
+      <Filter>Patcher</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayerInterface">
@@ -57,6 +63,12 @@
     </Filter>
     <Filter Include="CommonDialog">
       <UniqueIdentifier>{7946256d-8cec-4e92-bcf7-51ba668d912f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HTTP">
+      <UniqueIdentifier>{66ba7943-eecf-496f-b069-6346f9bb47b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Patcher">
+      <UniqueIdentifier>{87db11d9-fd15-4e61-9588-4d2655ca81a5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +129,30 @@
     </ClInclude>
     <ClInclude Include="CommonDialog.h">
       <Filter>CommonDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="DownloadHTTPS.h">
+      <Filter>HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="Patcher.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
+    <ClInclude Include="SYSTEM_VERSION.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
+    <ClInclude Include="Common_Patcher.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
+    <ClInclude Include="proc.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
+    <ClInclude Include="freebsd.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
+    <ClInclude Include="resolver_patch.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
+    <ClInclude Include="resolver_patch.c">
+      <Filter>Patcher</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

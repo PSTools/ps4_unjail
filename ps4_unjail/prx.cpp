@@ -6,6 +6,7 @@ extern "C" {
 #include "unjail.h"
 #include "ftps4.h"
 #include "mount.h"
+#include "Patcher.h"
 }
 
 #include <stdbool.h>
@@ -54,6 +55,7 @@ extern "C" {
 #include "Kernel.h"
 #include "SoundUtil.h"
 #include "SaveDataDialog.h"
+#include "DownloadHTTPS.h"
 
 extern int run;
 
@@ -294,14 +296,35 @@ PRX_EXPORT int FreeMountUsbMuilti(){
 PRX_EXPORT int FreeMount()
 {
 	initSysUtil();
-
+	//LOAD:FFFFFFFFDF6AFFE0	0000000F	C	/dev/es0.crypt
+	//LOAD:FFFFFFFFDF6AFFEF	00000011	C	/dev/da0x8.crypt
+	//notify("Mount New Test");
+	mount_large_fs("/dev/es0.crypt", "/es0", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x0.crypt", "/preinst", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x1.crypt", "/preinst2", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x4.crypt", "/system", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x5.crypt", "/system_ex", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sbram0", "/system_sam", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x6.crypt","/da0x6", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x8.crypt", "/da0x8", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x9.crypt", "/da0x9", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x12.crypt","/da0x12", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x13.crypt","/da0x13", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x14.crypt","/da0x14", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x15.crypt","/da0x15", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash0s0x32b","/sflash0s32b", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash0s1.cryptx2b","/sflash0s12", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash0s1.cryptx3b","/sflash0s13", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x4b.crypt","/da0x4b", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x5b.crypt","/da0x5b", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x6x2.crypt","/da0x6x2", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/da0x6x1.crypt","/da0x6x1", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash0s1.cryptx1","/sflash0s1_cryptx1","exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash0s1.cryptx40","/da0","exfatfs", "511", MNT_UPDATE);
+	///dev/da0x6x1.crypt
+	//mount_large_fs("/dev/da0x5.crypt",
+	/*mount_large_fs("/dev/sbram0", "/system_sam", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/sflash0.crypt", "/system_sam", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflash1.crypt", "/flash1", "exfatfs", "511", MNT_UPDATE);
+	mount_large_fs("/dev/sflash1.crypt", "/flash1", "exfatfs", "511", MNT_UPDATE);*/
 
 	int fd = sceKernelOpen("/dev/npdrm", O_RDWR, 0);
 	if (fd < 0)
@@ -739,6 +762,11 @@ PRX_EXPORT int ShowLoadingDialog(char* Message)
 PRX_EXPORT int ShowMessageDialog(char* Message)
 {
 	return msgok(Message);
+}
+
+PRX_EXPORT int ShowMessageYesNoDialog(char* Message)
+{
+	return msgYesNo(Message);
 }
 
 #pragma endregion << Send notification on the ps4 >>
@@ -1791,16 +1819,17 @@ PRX_EXPORT bool CreateAndRegister()
 			// Error handling
 		}
 
-		ret = sceNpTrophyCreateContext(&context,userId, 0, 0);
+		ret = sceNpTrophyCreateContext(&context,userId,0, 0);
 		if (ret < 0) {
 			if(ret == SCE_NP_TROPHY_ERROR_CONTEXT_ALREADY_EXISTS)
 			{
-				notify("Context already exists?");
+				//notify("Context already exists?");
 				//destroy and recreate ?
-				
+				goto errorDestory;
+
 			}
 			else
-			//if(DEBUGENABlED == 1)
+				//if(DEBUGENABlED == 1)
 			{
 				printf("sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
 				sprintf(buffer, "sceNpTrophyCreateContext() failed. ret = 0x%x\n", ret);
@@ -1831,6 +1860,21 @@ PRX_EXPORT bool CreateAndRegister()
 		sprintf(buffer, "Error %s",ex.what());
 		notify(buffer);
 	}
+	return true;
+
+errorDestory:
+	int ret = sceNpTrophySystemDestroyContext(context);
+	if(ret < 0)
+	{
+		char buffer[1000];
+		sprintf(buffer, "sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
+		notify(buffer);
+	}
+	else
+	{
+		CreateAndRegister();
+	}
+
 	return true;
 }
 
@@ -1870,19 +1914,19 @@ PRX_EXPORT bool DestroyAndTerminate()
 			//return false;
 		}
 
-		//ret = sceNpTrophyDestroyContext(context);
-		//if (ret < 0) {
-		//	if(DEBUGENABlED == 1)
-		//	{
-		//		printf("sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
-		//		sprintf(buffer, "sceNpTrophyDestroyContext() failed. ret = 0x%x\n", ret);
-		//		notify(buffer);
-		//	}
-		//	// Error handling
-		//	//return false;
-		//}
-
-		context = SCE_NP_TROPHY_INVALID_CONTEXT;
+		ret = sceNpTrophySystemDestroyContext(context);
+		if (ret < 0) {
+			if(DEBUGENABlED == 1)
+			{
+				printf("sceNpTrophySystemDestroyContext() failed. ret = 0x%x\n", ret);
+				sprintf(buffer, "sceNpTrophySystemDestroyContext() failed. ret = 0x%x\n", ret);
+				notify(buffer);
+			}
+			// Error handling
+			//return false;
+		}
+		//we dont want to reset the context incase we have to destroy it later
+		//context = SCE_NP_TROPHY_INVALID_CONTEXT;
 		handle = -1;
 
 
@@ -2868,8 +2912,6 @@ PRX_EXPORT bool Unity_Plugin()
 
 #pragma endregion << Mono Stuff >>
 
-
-
 #pragma region << Sound Stuff >>
 
 
@@ -2888,3 +2930,22 @@ PRX_EXPORT void PlaySoundControler(char* Path)
 
 
 #pragma endregion << Sound Stuff >>
+
+#pragma region << Download Stuff >>
+
+PRX_EXPORT unsigned char* DownloadString(char* Url)
+{
+	return Download(Url);
+}
+
+#pragma endregion << Download Stuff >>
+
+
+#pragma region << Patcher >>
+
+PRX_EXPORT void Install_Patches(int FW)
+{
+	InstallPatches(FW);
+}
+
+#pragma region << Patcher >>

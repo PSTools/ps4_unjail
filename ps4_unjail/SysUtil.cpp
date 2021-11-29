@@ -6,6 +6,7 @@
 #include "SysUtil.h"
 #include <stdio.h>
 #include "syscall.h"
+#include <string>
 
 #include "MsgDialog.h"
 
@@ -75,6 +76,7 @@ void notify(char *message)
 	//sceSysUtilSendSystemNotificationWithText(0x81, buffer);
 	sceSysUtilSendSystemNotificationWithText(222, buffer);
 }
+
 
 /*Show Messages Thanks to LM's Store Source Code*/
 int loadmsg(char* format, ...)
@@ -181,6 +183,86 @@ int msgok(char* format, ...)
 	return ret;
 }
 
+int msgYesNo(char* format, ...)
+{
+	int ret = 0;
+
+	int sceSysModuleMessageDialog = sceKernelLoadStartModule("/system/common/lib/libSceMsgDialog.sprx", 0, NULL, 0, 0, 0);
+	ret =sceKernelDlsym(sceSysModuleMessageDialog, "sceMsgDialogInitialize", (void **)&_sceMsgDialogInitialize);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog, "sceMsgDialogOpen", (void **)&sceMsgDialogOpen);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog, "sceMsgDialogTerminate", (void **)&sceMsgDialogTerminate);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceMsgDialogUpdateStatus",(void **)&sceMsgDialogUpdateStatus);
+	ret = sceKernelDlsym(sceSysModuleMessageDialog,"sceMsgDialogGetResult",(void **)&sceMsgDialogGetResult);
+	//sceSysmoduleLoadModule(SCE_SYSMODULE_MESSAGE_DIALOG);
+
+	sceMsgDialogTerminate();
+
+	char buff[1024];
+	char buffer[1000];
+	memset(buff, 0, 1024);
+
+	va_list args;
+	va_start(args, format);
+	vsprintf(buff, format, args);
+	va_end(args);
+
+	strcpy(buffer, buff);
+
+	//logshit(buff);
+
+	_sceMsgDialogInitialize();
+	OrbisMsgDialogParam param;
+	OrbisMsgDialogParamInitialize(&param);
+	param.mode = ORBIS_MSG_DIALOG_MODE_USER_MSG;
+
+
+
+
+	OrbisMsgDialogUserMessageParam userMsgParam;
+	OrbisMsgDialogButtonsParam		buttonsParam;
+
+	memset(&userMsgParam, 0, sizeof(userMsgParam));
+	memset( &buttonsParam, 0x00, sizeof(buttonsParam) );
+	userMsgParam.msg = buffer;
+	userMsgParam.buttonType = ORBIS_MSG_DIALOG_BUTTON_TYPE_2BUTTONS;
+	userMsgParam.buttonsParam	= &buttonsParam;
+	buttonsParam.msg1			= "YES";
+	buttonsParam.msg2			= "NO";
+	param.userMsgParam = &userMsgParam;
+
+	if (sceMsgDialogOpen(&param) < 0)
+		ret = -1;	
+
+
+	OrbisCommonDialogStatus stat;
+
+	while (1)
+	{
+		stat = sceMsgDialogUpdateStatus();
+		if (stat == ORBIS_COMMON_DIALOG_STATUS_FINISHED)
+		{
+			OrbisMsgDialogResult result;
+			memset(&result, 0, sizeof(result));
+
+			if (0 > sceMsgDialogGetResult(&result))
+				ret = -2;
+			if(result.buttonId == ORBIS_MSG_DIALOG_BUTTON_ID_BUTTON1)
+			{
+				ret =1;
+			}
+			else
+			{
+				ret = 0;
+			}
+			sceMsgDialogTerminate();
+			break;
+		}
+	}
+
+	return ret;
+}
+
+
 int errorMsg(char* format,...)
 {
 	int ret = 0;
@@ -225,6 +307,27 @@ int hidemsg()
 	sceMsgDialogTerminate();
 
 	return ret;
+}
+
+
+const char* s_menuXml = 
+	"<group label='CommonDialog ShowCase'>"
+	"	<int id='PadCtrlUserSelect' label='PadCtrlUserSelect' value='0' min='0' max='0' format=''/>"
+	"	<int id='MessageDialog' label='MessageDialog' value='0' min='0' max='0' format=''/>"
+	"	<int id='InvitationDialog' label='InvitationDialog' value='0' min='0' max='0'  format=''/>"
+	"	<int id='SaveDataDialog' label='SaveDataDialog' value='0' min='0' max='0' format=''/>"
+	"	<int id='WebBrowserDialog' label='WebBrowserDialog' value='0' min='0' max='0' format=''/>"
+	"	<int id='NpFriendlistDialog' label='NpFriendlistDialog' value='0' min='0' max='0' format=''/>"
+	"	<int id='NpProfileDialog' label='NpProfileDialog' value='0' min='0' max='0' format=''/>"
+	"	<int id='GameCustomDataDialog' label='GameCustomDataDialog' value='0' min='0' max='0'  format=''/>"
+	"	<int id='NpNamePrivacyDialog' label='MessageDialog(NpNamePrivacySetting)' value='0' min='0' max='0'  format=''/>"
+	"	<int id='VrServiceDialog' label='VrServiceDialog' value='0' min='0' max='0'  format=''/>"
+	"</group>";
+
+int ShowCustomMessage()
+{
+	//Custom Message Dialog Here
+	//std::string menu_xml = "<group label='PadCtrlUserSelect'>";
 }
 
 

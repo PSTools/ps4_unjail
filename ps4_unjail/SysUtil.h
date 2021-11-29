@@ -27,6 +27,7 @@ int sys_dynlib_dlsym(int loadedModuleID, const char *name, void *destination);
 
 int msgok(char* format, ...);
 int loadmsg(char* format, ...);
+int msgYesNo(char* format, ...);
 int hidemsg();
 
 #endif

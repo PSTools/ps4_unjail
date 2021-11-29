@@ -60,7 +60,7 @@
     <Link />
     <Link />
     <Link>
-      <AdditionalDependencies>-lScePosix_stub_weak;-lSceNet_stub_weak;-lSceNetCtl_stub_weak;-lSceNetDebug_stub_weak;-lSceUsbd_stub_weak;-lSceUsbStorage_tau_stub_weak;-lSceSysmodule_tau_stub_weak;-lSceSysmodule_stub_weak;-lSceSystemService_tau_stub_weak;-lkernel_tau_stub_weak;-lSceLncUtil_tau_stub_weak</AdditionalDependencies>
+      <AdditionalDependencies>-lScePosix_stub_weak;-lSceNet_stub_weak;-lSceNetCtl_stub_weak;-lSceHttp_stub_weak;-lSceSsl_stub_weak;-lSceNetDebug_stub_weak;-lSceUsbd_stub_weak;-lSceUsbStorage_tau_stub_weak;-lSceSysmodule_tau_stub_weak;-lSceSysmodule_stub_weak;-lSceSystemService_tau_stub_weak;-lkernel_tau_stub_weak;-lSceLncUtil_tau_stub_weak</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\tauon2\lib;$(SCE_ORBIS_SDK_DIR)\lib;$(SCE_ORBIS_SDK_DIR)\target\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -81,6 +81,7 @@
     <ClCompile Include="CommonDialog.cpp" />
     <ClCompile Include="decrypt.c" />
     <ClCompile Include="decryptio.c" />
+    <ClCompile Include="DownloadHTTPS.cpp" />
     <ClCompile Include="encryptsrv.c" />
     <ClCompile Include="ftps4.c">
       <CLanguageStd Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
@@ -91,6 +92,7 @@
     <ClCompile Include="Kernel.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="mount.c" />
+    <ClCompile Include="Patcher.c" />
     <ClCompile Include="PlayerInterface\UnityPrxPlugin.cpp" />
     <ClCompile Include="pluginLib.cpp" />
     <ClCompile Include="pluginunjail.cpp" />
@@ -110,10 +112,12 @@
   <ItemGroup>
     <ClInclude Include="bls.h" />
     <ClInclude Include="CommonDialog.h" />
+    <ClInclude Include="Common_Patcher.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="decrypt.h" />
     <ClInclude Include="decryptio.h" />
     <ClInclude Include="defines.h" />
+    <ClInclude Include="DownloadHTTPS.h" />
     <ClInclude Include="encryptsrv.h" />
     <ClInclude Include="encryptsrv_args.h" />
     <ClInclude Include="ftps4.h" />
@@ -121,6 +125,7 @@
     <ClInclude Include="Module.h" />
     <ClInclude Include="mount.h" />
     <ClInclude Include="MsgDialog.h" />
+    <ClInclude Include="Patcher.h" />
     <ClInclude Include="PlayerInterface\IPluginPS3.h" />
     <ClInclude Include="PlayerInterface\IPluginPSP2.h" />
     <ClInclude Include="PlayerInterface\IPluginSceAppParams.h" />
@@ -130,12 +135,17 @@
     <ClInclude Include="PlayerInterface\UnityEventQueue.h" />
     <ClInclude Include="PlayerInterface\UnityPrxPlugin.h" />
     <ClInclude Include="pluginunjail.h" />
+    <ClInclude Include="proc.h" />
     <ClInclude Include="pup.h" />
+    <ClInclude Include="resolver_patch.c" />
+    <ClInclude Include="resolver_patch.h" />
     <ClInclude Include="SaveDataDialog.h" />
     <ClInclude Include="Saves.h" />
     <ClInclude Include="SoundUtil.h" />
+    <ClInclude Include="freebsd.h" />
     <ClInclude Include="syscall.h" />
     <ClInclude Include="SystemService.h" />
+    <ClInclude Include="SYSTEM_VERSION.h" />
     <ClInclude Include="SysUtil.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="unjail.h" />
