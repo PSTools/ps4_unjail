@@ -392,11 +392,11 @@ SceUChar8* http_download(int libhttpCtxId, const char *targetUrl)
 	}
 	tmplId = ret;
 
-	ret = sceHttpSetNonblock(tmplId, SCE_TRUE) ;
+	/*ret = sceHttpSetNonblock(tmplId, SCE_TRUE) ;
 	if ( ret < 0 ) {
 		printf("sceHttpSetNonblock() error: 0x%08X\n",ret) ;
 		goto error ;
-	}
+	}*/
 
 
 	/* Perform http_get without server verification */
