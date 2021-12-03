@@ -1,151 +1,9 @@
 
 #include "Patcher.h"
+#include "unjail.h"
+#include "syscall.h"
 
 #define nullptr ((void*)0)
-
-#define X86_CR0_WP (1 << 16)
-//
-// Used in every payload that uses jailbreak();
-#define K300_XFAST_SYSCALL         0x0
-#define K310_XFAST_SYSCALL         0x0
-#define K311_XFAST_SYSCALL         0x0
-#define K315_XFAST_SYSCALL         0x0
-#define K350_XFAST_SYSCALL         0x003A1AD0
-#define K355_XFAST_SYSCALL         0x003A1F10
-#define K370_XFAST_SYSCALL         0x003A2000
-#define K400_XFAST_SYSCALL         0x0030EA00
-#define K401_XFAST_SYSCALL         0x0030EA00
-#define K405_XFAST_SYSCALL         0x0030EB30
-#define K406_XFAST_SYSCALL         0x0030EB40
-#define K407_XFAST_SYSCALL         0x0030EB40
-#define K450_XFAST_SYSCALL         0x003095D0
-#define K455_XFAST_SYSCALL         0x003095D0
-#define K470_XFAST_SYSCALL         0x0030B840
-#define K471_XFAST_SYSCALL         0x0030B7D0
-#define K472_XFAST_SYSCALL         0x0030B7D0
-#define K473_XFAST_SYSCALL         0x0030B7D0
-#define K474_XFAST_SYSCALL         0x0030B7D0
-#define K500_XFAST_SYSCALL         0x000001C0
-#define K501_XFAST_SYSCALL         0x000001C0
-#define K503_XFAST_SYSCALL         0x000001C0
-#define K505_XFAST_SYSCALL         0x000001C0
-#define K507_XFAST_SYSCALL         0x000001C0
-#define K550_XFAST_SYSCALL         0x000001C0
-#define K553_XFAST_SYSCALL         0x000001C0
-#define K555_XFAST_SYSCALL         0x000001C0
-#define K556_XFAST_SYSCALL         0x000001C0
-#define K600_XFAST_SYSCALL         0x000001C0
-#define K602_XFAST_SYSCALL         0x000001C0
-#define K620_XFAST_SYSCALL         0x000001C0
-#define K650_XFAST_SYSCALL         0x000001C0
-#define K651_XFAST_SYSCALL         0x000001C0
-#define K670_XFAST_SYSCALL         0x000001C0
-#define K671_XFAST_SYSCALL         0x000001C0
-#define K672_XFAST_SYSCALL         0x000001C0
-#define K700_XFAST_SYSCALL         0x000001C0
-#define K701_XFAST_SYSCALL         0x000001C0
-#define K702_XFAST_SYSCALL         0x000001C0
-#define K750_XFAST_SYSCALL         0x000001C0
-#define K751_XFAST_SYSCALL         0x000001C0
-#define K755_XFAST_SYSCALL         0x000001C0
-#define K800_XFAST_SYSCALL         0x000001C0
-#define K801_XFAST_SYSCALL         0x0
-#define K803_XFAST_SYSCALL         0x0
-
-// Used in every payload that uses jailbreak();
-#define K300_PRISON_0              0x0
-#define K310_PRISON_0              0x0
-#define K311_PRISON_0              0x0
-#define K315_PRISON_0              0x0
-#define K350_PRISON_0              0x00EF5A00
-#define K355_PRISON_0              0x00EF5A00
-#define K370_PRISON_0              0x00EFEF10
-#define K400_PRISON_0              0x00F26010
-#define K401_PRISON_0              0x00F26010
-#define K405_PRISON_0              0x00F26010
-#define K406_PRISON_0              0x00F26010
-#define K407_PRISON_0              0x00F2A010
-#define K450_PRISON_0              0x010399B0
-#define K455_PRISON_0              0x010399B0
-#define K470_PRISON_0              0x01042AB0
-#define K471_PRISON_0              0x01042AB0
-#define K472_PRISON_0              0x01042AB0
-#define K473_PRISON_0              0x01042AB0
-#define K474_PRISON_0              0x01042AB0
-#define K500_PRISON_0              0x010986A0
-#define K501_PRISON_0              0x010986A0
-#define K503_PRISON_0              0x010986A0
-#define K505_PRISON_0              0x010986A0
-#define K507_PRISON_0              0x010986A0
-#define K550_PRISON_0              0x01134180
-#define K553_PRISON_0              0x01134180
-#define K555_PRISON_0              0x01139180
-#define K556_PRISON_0              0x01139180
-#define K600_PRISON_0              0x01139458
-#define K602_PRISON_0              0x01139458
-#define K620_PRISON_0              0x0113D458
-#define K650_PRISON_0              0x0113D4F8
-#define K651_PRISON_0              0x0113D4F8
-#define K670_PRISON_0              0x0113E518
-#define K671_PRISON_0              0x0113E518
-#define K672_PRISON_0              0x0113E518
-#define K700_PRISON_0              0x0113E398
-#define K701_PRISON_0              0x0113E398
-#define K702_PRISON_0              0x0113E398
-#define K750_PRISON_0              0x0113B728
-#define K751_PRISON_0              0x0113B728
-#define K755_PRISON_0              0x0113B728
-#define K800_PRISON_0              0x0111A7D0
-#define K801_PRISON_0              0x0
-#define K803_PRISON_0              0x0
-
-// Used in every payload that uses jailbreak();
-#define K300_ROOTVNODE             0x0
-#define K310_ROOTVNODE             0x0
-#define K311_ROOTVNODE             0x0
-#define K315_ROOTVNODE             0x0
-#define K350_ROOTVNODE             0x01963000
-#define K355_ROOTVNODE             0x01963040
-#define K370_ROOTVNODE             0x0196F040
-#define K400_ROOTVNODE             0x0206D250
-#define K401_ROOTVNODE             0x0206D250
-#define K405_ROOTVNODE             0x0206D250
-#define K406_ROOTVNODE             0x0206D250
-#define K407_ROOTVNODE             0x02071250
-#define K450_ROOTVNODE             0x021AFA30
-#define K455_ROOTVNODE             0x021AFA30
-#define K470_ROOTVNODE             0x021B89E0
-#define K471_ROOTVNODE             0x021B89E0
-#define K472_ROOTVNODE             0x021B89E0
-#define K473_ROOTVNODE             0x021B89E0
-#define K474_ROOTVNODE             0x021B89E0
-#define K500_ROOTVNODE             0x022C19F0
-#define K501_ROOTVNODE             0x022C19F0
-#define K503_ROOTVNODE             0x022C1A70
-#define K505_ROOTVNODE             0x022C1A70
-#define K507_ROOTVNODE             0x022C1A70
-#define K550_ROOTVNODE             0x022EF570
-#define K553_ROOTVNODE             0x022EF570
-#define K555_ROOTVNODE             0x022F3570
-#define K556_ROOTVNODE             0x022F3570
-#define K600_ROOTVNODE             0x021BFAC0
-#define K602_ROOTVNODE             0x021BFAC0
-#define K620_ROOTVNODE             0x021C3AC0
-#define K650_ROOTVNODE             0x02300320
-#define K651_ROOTVNODE             0x02300320
-#define K670_ROOTVNODE             0x02300320
-#define K671_ROOTVNODE             0x02300320
-#define K672_ROOTVNODE             0x02300320
-#define K700_ROOTVNODE             0x022C5750
-#define K701_ROOTVNODE             0x022C5750
-#define K702_ROOTVNODE             0x022C5750
-#define K750_ROOTVNODE             0x01B463E0
-#define K751_ROOTVNODE             0x01B463E0
-#define K755_ROOTVNODE             0x01B463E0
-#define K800_ROOTVNODE             0x01B8C730
-#define K801_ROOTVNODE             0x0
-#define K803_ROOTVNODE             0x0
-
 
 // 'sce_sdmemory' patch
 #define K505_sce_sdmemory_patch				0xD42843
@@ -168,12 +26,32 @@
 
 
 
-unsigned int long long __readmsr1(unsigned long __register) {
+
+
+#define CR0_WP (1 << 16) // write protect
+
+static inline __attribute__((always_inline)) uint64_t readCr0(void)
+{
+	uint64_t cr0;
+	__asm__ volatile ("movq %0, %%cr0" : "=r" (cr0) : : "memory");
+	return cr0;
+}
+
+static inline __attribute__((always_inline)) void writeCr0(uint64_t cr0)
+{
+	__asm__ volatile("movq %%cr0, %0" : : "r" (cr0) : "memory");
+}
+
+uint64_t __readmsr1(unsigned long __register)
+{
 	unsigned long __edx;
 	unsigned long __eax;
-	__asm__("rdmsr" : "=d"(__edx), "=a"(__eax) : "c"(__register));
-	return (((unsigned int long long)__edx) << 32) | (unsigned int long long)__eax;
+	__asm__ ("rdmsr" : "=d"(__edx), "=a"(__eax) : "c"(__register));
+	return (((uint64_t)__edx) << 32) | (uint64_t)__eax;
 }
+
+__asm__("kexec:\nmov $11, %rax\nmov %rcx, %r10\nsyscall\nret");
+void kexec(void*, void*);
 int (*sysctl)(const int *, u_int, void *, size_t *, const void *, size_t);
 
 
@@ -234,7 +112,7 @@ void notify(char *message)
 	sceSysUtilSendSystemNotificationWithText(222, buffer);
 }
 
-uint8_t* gKernelBase = NULL;
+
 //
 //
 ////i dont care abo
@@ -505,64 +383,77 @@ uint8_t* gKernelBase = NULL;
 //	return;
 //}
 //
-void Mira_Patch_505()
+int Mira_Patch_505(void* td, void* args)
 {
-	notify("mira patching");
-	// Use "kmem" for all patches
-	uint8_t *kmem;
+	uint8_t* kernel_base = (uint8_t*)(__readmsr1(0xC0000082) - K505_XFAST_SYSCALL);
 
-	// Verbose Panics
-	kmem = (uint8_t *)&gKernelBase[0x00171627];
-	kmem[0] = 0x90;
-	kmem[1] = 0x90;
-	kmem[2] = 0x90;
-	kmem[3] = 0x90;
-	kmem[4] = 0x90;
-
-	// sceSblACMgrIsAllowedSystemLevelDebugging
-	kmem = (uint8_t *)&gKernelBase[0x00010FC0];
-	kmem[0] = 0xB8;
-	kmem[1] = 0x01;
-	kmem[2] = 0x00;
-	kmem[3] = 0x00;
-	kmem[4] = 0x00;
-	kmem[5] = 0xC3;
-
-	kmem = (uint8_t *)&gKernelBase[0x00011730];
-	kmem[0] = 0xB8;
-	kmem[1] = 0x01;
-	kmem[2] = 0x00;
-	kmem[3] = 0x00;
-	kmem[4] = 0x00;
-	kmem[5] = 0xC3;
-
-	kmem = (uint8_t *)&gKernelBase[0x00011750];
-	kmem[0] = 0xB8;
-	kmem[1] = 0x01;
-	kmem[2] = 0x00;
-	kmem[3] = 0x00;
-	kmem[4] = 0x00;
-	kmem[5] = 0xC3;
-
-	// Enable mount for unprivileged user
-	kmem = (uint8_t *)&gKernelBase[0x001DEBFE];
-	kmem[0] = 0x90;
-	kmem[1] = 0x90;
-	kmem[2] = 0x90;
-	kmem[3] = 0x90;
-	kmem[4] = 0x90;
-	kmem[5] = 0x90;
+	uint64_t cr0 = readCr0();
+	writeCr0(cr0 & ~X86_CR0_WP);
 
 
-	// prtinf hook patches
-	kmem = (uint8_t *)&gKernelBase[0x00436136];
-	kmem[0] = 0xEB;
-	kmem[1] = 0x1E;
+	//// Use "kmem" for all patches
+	//uint8_t *kmem;
 
-	kmem = (uint8_t *)&gKernelBase[0x00436154];
-	kmem[0] = 0x90;
-	kmem[1] = 0x90;
-	notify("mira patching completed");
+	//// Verbose Panics
+	//kmem = (uint8_t *)&kernel_base[0x00171627];
+	//kmem[0] = 0x90;
+	//kmem[1] = 0x90;
+	//kmem[2] = 0x90;
+	//kmem[3] = 0x90;
+	//kmem[4] = 0x90;
+
+	//// sceSblACMgrIsAllowedSystemLevelDebugging
+	//kmem = (uint8_t *)&kernel_base[0x00010FC0];
+	//kmem[0] = 0xB8;
+	//kmem[1] = 0x01;
+	//kmem[2] = 0x00;
+	//kmem[3] = 0x00;
+	//kmem[4] = 0x00;
+	//kmem[5] = 0xC3;
+
+	//kmem = (uint8_t *)&kernel_base[0x00011730];
+	//kmem[0] = 0xB8;
+	//kmem[1] = 0x01;
+	//kmem[2] = 0x00;
+	//kmem[3] = 0x00;
+	//kmem[4] = 0x00;
+	//kmem[5] = 0xC3;
+
+	//kmem = (uint8_t *)&kernel_base[0x00011750];
+	//kmem[0] = 0xB8;
+	//kmem[1] = 0x01;
+	//kmem[2] = 0x00;
+	//kmem[3] = 0x00;
+	//kmem[4] = 0x00;
+	//kmem[5] = 0xC3;
+
+	//// Enable mount for unprivileged user
+	//kmem = (uint8_t *)&kernel_base[0x001DEBFE];
+	//kmem[0] = 0x90;
+	//kmem[1] = 0x90;
+	//kmem[2] = 0x90;
+	//kmem[3] = 0x90;
+	//kmem[4] = 0x90;
+	//kmem[5] = 0x90;
+
+
+	//// prtinf hook patches
+	//kmem = (uint8_t *)&kernel_base[0x00436136];
+	//kmem[0] = 0xEB;
+	//kmem[1] = 0x1E;
+
+	//kmem = (uint8_t *)&kernel_base[0x00436154];
+	//kmem[0] = 0x90;
+	//kmem[1] = 0x90;
+
+
+
+
+	//disable patching
+	writeCr0(cr0);
+
+	return 0;
+
 }
 
 void InstallPatches(int FW)
@@ -571,37 +462,42 @@ void InstallPatches(int FW)
 	//notify("We got somewhere");
 	loadAndImport();
 	//notify("loadAndImport");
-	void* kernel_base;
-
+	if(!gKernelBase)
+	{
+		notify("Could not get Kernel Base Address");
+		return;
+	}
 	switch(FW)
 	{
 	case 350:
-		kernel_base = &((uint8_t*)__readmsr1(0xC0000082))[-K350_XFAST_SYSCALL];
-		gKernelBase = (uint8_t*)kernel_base;
+
 		break;
 	case 355:
-		gKernelBase = (uint8_t*)__readmsr1(0xC0000082) - K355_XFAST_SYSCALL;
+
 		break;
 	case 370:
-		gKernelBase = (uint8_t*)__readmsr1(0xC0000082) - K370_XFAST_SYSCALL;
+
 		break;
 	case 400:
-		gKernelBase = (uint8_t*)__readmsr1(0xC0000082) - K400_XFAST_SYSCALL;
+
 		break;
 	case 401:
-		gKernelBase = (uint8_t*)__readmsr1(0xC0000082) - K401_XFAST_SYSCALL;
+
 		break;
 	case 405:
-		gKernelBase = (uint8_t*)__readmsr1(0xC0000082) - K405_XFAST_SYSCALL;
+
 		break;
 	case 505:
-		//notify("505");
-		kernel_base = &((uint8_t*)__readmsr1(0xC0000082))[-K505_XFAST_SYSCALL];
-		notify("kernel_base");
-		gKernelBase = (uint8_t*)kernel_base;
-		notify("gbase");
-		//I will be using this as a test 
-		Mira_Patch_505();
+		{
+			notify("Enabling write Mode");
+			//notify("505");
+			/*kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
+			gKernelBase = (uint8_t*)kernel_base;*/
+			struct thread td;
+			kexec(&Mira_Patch_505,NULL);
+			notify("mira patching completed");
+		}
+
 		break;
 	default:
 		break;

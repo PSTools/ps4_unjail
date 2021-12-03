@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <_kernel.h>
+#include <stdlib.h>
 
 void InstallPatches(int FW);
 
