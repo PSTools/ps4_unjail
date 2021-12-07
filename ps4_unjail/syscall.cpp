@@ -56,3 +56,6 @@ long syscall(long num, ...) {
 	);
 	return result;                                    // Return the result to the caller.
 }
+
+
+

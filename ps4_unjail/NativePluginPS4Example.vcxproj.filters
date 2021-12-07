@@ -41,6 +41,9 @@
     <ClCompile Include="Patcher.c">
       <Filter>Patcher</Filter>
     </ClCompile>
+    <ClCompile Include="PatcherUtil.s">
+      <Filter>Patcher</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayerInterface">
@@ -69,6 +72,9 @@
     </Filter>
     <Filter Include="Patcher">
       <UniqueIdentifier>{87db11d9-fd15-4e61-9588-4d2655ca81a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Jailbreak">
+      <UniqueIdentifier>{c7dd7486-ab8e-455d-aa4a-92b089ad9757}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

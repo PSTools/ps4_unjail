@@ -2,6 +2,30 @@
 #include "Patcher.h"
 #include "unjail.h"
 #include "syscall.h"
+#include <cstring>
+#include <stdio.h>
+
+
+
+//static inline uint64_t readCr0(void) {
+//	uint64_t cr0;
+//	__asm__ volatile (
+//		"movq %%cr0, %0"
+//		: "=r" (cr0)
+//		: : "memory"
+//		);
+//	return cr0;
+//}
+//static inline void writeCr0(uint64_t cr0) {
+//	__asm__ volatile (
+//		"movq %0, %%cr0"
+//		: : "r" (cr0)
+//		: "memory"
+//		);
+//}
+extern void  cpu_disable_wp();
+extern void cpu_enable_wp();
+
 
 #define nullptr ((void*)0)
 
@@ -30,28 +54,6 @@
 
 #define CR0_WP (1 << 16) // write protect
 
-static inline __attribute__((always_inline)) uint64_t readCr0(void)
-{
-	uint64_t cr0;
-	__asm__ volatile ("movq %0, %%cr0" : "=r" (cr0) : : "memory");
-	return cr0;
-}
-
-static inline __attribute__((always_inline)) void writeCr0(uint64_t cr0)
-{
-	__asm__ volatile("movq %%cr0, %0" : : "r" (cr0) : "memory");
-}
-
-uint64_t __readmsr1(unsigned long __register)
-{
-	unsigned long __edx;
-	unsigned long __eax;
-	__asm__ ("rdmsr" : "=d"(__edx), "=a"(__eax) : "c"(__register));
-	return (((uint64_t)__edx) << 32) | (uint64_t)__eax;
-}
-
-__asm__("kexec:\nmov $11, %rax\nmov %rcx, %r10\nsyscall\nret");
-void kexec(void*, void*);
 int (*sysctl)(const int *, u_int, void *, size_t *, const void *, size_t);
 
 
@@ -112,6 +114,213 @@ void notify(char *message)
 	sceSysUtilSendSystemNotificationWithText(222, buffer);
 }
 
+
+int find_process(const char* target)
+{
+	int pid;
+	int mib[3] = {1, 14, 0};
+	size_t size, count;
+	char* data;
+	char* proc;
+
+	if (sysctl(mib, 3, NULL, &size, NULL, 0) < 0)
+	{
+		return -1;
+	}
+
+	if (size == 0)
+	{
+		return -2;
+	}
+
+	data = (char*)malloc(size);
+	if (data == NULL)
+	{
+		return -3;
+	}
+
+	if (sysctl(mib, 3, data, &size, NULL, 0) < 0)
+	{
+		free(data);
+		return -4;
+	}
+
+	count = size / 0x448;
+	proc = data;
+	pid = -1;
+	while (count != 0)
+	{
+
+		char* name = &proc[0x1BF];
+		if (strncmp(name, target, strlen(target)) == 0)
+		{
+			pid = *(int*)(&proc[0x48]);
+			break;
+		}
+		proc += 0x448;
+		count--;
+	}
+
+	free(data);
+	return pid;
+}
+
+
+
+int mount_procfs()
+{
+	int result = syscall(136,"/mnt/proc", 0777);
+	if (result < 0)
+	{
+		notify("Failed to create /mnt/proc\n");
+		return -1;
+	}
+	//mount syscall
+	result = syscall(21,"procfs", "/mnt/proc", 0, NULL);
+	if (result < 0)
+	{
+		notify("Failed to mount procfs:");
+		//notify("Failed to mount procfs: %d\n", result, *__error());
+		return -2;
+	}
+
+	return 0;
+}
+
+int umount_procfs()
+{
+
+	int result = syscall(22,"/mnt/proc",MNT_FORCE);
+	if (result < 0)
+	{
+		notify("Failed to unmount procfs:");
+		//notify("Failed to mount procfs: %d\n", result, *__error());
+		return -1;
+	}
+
+
+	return 0;
+}
+
+
+int get_code_info(int pid, uint64_t* paddress, uint64_t* psize, uint64_t known_size)
+{
+	int mib[4] = {1, 14, 32, pid};
+	size_t size, count;
+	char* data;
+	char* entry;
+
+	if (sysctl(mib, 4, NULL, &size, NULL, 0) < 0)
+	{
+		notify("sysctl failed");
+		return -1;
+	}
+
+	if (size == 0)
+	{
+		notify("size == 0");
+		return -2;
+	}
+
+	data = (char*)malloc(size);
+	if (data == NULL)
+	{
+		notify("data == NULL");
+		return -3;
+	}
+
+	if (sysctl(mib, 4, data, &size, NULL, 0) < 0)
+	{
+		notify("sysctl failed");
+		free(data);
+		return -4;
+	}
+
+	int struct_size = *(int*)data;
+	count = size / struct_size;
+	entry = data;
+
+	int found = 0;
+	while (count != 0)
+	{
+		int type = *(int*)(&entry[0x4]);
+		uint64_t start_addr = *(uint64_t*)(&entry[0x8]);
+		uint64_t end_addr = *(uint64_t*)(&entry[0x10]);
+		uint64_t code_size = end_addr - start_addr;
+		uint32_t prot = *(uint32_t*)(&entry[0x38]);
+		//notify(name);
+		char proc_path1[164];
+		sprintf(proc_path1, "%d %llx %llx (%llu) %x\n", type, start_addr, end_addr, code_size, prot);
+		//notify(proc_path1);
+		//printfsocket("%d %llx %llx (%llu) %x\n", type, start_addr, end_addr, code_size, prot);
+
+		if (prot == 5)
+		{
+			notify("Found");
+			*paddress = start_addr;
+			*psize = (end_addr - start_addr);
+			found = 1;
+			break;
+		}
+
+		entry += struct_size;
+		count--;
+	}
+
+	free(data);
+	return !found ? -5 : 0;
+}
+
+typedef struct _patch_info
+{
+	const char* name;
+	uint32_t address;
+	const char* data;
+	uint32_t size;
+}
+patch_info;
+
+int apply_patches(int pid, uint64_t known_size, patch_info* patches)
+{
+	uint64_t code_address, code_size;
+	int result = get_code_info(pid, &code_address, &code_size, known_size);
+	if (result < 0)
+	{
+		char proc_path1[164];
+		sprintf(proc_path1, "Failed to get code info for %d: %d\n", pid, result);
+		notify(proc_path1);
+		//printfsocket("Failed to get code info for %d: %d\n", pid, result);
+		//return -1;
+	}
+
+	char proc_path[64];
+	sprintf(proc_path, "/mnt/proc/%d/file", pid);
+	notify(proc_path);
+	//open
+	int fd = syscall(5,proc_path, 0x0002, 0);
+	if (fd < 0)
+	{
+		notify("Failed to open");
+		//printfsocket("Failed to open %s!\n", proc_path);
+		return -2;
+	}
+	notify("Opened process memory");
+	//printfsocket("Opened process memory...\n");
+	for (int i = 0; patches[i].name != NULL; i++)
+	{
+		lseek(fd, code_address + patches[i].address, SEEK_SET);
+		result = syscall(4,fd, patches[i].data, patches[i].size);//	write
+
+		char proc_path1[164];
+		sprintf(proc_path1, "patch %s: %d\n", patches[i].name, result);
+		notify(proc_path1);
+		//printfsocket("patch %s: %d %d\n", patches[i].name, result, result < 0 ? errno : 0);
+	}
+
+	syscall(6,fd);
+	//sceKernelClose(fd);
+	return 0;
+}
 
 //
 //
@@ -385,10 +594,11 @@ void notify(char *message)
 //
 int Mira_Patch_505(void* td, void* args)
 {
-	uint8_t* kernel_base = (uint8_t*)(__readmsr1(0xC0000082) - K505_XFAST_SYSCALL);
+	uint8_t* kernel_base = (uint8_t*)(__readmsr(0xC0000082) - K505_XFAST_SYSCALL);
 
-	uint64_t cr0 = readCr0();
-	writeCr0(cr0 & ~X86_CR0_WP);
+	cpu_disable_wp();
+	// Patch something
+
 
 
 	//// Use "kmem" for all patches
@@ -449,11 +659,135 @@ int Mira_Patch_505(void* td, void* args)
 
 
 
-	//disable patching
-	writeCr0(cr0);
+	// Restore write protection
+	cpu_enable_wp();
 
 	return 0;
 
+}
+
+patch_info K505_shellcore_patches[32] =
+{
+	{"sce_sdmemory_patch",K505_sce_sdmemory_patch,"\x00",1},// 'sce_sdmemory' patch
+	{"verify_keystone_patch",K505_verify_keystone_patch,"\x48\x31\xC0\xC3",4},//verify keystone patch
+	{"save_mount_permision",K505_save_mount_permision,"\x31\xC0\xC3",3}, //transfer mount permission patch eg mount foreign saves with write permission
+	{"save_psn_patch",K505_save_psn_patch,"\x31\xC0\xC3",3},// 0x31, 0xC0, 0xC3//patch psn check to load saves saves foreign to current account
+	{"save_mount_patch",K505_save_mount_patch,"\x90\x90",2}, // ^
+	{"save_mount_something_patch",K505_save_mount_something_patch,"\x90\x90\x90\x90\x90\x90",6},  // something something patches... 
+	{"save_mount_patch_unk",K505_save_mount_patch_unk,"\x90\x90\x90\x90\x90\x90",6},  // don't even remember doing this
+	{"save_mount_never_jump",K505_save_mount_never_jump,"\x90\x90",2},  //nevah jump
+	{"save_mount_always_jump",K505_save_mount_always_jump,"\x90\xE9",2},  //nevah jump
+	{ NULL, 0, NULL, 0 },//required to end forloop for patching
+};
+
+
+int patcher(struct thread *td){
+
+	struct ucred* cred;
+	struct filedesc* fd;
+
+	fd = td->td_proc->p_fd;
+	cred = td->td_proc->p_ucred;
+	//notify("We made it this far");
+	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
+	uint8_t* kernel_ptr = (uint8_t*)kernel_base;
+	void** got_prison0 =   (void**)&kernel_ptr[K505_PRISON_0];
+	void** got_rootvnode = (void**)&kernel_ptr[K505_ROOTVNODE];
+
+	cred->cr_uid = 0;
+	cred->cr_ruid = 0;
+	cred->cr_rgid = 0;
+	cred->cr_groups[0] = 0;
+
+	cred->cr_prison = *got_prison0;
+	fd->fd_rdir = fd->fd_jdir = *got_rootvnode;
+
+	// escalate ucred privs, needed for access to the filesystem ie* mounting & decrypting files
+	void *td_ucred = *(void **)(((char *)td) + 304); // p_ucred == td_ucred
+
+	// sceSblACMgrIsSystemUcred
+	uint64_t *sonyCred = (uint64_t *)(((char *)td_ucred) + 96);
+	*sonyCred = 0xffffffffffffffff;
+
+	// sceSblACMgrGetDeviceAccessType
+	uint64_t *sceProcType = (uint64_t *)(((char *)td_ucred) + 88);
+	*sceProcType = 0x3801000000000013; // Max access
+
+	// sceSblACMgrHasSceProcessCapability
+	uint64_t *sceProcCap = (uint64_t *)(((char *)td_ucred) + 104);
+	*sceProcCap = 0xffffffffffffffff; // Sce Process
+
+	// Disable write protection
+	cpu_disable_wp();
+
+
+	// Patch something
+
+
+	//Use "kmem" for all patches
+	uint8_t *kmem;
+
+	// Verbose Panics
+	kmem = (uint8_t *)&kernel_ptr[0x00171627];
+	kmem[0] = 0x90;
+	kmem[1] = 0x90;
+	kmem[2] = 0x90;
+	kmem[3] = 0x90;
+	kmem[4] = 0x90;
+
+	// sceSblACMgrIsAllowedSystemLevelDebugging
+	kmem = (uint8_t *)&kernel_ptr[0x00010FC0];
+	kmem[0] = 0xB8;
+	kmem[1] = 0x01;
+	kmem[2] = 0x00;
+	kmem[3] = 0x00;
+	kmem[4] = 0x00;
+	kmem[5] = 0xC3;
+
+	kmem = (uint8_t *)&kernel_ptr[0x00011730];
+	kmem[0] = 0xB8;
+	kmem[1] = 0x01;
+	kmem[2] = 0x00;
+	kmem[3] = 0x00;
+	kmem[4] = 0x00;
+	kmem[5] = 0xC3;
+
+	kmem = (uint8_t *)&kernel_ptr[0x00011750];
+	kmem[0] = 0xB8;
+	kmem[1] = 0x01;
+	kmem[2] = 0x00;
+	kmem[3] = 0x00;
+	kmem[4] = 0x00;
+	kmem[5] = 0xC3;
+
+	// Enable mount for unprivileged user
+	kmem = (uint8_t *)&kernel_ptr[0x001DEBFE];
+	kmem[0] = 0x90;
+	kmem[1] = 0x90;
+	kmem[2] = 0x90;
+	kmem[3] = 0x90;
+	kmem[4] = 0x90;
+	kmem[5] = 0x90;
+
+
+	// prtinf hook patches
+	kmem = (uint8_t *)&kernel_ptr[0x00436136];
+	kmem[0] = 0xEB;
+	kmem[1] = 0x1E;
+
+	kmem = (uint8_t *)&kernel_ptr[0x00436154];
+	kmem[0] = 0x90;
+	kmem[1] = 0x90;
+	// Restore write protection
+	cpu_enable_wp();
+
+
+
+
+
+
+
+	return 0;
 }
 
 void InstallPatches(int FW)
@@ -489,15 +823,45 @@ void InstallPatches(int FW)
 		break;
 	case 505:
 		{
-			notify("Enabling write Mode");
+			//notify("Enabling write Mode 505");
 			//notify("505");
 			/*kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
 			gKernelBase = (uint8_t*)kernel_base;*/
 			struct thread td;
-			kexec(&Mira_Patch_505,NULL);
-			notify("mira patching completed");
-		}
+			syscall(11,patcher,td);
+			//save data patches
+			int result;
 
+			printf("Hello From Klog");
+			int shell_pid = find_process("SceShellCore");
+			if (shell_pid < 0)
+			{
+				notify("shell PID issue");
+				return;
+				//return -15;
+			}
+			result = mount_procfs();
+			if (result)
+			{
+				notify("mount_procfs failed");
+				return;
+			}
+
+			if(apply_patches(shell_pid, 0xF18000, K505_shellcore_patches) == 0)
+			{
+				notify("Patched");
+			}
+			result = umount_procfs();
+			if(result)
+			{
+				notify("unmount_procfs failed");
+				return;
+			}
+
+
+
+
+		}
 		break;
 	default:
 		break;
@@ -505,4 +869,7 @@ void InstallPatches(int FW)
 
 }
 
+#include <sys/_types.h>
 
+//ptrace
+//syscall(26

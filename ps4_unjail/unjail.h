@@ -191,6 +191,9 @@ struct thread {
 struct kpayload_args { uint64_t user_arg; };
 struct kdump_args { uint64_t argArrayPtr; };
 
+
+unsigned int long long __readmsr(unsigned long __register);
+
 void  *unjail405(struct thread *td);
 void  *unjail455(struct thread *td);
 void  *unjail474(struct thread *td);
