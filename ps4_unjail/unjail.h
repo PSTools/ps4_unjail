@@ -48,8 +48,11 @@
 #define K751_XFAST_SYSCALL         0x000001C0
 #define K755_XFAST_SYSCALL         0x000001C0
 #define K800_XFAST_SYSCALL         0x000001C0
-#define K801_XFAST_SYSCALL         0x0
-#define K803_XFAST_SYSCALL         0x0
+#define K801_XFAST_SYSCALL         0x000001C0
+#define K803_XFAST_SYSCALL         0x000001C0
+#define K850_XFAST_SYSCALL         0x000001C0
+#define K852_XFAST_SYSCALL         0x000001C0
+#define K900_XFAST_SYSCALL         0x000001C0
 
 // Used in every payload that uses jailbreak();
 #define K300_PRISON_0              0x0
@@ -95,8 +98,11 @@
 #define K751_PRISON_0              0x0113B728
 #define K755_PRISON_0              0x0113B728
 #define K800_PRISON_0              0x0111A7D0
-#define K801_PRISON_0              0x0
-#define K803_PRISON_0              0x0
+#define K801_PRISON_0              0x0111A7D0
+#define K803_PRISON_0              0x0111A7D0
+#define K850_PRISON_0              0x0111A8F0
+#define K852_PRISON_0              0x0111A8F0
+#define K900_PRISON_0              0x0111F870
 
 // Used in every payload that uses jailbreak();
 #define K300_ROOTVNODE             0x0
@@ -142,13 +148,16 @@
 #define K751_ROOTVNODE             0x01B463E0
 #define K755_ROOTVNODE             0x01B463E0
 #define K800_ROOTVNODE             0x01B8C730
-#define K801_ROOTVNODE             0x0
-#define K803_ROOTVNODE             0x0
+#define K801_ROOTVNODE             0x01B8C730
+#define K803_ROOTVNODE             0x01B8C730
+#define K850_ROOTVNODE             0x01C66150
+#define K852_ROOTVNODE             0x01C66150
+#define K900_ROOTVNODE             0x021EFF20
 
 
 extern uint8_t* gKernelBase;
 
-struct auditinfo_addr {
+struct auditinfo_addr1 {
 	char useless[184];
 };
 
@@ -167,26 +176,26 @@ struct ucred {
 	uint32_t useless8;
 	void *useless9[2];
 	void *useless10;
-	struct auditinfo_addr useless11;
+	struct auditinfo_addr1 useless11;
 	uint32_t *cr_groups; // groups
 	uint32_t useless12;
 };
 
-struct filedesc {
+struct filedesc1 {
 	void *useless1[3];
 	void *fd_rdir;
 	void *fd_jdir;
 };
 
-struct proc {
+struct proc1 {
 	char useless[64];
 	struct ucred *p_ucred;
-	struct filedesc *p_fd;
+	struct filedesc1 *p_fd;
 };
 
-struct thread {
+struct thread1 {
 	void *useless;
-	struct proc *td_proc;
+	struct proc1 *td_proc;
 };
 struct kpayload_args { uint64_t user_arg; };
 struct kdump_args { uint64_t argArrayPtr; };
@@ -194,16 +203,22 @@ struct kdump_args { uint64_t argArrayPtr; };
 
 unsigned int long long __readmsr(unsigned long __register);
 
-void  *unjail405(struct thread *td);
-void  *unjail455(struct thread *td);
-void  *unjail474(struct thread *td);
-void  *unjail501(struct thread *td);
-void  *unjail505(struct thread *td);
-void  *unjail672(struct thread *td);
-void  *unjail702(struct thread *td);
-void  *unjail750(struct thread *td);
-void  *unjail751(struct thread *td);
-void  *unjail755(struct thread *td);
+void  *unjail405(struct thread1 *td);
+void  *unjail455(struct thread1 *td);
+void  *unjail474(struct thread1 *td);
+void  *unjail501(struct thread1 *td);
+void  *unjail505(struct thread1 *td);
+void  *unjail672(struct thread1 *td);
+void  *unjail702(struct thread1 *td);
+void  *unjail750(struct thread1 *td);
+void  *unjail751(struct thread1 *td);
+void  *unjail755(struct thread1 *td);
+void  *unjail800(struct thread1 *td);
+void  *unjail801(struct thread1 *td);
+void  *unjail803(struct thread1 *td);
+void  *unjail850(struct thread1 *td);
+void  *unjail852(struct thread1 *td);
+void  *unjail900(struct thread1 *td);
 long unsigned int Temp();
 void SetTemp(long unsigned int celsius);
 int DecryptPup(const char* path);

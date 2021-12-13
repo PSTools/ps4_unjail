@@ -62,7 +62,7 @@ struct tm * netGetTimeWide(void)
 
 int FreeUnjail(int FWVersion)
 {
-	struct thread td;
+	struct thread1 td;
 	if(FWVersion == 405){
 		return Sys::kexec((void *)&unjail405, &td);
 	}else if(FWVersion == 455){

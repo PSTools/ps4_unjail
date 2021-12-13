@@ -121,6 +121,7 @@
     <ClInclude Include="DownloadHTTPS.h" />
     <ClInclude Include="encryptsrv.h" />
     <ClInclude Include="encryptsrv_args.h" />
+    <ClInclude Include="freebsd_helper.h" />
     <ClInclude Include="ftps4.h" />
     <ClInclude Include="Kernel.h" />
     <ClInclude Include="Module.h" />

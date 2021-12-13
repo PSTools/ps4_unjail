@@ -186,7 +186,7 @@ PRX_EXPORT struct tm * netGetTimeWide(void)
 
 PRX_EXPORT int FreeUnjail(int FWVersion)
 {
-	struct thread td;
+	struct thread1 td;
 	if(FWVersion == 405){
 		return Sys::kexec((void *)&unjail405, &td);
 	}else if(FWVersion == 455){
@@ -209,7 +209,24 @@ PRX_EXPORT int FreeUnjail(int FWVersion)
 	}else if (FWVersion == 755){
 		return Sys::kexec((void *)&unjail755, &td);
 	}
-
+	else if (FWVersion == 800){
+		return Sys::kexec((void *)&unjail800, &td);
+	}
+	else if (FWVersion == 801){
+		return Sys::kexec((void *)&unjail801, &td);
+	}
+	else if (FWVersion == 803){
+		return Sys::kexec((void *)&unjail803, &td);
+	}
+	else if (FWVersion == 850){
+		return Sys::kexec((void *)&unjail850, &td);
+	}
+	else if (FWVersion == 852){
+		return Sys::kexec((void *)&unjail852, &td);
+	}
+	else if (FWVersion == 900){
+		return Sys::kexec((void *)&unjail900, &td);
+	}
 	return 0;
 }
 

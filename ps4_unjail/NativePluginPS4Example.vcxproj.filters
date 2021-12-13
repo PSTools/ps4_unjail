@@ -160,5 +160,8 @@
     <ClInclude Include="resolver_patch.c">
       <Filter>Patcher</Filter>
     </ClInclude>
+    <ClInclude Include="freebsd_helper.h">
+      <Filter>Patcher</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
