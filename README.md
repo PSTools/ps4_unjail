@@ -1,6 +1,8 @@
 # ps4_unjail
 ![image](https://i.imgur.com/qTGhdSY.png)
 
+![GitHub all releases](https://img.shields.io/github/downloads/PSTools/ps4_unjail/total)
+
 PS4 Universal Plugin
 Originally by @zecoxao
 
