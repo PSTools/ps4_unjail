@@ -1,43 +1,6 @@
-﻿Build started 2021/12/13 18:26:56.
+﻿Build started 2021/12/13 18:37:20.
      1>Project "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\NativePluginPS4Example.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         Patcher.c
-         orbis-clang.exe -o ORBIS_Debug\Patcher.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c"
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(165,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(165,37): warning : missing terminating ' character [-Winvalid-pp-token]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(248,13): warning : incompatible integer to pointer conversion returning 'int' from a function with result type 'struct proc *' [-Wint-conversion]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(317,31): warning : incompatible pointer to integer conversion passing 'void *' to parameter of type 'int' [-Wint-conversion]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\sys/_null.h(32,14):  note: expanded from macro 'NULL'
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(310,47):  note: passing argument to parameter 'data' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(321,31): warning : incompatible pointer to integer conversion passing 'void *' to parameter of type 'int' [-Wint-conversion]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\sys/_null.h(32,14):  note: expanded from macro 'NULL'
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(310,47):  note: passing argument to parameter 'data' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(330,31): warning : incompatible pointer to integer conversion passing 'void *' to parameter of type 'int' [-Wint-conversion]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\sys/_null.h(32,14):  note: expanded from macro 'NULL'
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(310,47):  note: passing argument to parameter 'data' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(339,31): warning : incompatible pointer to integer conversion passing 'void *' to parameter of type 'int' [-Wint-conversion]
-         C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include\sys/_null.h(32,14):  note: expanded from macro 'NULL'
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(310,47):  note: passing argument to parameter 'data' here
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(535,57): warning : format specifies type 'unsigned long long' but the argument has type 'uint64_t' (aka 'unsigned long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(535,69): warning : format specifies type 'unsigned long long' but the argument has type 'uint64_t' (aka 'unsigned long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(535,79): warning : format specifies type 'unsigned long long' but the argument has type 'uint64_t' (aka 'unsigned long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(621,9): warning : unused variable 'addressinmem' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(622,10): warning : unused variable 'n' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(607,16): warning : unused variable 'td' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(695,41): warning : format specifies type 'unsigned long long' but the argument has type 'off_t' (aka 'long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(751,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(751,40): warning : missing terminating ' character [-Winvalid-pp-token]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(1112,9): warning : implicit declaration of function 'proc_rw_mem' is invalid in C99 [-Wimplicit-function-declaration]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(1313,23): warning : variable 'td' is uninitialized when used here [-Wuninitialized]
-         C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\Patcher.c(1312,4):  note: variable 'td' is declared here
-         pluginLib.cpp
-         orbis-clang.exe -o ORBIS_Debug\pluginLib.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp"
-     1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(35,19): warning : missing terminating '"' character [-Winvalid-pp-token]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(35,19): warning : extra tokens at end of #include directive [-Wextra-tokens]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(137,24): warning : more '%' conversions than data arguments [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(142,58): warning : format specifies type 'unsigned int' but the argument has type 'uint64_t' (aka 'unsigned long') [-Wformat]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\pluginLib.cpp(131,8): warning : unused variable 'info' [-Wunused-variable]
          prx.cpp
          orbis-clang.exe -o ORBIS_Debug\prx.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp"
      1>orbis-clang.exe : warning : implicitly enabling rtti for exception handling
@@ -219,12 +182,6 @@
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2958,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2961,9): warning : unknown pragma ignored [-Wunknown-pragmas]
      1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\prx.cpp(2968,9): warning : unknown pragma ignored [-Wunknown-pragmas]
-         unjail.c
-         orbis-clang.exe -o ORBIS_Debug\unjail.o -c -MD -MV -fdiagnostics-format=msvc -IC:\tauon2\include -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\lib\clang\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include" -I"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\include_common" -D_DEBUG -g -Wall -fno-caret-diagnostics -O0 -fexceptions "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c"
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(11,11): warning : implicit declaration of function 'sceKernelGetCpuTemperature' is invalid in C99 [-Wimplicit-function-declaration]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(11,6): warning : unused variable 'hi' [-Wunused-variable]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(18,12): warning : implicit declaration of function 'sceKernelSetFanShit' is invalid in C99 [-Wimplicit-function-declaration]
-     1>C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\unjail.c(18,6): warning : unused variable 'hii' [-Wunused-variable]
        Link:
          C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\host_tools\bin\orbis-ld.exe -o "C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx" --oformat=prx --prx-stub-output-dir="C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4" -LC:\tauon2\lib -L"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\lib" -L"C:\Program Files (x86)\SCE\ORBIS SDKs\4.500\target\lib" --start-group ORBIS_Debug\checkheaders.o ORBIS_Debug\CommonDialog.o ORBIS_Debug\decrypt.o ORBIS_Debug\decryptio.o ORBIS_Debug\DownloadHTTPS.o ORBIS_Debug\encryptsrv.o ORBIS_Debug\ftps4.o ORBIS_Debug\Kernel.o ORBIS_Debug\Module.o ORBIS_Debug\mount.o ORBIS_Debug\Patcher.o ORBIS_Debug\PatcherUtil.o ORBIS_Debug\UnityPrxPlugin.o ORBIS_Debug\pluginLib.o ORBIS_Debug\pluginunjail.o ORBIS_Debug\prx.o ORBIS_Debug\SaveDataDialog.o ORBIS_Debug\Saves.o ORBIS_Debug\Sound.o ORBIS_Debug\SoundUtil.o ORBIS_Debug\syscall.o ORBIS_Debug\SystemService.o ORBIS_Debug\SysUtil.o ORBIS_Debug\unjail.o ORBIS_Debug\UserService.o "-lScePosix_stub_weak" "-lSceNet_stub_weak" "-lSceNetCtl_stub_weak" "-lSceHttp_stub_weak" "-lSceSsl_stub_weak" "-lSceNetDebug_stub_weak" "-lSceUsbd_stub_weak" "-lSceUsbStorage_tau_stub_weak" "-lSceSysmodule_tau_stub_weak" "-lSceSysmodule_stub_weak" "-lSceSystemService_tau_stub_weak" "-lkernel_tau_stub_weak" "-lSceLncUtil_tau_stub_weak" --end-group
          NativePluginPS4Example.vcxproj -> C:\Users\3de Echelon\Downloads\ps4_unjail\ps4_unjail\..\Plugins\PS4\universal.prx
@@ -232,4 +189,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.88
+Time Elapsed 00:00:00.90

@@ -316,27 +316,27 @@ PRX_EXPORT int FreeMount()
 	//LOAD:FFFFFFFFDF6AFFE0	0000000F	C	/dev/es0.crypt
 	//LOAD:FFFFFFFFDF6AFFEF	00000011	C	/dev/da0x8.crypt
 	//notify("Mount New Test");
-	mount_large_fs("/dev/es0.crypt", "/es0", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/es0.crypt", "/es0", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x0.crypt", "/preinst", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x1.crypt", "/preinst2", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x4.crypt", "/system", "exfatfs", "511", MNT_UPDATE);
 	mount_large_fs("/dev/da0x5.crypt", "/system_ex", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x6.crypt","/da0x6", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x8.crypt", "/da0x8", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x9.crypt", "/da0x9", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x12.crypt","/da0x12", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x13.crypt","/da0x13", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x14.crypt","/da0x14", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x15.crypt","/da0x15", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflash0s0x32b","/sflash0s32b", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflash0s1.cryptx2b","/sflash0s12", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflash0s1.cryptx3b","/sflash0s13", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x4b.crypt","/da0x4b", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x5b.crypt","/da0x5b", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x6x2.crypt","/da0x6x2", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/da0x6x1.crypt","/da0x6x1", "exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflash0s1.cryptx1","/sflash0s1_cryptx1","exfatfs", "511", MNT_UPDATE);
-	mount_large_fs("/dev/sflash0s1.cryptx40","/da0","exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x6.crypt","/da0x6", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x8.crypt", "/da0x8", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x9.crypt", "/da0x9", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x12.crypt","/da0x12", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x13.crypt","/da0x13", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x14.crypt","/da0x14", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x15.crypt","/da0x15", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/sflash0s0x32b","/sflash0s32b", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/sflash0s1.cryptx2b","/sflash0s12", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/sflash0s1.cryptx3b","/sflash0s13", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x4b.crypt","/da0x4b", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x5b.crypt","/da0x5b", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x6x2.crypt","/da0x6x2", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/da0x6x1.crypt","/da0x6x1", "exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/sflash0s1.cryptx1","/sflash0s1_cryptx1","exfatfs", "511", MNT_UPDATE);
+	//mount_large_fs("/dev/sflash0s1.cryptx40","/da0","exfatfs", "511", MNT_UPDATE);
 	///dev/da0x6x1.crypt
 	//mount_large_fs("/dev/da0x5.crypt",
 	/*mount_large_fs("/dev/sbram0", "/system_sam", "exfatfs", "511", MNT_UPDATE);
