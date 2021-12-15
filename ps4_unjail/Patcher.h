@@ -80,6 +80,24 @@ struct ptrace_io_desc {
 #define	KERN_PMAP_STORE		0x22CB570
 
 
+//mira patches here might need to get a way to determen on loadup which is to be used
+
+#define K505_kdlsym_vmspace_acquire_ref_addr        0x19EF90
+#define K505_kdlsym_vmspace_free_addr               0x19EDC0
+#define K505_kdlsym_vm_map_lock_read_addr           0x19F140
+#define K505_kdlsym_vm_map_unlock_read_addr         0x19F190
+#define K505_kdlsym_vm_map_lookup_entry_addr        0x19F760
+#define K505_kdlsym_proc_rw_mem1_addr               0x30D150
+
+#ifndef kdlsym
+#define kdlsym(x) ((void*)((uint8_t *)&gKernelBase[K505_kdlsym_ ## x ##_addr]))
+#endif
+
+#define resolve(name) name = ((void *)&gKernelBase[K505_kdlsym_ ## name ##_addr])
+
+
+//#define _KERNEL 0
+
 void InstallPatches(int FW);
 
 

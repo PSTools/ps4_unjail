@@ -4,26 +4,10 @@
 #include "syscall.h"
 #include <cstring>
 #include <stdio.h>
-#include <external\freebsd-headers\include\sys\_iovec.h>
 #include <external\freebsd-headers\include\sys\uio.h>
-#include <external\freebsd-headers\include\sys\proc.h>
+#include <pthread.h>
+//#include <external\freebsd-headers\include\sys\proc.h>
 
-void  disable_wp()
-{
-	__asm__("cpu_disable_wp:\n"
-    "mov %rax, %cr0\n"
-    "and %rax, ~0x10000\n"
-    "mov %cr0, %rax\n"
-    "ret");
-}
-void enable_wp()
-{
-	__asm__("cpu_enable_wp:\n"
-    "mov %rax, %cr0\n"
-    "or %rax, 0x10000\n"
-    "mov %cr0, %rax\n"
-    "ret");
-}
 
 extern void cpu_disable_wp();
 extern void cpu_enable_wp();
@@ -54,19 +38,17 @@ extern void cpu_enable_wp();
 //psn save patch 
 #define K505_save_psn_patch					0xC54F0
 
-//mira patches here might need to get a way to determen on loadup which is to be used
-#define kdlsym_addr_exec_new_vmspace                       0x0038AD10
-#define kdlsym_addr_proc_rwmem                             0x0030D150
-#define kdlsym_addr_vmspace_acquire_ref                    0x0019EF90
-#define kdlsym_addr_vmspace_alloc                          0x0019EB20
-#define kdlsym_addr_vmspace_free                           0x0019EDC0
 
 
-#ifndef kdlsym
-#define kdlsym(x) ((void*)((uint8_t *)&gKernelBase[kdlsym_addr_ ## x]))
-#endif
 
-#define resolve(name) name = (void *)&gKernelBase[kdlsym_addr_ ## name]))
+//struct vmspace *(*vmspace_acquire_ref)(struct proc *p);
+//void (*vmspace_free)(struct vmspace *vm);
+//void (*vm_map_lock_read)(struct vm_map *map);
+//void (*vm_map_unlock_read)(struct vm_map *map);
+//int (*vm_map_lookup_entry)(struct vm_map *map, uint64_t address, struct vm_map_entry **entries);
+
+
+
 
 
 #define CR0_WP (1 << 16) // write protect
@@ -231,8 +213,10 @@ struct kinfo_proc {
 	char name[];
 };
 
+int (*proc_rw_mem1)(struct kinfo_proc *p, struct uio *uio);
 
-struct proc* findProcess(char *procName) {
+
+struct kinfo_proc* findProcess(char *procName) {
 	int procPID = 0;
 	while (!procPID) {
 		int mib[3];
@@ -250,9 +234,9 @@ struct proc* findProcess(char *procName) {
 				if (sysctl(mib, 3, dump, &len, NULL, 0) != -1) {
 					int structSize = *(int *)dump;
 					for (size_t i = 0; i < (len / structSize); i++) {
-						struct proc *procInfo = (struct proc *)(dump + (i * structSize));
-						if (!strcmp(procInfo->p_comm, procName)) {
-							procPID = procInfo->p_pid;
+						struct kinfo_proc *procInfo = (struct kinfo_proc *)(dump + (i * structSize));
+						if (!strcmp(procInfo->name, procName)) {
+							procPID = procInfo->pid;
 							return procInfo;
 							break;
 						}
@@ -265,6 +249,216 @@ struct proc* findProcess(char *procName) {
 		sceKernelSleep(1);
 	}
 	return NULL;
+}
+
+
+int read_rif(const char* path, void* buffer)
+{
+	FILE* handle = fopen(path, "rb");
+	if (handle == NULL)
+	{
+		return -1;
+	}
+	fseek(handle, 0x400, SEEK_SET);
+	fread(buffer, 1, 0x400, handle);
+	fclose(handle);
+	return 0;
+}
+
+typedef struct _rif_info
+{
+	uint32_t version;
+	uint32_t unknown_4; // &rif[0x6]
+	uint64_t psn_account_id;
+	uint64_t start_timestamp;
+	uint64_t end_timestamp;
+	uint64_t unknown_20;
+	uint32_t type;
+	uint32_t unknown_2C; // &rif[0x54]
+	uint32_t sku_flag;
+	uint32_t unknown_34;
+	uint64_t unknown_38;
+	uint64_t unknown_40;
+	char content_id[48];
+	uint8_t secret_key_iv[16];
+}
+rif_info;
+
+typedef struct _rif_secret
+{
+	uint8_t content_key_seed[16];
+	uint8_t self_key_seed[16];
+	uint8_t entitlement_key[16];
+}
+rif_secret;
+
+int npdrm_decompose_rif(rif_secret* secret, rif_info* info, void* rif)
+{
+	int fd = syscall(5,"/dev/npdrm", 0x0002, 0);
+	if (fd < 0)
+	{
+		return 0x800F0A13;
+	}
+	struct
+	{
+		void* secret;
+		void* info;
+		void* rif;
+		int error;
+	}
+	args;
+	memset(&args, 0, sizeof(args));
+	args.secret = secret;
+	args.info = info;
+	args.rif = rif;
+	int result = syscall(54,fd, 0xC0204E0E, &args);
+	syscall(6,fd);
+	return result ? 0x800F0A05 : args.error;
+}
+
+int sceSblAuthMgrAddEEkc3(const char* content_id, void* keys, int field_2C, int a4)
+{
+	if (!content_id || !keys)
+	{
+		return 0x800F0B16;
+	}
+	int fd = syscall(5,"/dev/authmgr", 0x0002, 0);
+	if (fd < 0)
+	{
+		return 0x800F0B13;
+	}
+	struct
+	{
+		char content_id[36];
+		uint8_t keys[32];
+		int field_44;
+		int field_48;
+		int error;
+	}
+	args;
+	memcpy(args.content_id, content_id, sizeof(args.content_id));
+	memcpy(args.keys, keys, sizeof(args.keys));
+	args.field_44 = field_2C;
+	args.field_48 = a4;
+	int result = syscall(54,fd, 0xC0504104, &args);
+	syscall(6,fd);
+	return result ? 0x800F0B05 : args.error;
+}
+
+int sceSblAuthMgrDeleteEEkc(const char* content_id)
+{
+	if (!content_id)
+	{
+		return 0x800F0B16;
+	}
+	int fd = syscall(5,"/dev/authmgr", 0x0002, 0);
+	if (fd < 0)
+	{
+		return 0x800F0B13;
+	}
+	struct
+	{
+		char content_id[36];
+		uint8_t unknown[32];
+		int error;
+	}
+	args;
+	memcpy(args.content_id, content_id, sizeof(args.content_id));
+	int result = syscall(54,fd, 0xC0484102, &args);
+	syscall(6,fd);
+	return result ? 0x800F0B05 : args.error;
+}
+
+uint8_t rif[0x400];
+
+
+void hexdump(void* input, int length, int relative)
+{
+	uint8_t* buffer = (uint8_t*)input;
+	int i;
+
+	for (i = 0; i < length; i++)
+	{
+		if ((i % 16) == 0)
+		{
+			char proc_path1[164];
+			sprintf(proc_path1, "%llx :", !relative ? (uint64_t)&buffer[i] : (uint64_t)i);
+			notify(proc_path1);
+			//printfsocket("%llx :", !relative ? (uint64_t)&buffer[i] : (uint64_t)i);
+		}
+
+		char proc_path1[164];
+		sprintf(proc_path1, " %02x", buffer[i]);
+		notify(proc_path1);
+
+		//printfsocket(" %02x", buffer[i]);
+
+		if (i > 0 && (i % 16) == 15)
+		{
+			//printfsocket("\n");
+		}
+	}
+
+	if ((i % 16) != 0)
+	{
+		//printfsocket("\n");
+	}
+
+	//printfsocket("\n");
+}
+
+int mount_npdrm()
+{
+	//int result = syscall(136,"/mnt/npdrm", 0777);
+	//if (result < 0)
+	//{
+	//	notify("Failed to create /mnt/npdrm\n");
+	//	return -1;
+	//}
+	////mount syscall
+	//result = syscall(21,"/dev/npdrm", "/mnt/npdrm", 0, NULL);
+	//if (result < 0)
+	//{
+	//	notify("Failed to mount npdrm:");
+	//	//notify("Failed to mount procfs: %d\n", result, *__error());
+	//	return -2;
+	//}
+	read_rif("/user/license/freeIP9100-CUSA00001_00.rif", rif);
+
+	rif_secret rif_secret;
+	rif_info rif_info;
+	memset(&rif_secret, 0xCC, sizeof(rif_secret));
+	memset(&rif_info, 0xCC, sizeof(rif_info));
+	int result = npdrm_decompose_rif(&rif_secret, &rif_info, rif);
+	char proc_path1[164];
+	sprintf(proc_path1, "npdrm_parse_rif = %x\n", result);
+	notify(proc_path1);
+	if (result)
+	{
+		return -15;
+	}
+
+	hexdump(&rif_secret, sizeof(rif_secret), 1);
+	//hexdump(&rif_info, sizeof(rif_info), 1);
+
+	struct
+	{
+		uint8_t content_key_seed[16];
+		uint8_t self_key_seed[16];
+	}
+	keys;
+	memcpy(keys.content_key_seed, rif_secret.content_key_seed, 16);
+	memcpy(keys.self_key_seed, rif_secret.self_key_seed, 16);
+
+	//int fd = syscall(5,"/dev/npdrm", 0x0002, 0);
+	//if (fd < 0)
+	//{
+	//	notify("Failed to open npdrm");
+	//	//printfsocket("Failed to open %s!\n", proc_path);
+	//	return -2;
+	//}
+
+	return 0;
 }
 
 
@@ -567,27 +761,75 @@ size_t int2size_t(int val) {
 	return (val < 0) ? __SIZE_MAX__ : (size_t)((unsigned)val);
 }
 
-int AttachToProcess(struct thread *td,int PID)
+int AttachToProcess(struct thread1 *td,int PID)
 {
 	return syscall(26,PT_ATTACH, PID, NULL, NULL);
 }
 
-int apply_pacthes1(struct proc* p , patch_info* patches)
+
+int createThread(void*(func)(void*), void* args)
+{
+	ScePthread sceThread;
+	return scePthreadCreate(&sceThread, NULL, func, args, "PS4 Tools Thread") == 0;
+}
+
+
+//int proc_rw_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n, int write) {
+//	struct thread *td = curthread();
+//	struct iovec iov;
+//	struct uio uio;
+//	int r = 0;
+//
+//	if (!p) {
+//		return 1;
+//	}
+//
+//	if (size == 0) {
+//		if (n) {
+//			*n = 0;
+//		}
+//
+//		return 0;
+//	}
+//
+//	memset(&iov, NULL, sizeof(iov));
+//	iov.iov_base = (uint64_t)data;
+//	iov.iov_len = size;
+//
+//	memset(&uio, NULL, sizeof(uio));
+//	uio.uio_iov = (uint64_t)&iov;
+//	uio.uio_iovcnt = 1;
+//	uio.uio_offset = (uint64_t)ptr;
+//	uio.uio_resid = (uint64_t)size;
+//	uio.uio_segflg = UIO_SYSSPACE;
+//	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
+//	uio.uio_td = td;
+//
+//	r = proc_rwmem(p, &uio);
+//
+//	if (n) {
+//		*n = (size_t)((uint64_t)size - uio.uio_resid);
+//	}
+//
+//	return r;
+//}
+
+int apply_pacthes1(struct kinfo_proc* p , patch_info* patches)
 {
 	uint64_t code_address, code_size;
-	int result = get_code_info(p->p_pid, &code_address, &code_size, 0);
+	int result = get_code_info(p->pid, &code_address, &code_size, 0);
 	if (result < 0)
 	{
 		char proc_path1[164];
-		sprintf(proc_path1, "Failed to get code info for %d: %d\n", p->p_pid, result);
+		sprintf(proc_path1, "Failed to get code info for %d: %d\n", p->pid, result);
 		notify(proc_path1);
 		//printfsocket("Failed to get code info for %d: %d\n", pid, result);
 		return -1;
 	}
 
 	char proc_path[64];
-	sprintf(proc_path, "/mnt/proc/%d/mem", p->p_pid);
-	//notify(proc_path);
+	sprintf(proc_path, "/mnt/proc/%d/mem", p->pid);
+	notify(proc_path);
 	//open
 	int fd = syscall(5,proc_path, 0x0002, 0);
 	if (fd < 0)
@@ -602,33 +844,42 @@ int apply_pacthes1(struct proc* p , patch_info* patches)
 	//disable mprotect first
 	//mprotect
 
+
+
+	/*resolve(vmspace_acquire_ref);
+	resolve(vmspace_free);
+	resolve(vm_map_lock_read);
+	resolve(vm_map_unlock_read);
+	resolve(vm_map_lookup_entry);*/
+
+
+
+
 	//Set protection to all
 	//sceKernelMprotect((void*)Address, Length,
-	struct thread td;
-	//result = syscall(11,AttachToProcess,td,p->pid);
-	result = syscall(26,PT_ATTACH, p->p_pid, NULL, NULL);
-	if(result != 0)
-	{
-		sprintf(proc_path, "PTrace %d\n", result);
-		notify(proc_path);
-		sprintf(proc_path, "Value of errno: %d\n", errno);
-		notify(proc_path);
-		sprintf(proc_path,  "Error: %s\n", strerror( errno ));
-		notify(proc_path);
-	}
+
 	for (int i = 0; patches[i].name != NULL; i++)
 	{
 		off_t addressinmem = lseek(fd, code_address + patches[i].address, SEEK_SET);
 		size_t n;
 		char proc_path1[164];
-		//sprintf(proc_path1, "Address %llx\n", addressinmem);
-		//notify(proc_path1);
+		sprintf(proc_path1, "Address %llx\n", addressinmem);
+		notify(proc_path1);
 		////mem protect
 		//procWriteBytes(p->pid,(void*)(code_address + patches[i].address),(void*)patches[i].data,patches[i].size);
 		//result = syscall(74,(void*)addressinmem,patches[i].size,VM_PROT_ALL);
-		//addressinmem =lseek(fd, code_address + patches[i].address, SEEK_SET);//go back to the start and read again
-		//proc_write_mem(p,(void*)code_address + patches[i].address,patches[i].size,patches[i].data ,&n);//offset you wanne change
-		result = syscall(476,fd, patches[i].data, sizeof(patches[i].data), patches[i].size);//	write
+		if(result != 0)
+		{
+			sprintf(proc_path1, "patch %s: %d\n", patches[i].name, result);
+			notify(proc_path1);
+			sprintf(proc_path, "Value of errno: %d\n", errno);
+			notify(proc_path);
+			sprintf(proc_path,  "Error: %s\n", strerror( errno ));
+			notify(proc_path);
+		}
+		addressinmem =lseek(fd, code_address + patches[i].address, SEEK_SET);//go back to the start and read again
+		result = proc_rw_mem(p,(void*)(addressinmem),patches[i].size,&patches[i].data ,&n,1);//offset you wanne change
+		//result = syscall(476,fd, patches[i].data, sizeof(patches[i].data), patches[i].size);//	write
 
 		//char proc_path1[164];
 		if(result != 0)
@@ -642,11 +893,7 @@ int apply_pacthes1(struct proc* p , patch_info* patches)
 		}
 		//printfsocket("patch %s: %d %d\n", patches[i].name, result, result < 0 ? errno : 0);
 	}
-	result = syscall(26,PT_DETACH, p, NULL, NULL);
-
-
-
-
+	//result = syscall(26,PT_DETACH, p, NULL, NULL);
 	syscall(6,fd);
 	//sceKernelClose(fd);
 	return 0;
@@ -685,7 +932,7 @@ int apply_patches(int pid, uint64_t known_size, patch_info* patches)
 	//Set protection to all
 	//sceKernelMprotect((void*)Address, Length,
 	notify("Attaching to process");
-	procAttach(pid);
+	//procAttach(pid);
 	notify("Attached to process");
 
 	for (int i = 0; patches[i].name != NULL; i++)
@@ -695,7 +942,7 @@ int apply_patches(int pid, uint64_t known_size, patch_info* patches)
 		sprintf(proc_path1, "Address %llx\n", addressinmem);
 		notify(proc_path1);
 		//mem protect
-		//result = syscall(74,(void*)addressinmem,patches[i].size,VM_PROT_ALL);
+		result = syscall(74,(void*)addressinmem,patches[i].size,VM_PROT_ALL);
 		addressinmem =lseek(fd, code_address + patches[i].address, SEEK_SET);//go back to the start and read again
 		/*	sprintf(proc_path1, "Address %llx\n", addressinmem);
 		notify(proc_path1);*/
@@ -716,8 +963,8 @@ int apply_patches(int pid, uint64_t known_size, patch_info* patches)
 
 		//Write Patch.
 		//memcpy((void*)addressinmem,  patches[i].data, int2size_t(patches[i].size));
-		procWriteBytes(pid,(void*)(code_address + patches[i].address),&patches[i].data,sizeof(patches[i].data));
-		//result = syscall(4,fd, patches[i].data, patches[i].size);//	write
+		//procWriteBytes(pid,(void*)(code_address + patches[i].address),&patches[i].data,sizeof(patches[i].data));
+		result = syscall(4,fd, patches[i].data, patches[i].size);//	write
 
 		//char proc_path1[164];
 		sprintf(proc_path1, "patch %s: %d\n", patches[i].name, result);
@@ -727,7 +974,7 @@ int apply_patches(int pid, uint64_t known_size, patch_info* patches)
 
 
 
-	procDetach(pid);
+	//procDetach(pid);
 	sceKernelSleep(5);
 	syscall(6,fd);
 	//sceKernelClose(fd);
@@ -738,13 +985,13 @@ patch_info K505_shellcore_patches[32] =
 {
 	{"sce_sdmemory_patch",K505_sce_sdmemory_patch,"\x00",1},// 'sce_sdmemory' patch
 	{"verify_keystone_patch",K505_verify_keystone_patch,"\x48\x31\xC0\xC3",4},//verify keystone patch
-	//{"save_mount_permision",K505_save_mount_permision,"\x31\xC0\xC3",3}, //transfer mount permission patch eg mount foreign saves with write permission
-	//{"save_psn_patch",K505_save_psn_patch,"\x31\xC0\xC3",3},// 0x31, 0xC0, 0xC3//patch psn check to load saves saves foreign to current account
-	//{"save_mount_patch",K505_save_mount_patch,"\x90\x90",2}, // ^
-	//{"save_mount_something_patch",K505_save_mount_something_patch,"\x90\x90\x90\x90\x90\x90",6},  // something something patches... 
-	//{"save_mount_patch_unk",K505_save_mount_patch_unk,"\x90\x90\x90\x90\x90\x90",6},  // don't even remember doing this
-	//{"save_mount_never_jump",K505_save_mount_never_jump,"\x90\x90",2},  //nevah jump
-	//{"save_mount_always_jump",K505_save_mount_always_jump,"\x90\xE9",2},  //nevah jump
+	{"save_mount_permision",K505_save_mount_permision,"\x31\xC0\xC3",3}, //transfer mount permission patch eg mount foreign saves with write permission
+	{"save_psn_patch",K505_save_psn_patch,"\x31\xC0\xC3",3},// 0x31, 0xC0, 0xC3//patch psn check to load saves saves foreign to current account
+	{"save_mount_patch",K505_save_mount_patch,"\x90\x90",2}, // ^
+	{"save_mount_something_patch",K505_save_mount_something_patch,"\x90\x90\x90\x90\x90\x90",6},  // something something patches... 
+	{"save_mount_patch_unk",K505_save_mount_patch_unk,"\x90\x90\x90\x90\x90\x90",6},  // don't even remember doing this
+	{"save_mount_never_jump",K505_save_mount_never_jump,"\x90\x90",2},  //nevah jump
+	{"save_mount_always_jump",K505_save_mount_always_jump,"\x90\xE9",2},  //nevah jump
 	{ NULL, 0, NULL, 0 },//required to end forloop for patching
 };
 
@@ -1027,7 +1274,7 @@ int Mira_Patch_505(void* td, void* args)
 
 	uint8_t* kernel_base = (uint8_t*)(__readmsr(0xC0000082) - K505_XFAST_SYSCALL);
 
-	disable_wp();
+	cpu_disable_wp();
 	// Patch something
 
 
@@ -1092,62 +1339,62 @@ int Mira_Patch_505(void* td, void* args)
 
 
 	// Restore write protection
-	enable_wp();
+	cpu_enable_wp();
 
 	return 0;
 
 }
 struct uio {
-	struct	iovec *uio_iov;		/* scatter/gather list */
+	struct	iovec1 *uio_iov;		/* scatter/gather list */
 	int	uio_iovcnt;		/* length of scatter/gather list */
 	off_t	uio_offset;		/* offset in target object */
 	ssize_t	uio_resid;		/* remaining bytes to process */
 	enum	uio_seg uio_segflg;	/* address space */
 	enum	uio_rw uio_rw;		/* operation */
-	struct	thread *uio_td;		/* owner */
+	struct	thread1 *uio_td;		/* owner */
 };
 
-int proc_write_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n) 
-{
-	return proc_rw_mem(p, ptr, size, data, n, 1);
-}
-int proc_rw_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n, int write)
-{
-
-	struct iovec iov;
-	struct uio uio;
-	int r = 0;
-
-	if (!p)
-		return -1;
-
-	if (size == 0) {
-		if (n)
-			*n = 0;
-
-		return 0;
-	}
-
-	memset(&iov, 0, sizeof(iov));
-	iov.iov_base = data;
-	iov.iov_len = size;
-
-	memset(&uio, 0, sizeof(uio));
-	uio.uio_iov = &iov;
-	uio.uio_iovcnt = 1;
-	uio.uio_offset = (uint64_t)ptr;
-	uio.uio_resid = (uint64_t)size;
-	uio.uio_segflg = UIO_SYSSPACE;
-	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
-	//uio.uio_td = td;
-
-	//r = proc_rwmem(p, &uio);
-
-	if (n)
-		*n = (size_t)((uint64_t)size - uio.uio_resid);
-
-	return r;
-}
+//int proc_write_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n) 
+//{
+//	return proc_rw_mem(p, ptr, size, data, n, 1);
+//}
+//int proc_rw_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n, int write)
+//{
+//
+//	struct iovec iov;
+//	struct uio uio;
+//	int r = 0;
+//
+//	if (!p)
+//		return -1;
+//
+//	if (size == 0) {
+//		if (n)
+//			*n = 0;
+//
+//		return 0;
+//	}
+//
+//	memset(&iov, 0, sizeof(iov));
+//	iov.iov_base = data;
+//	iov.iov_len = size;
+//
+//	memset(&uio, 0, sizeof(uio));
+//	uio.uio_iov = &iov;
+//	uio.uio_iovcnt = 1;
+//	uio.uio_offset = (uint64_t)ptr;
+//	uio.uio_resid = (uint64_t)size;
+//	uio.uio_segflg = UIO_SYSSPACE;
+//	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
+//	//uio.uio_td = td;
+//
+//	//r = proc_rwmem(p, &uio);
+//
+//	if (n)
+//		*n = (size_t)((uint64_t)size - uio.uio_resid);
+//
+//	return r;
+//}
 
 int patcher(struct thread1 *td){
 
@@ -1195,62 +1442,91 @@ int patcher(struct thread1 *td){
 	//Use "kmem" for all patches
 	uint8_t *kmem;
 
-	// Verbose Panics
-	kmem = (uint8_t *)&kernel_ptr[0x00171627];
-	kmem[0] = 0x90;
-	kmem[1] = 0x90;
-	kmem[2] = 0x90;
-	kmem[3] = 0x90;
-	kmem[4] = 0x90;
+	//// Verbose Panics
+	//kmem = (uint8_t *)&kernel_ptr[0x00171627];
+	//kmem[0] = 0x90;
+	//kmem[1] = 0x90;
+	//kmem[2] = 0x90;
+	//kmem[3] = 0x90;
+	//kmem[4] = 0x90;
 
-	// sceSblACMgrIsAllowedSystemLevelDebugging
-	kmem = (uint8_t *)&kernel_ptr[0x00010FC0];
-	kmem[0] = 0xB8;
-	kmem[1] = 0x01;
-	kmem[2] = 0x00;
-	kmem[3] = 0x00;
-	kmem[4] = 0x00;
-	kmem[5] = 0xC3;
+	//// sceSblACMgrIsAllowedSystemLevelDebugging
+	//kmem = (uint8_t *)&kernel_ptr[0x00010FC0];
+	//kmem[0] = 0xB8;
+	//kmem[1] = 0x01;
+	//kmem[2] = 0x00;
+	//kmem[3] = 0x00;
+	//kmem[4] = 0x00;
+	//kmem[5] = 0xC3;
 
-	kmem = (uint8_t *)&kernel_ptr[0x00011730];
-	kmem[0] = 0xB8;
-	kmem[1] = 0x01;
-	kmem[2] = 0x00;
-	kmem[3] = 0x00;
-	kmem[4] = 0x00;
-	kmem[5] = 0xC3;
+	//kmem = (uint8_t *)&kernel_ptr[0x00011730];
+	//kmem[0] = 0xB8;
+	//kmem[1] = 0x01;
+	//kmem[2] = 0x00;
+	//kmem[3] = 0x00;
+	//kmem[4] = 0x00;
+	//kmem[5] = 0xC3;
 
-	kmem = (uint8_t *)&kernel_ptr[0x00011750];
-	kmem[0] = 0xB8;
-	kmem[1] = 0x01;
-	kmem[2] = 0x00;
-	kmem[3] = 0x00;
-	kmem[4] = 0x00;
-	kmem[5] = 0xC3;
+	//kmem = (uint8_t *)&kernel_ptr[0x00011750];
+	//kmem[0] = 0xB8;
+	//kmem[1] = 0x01;
+	//kmem[2] = 0x00;
+	//kmem[3] = 0x00;
+	//kmem[4] = 0x00;
+	//kmem[5] = 0xC3;
 
-	// Enable mount for unprivileged user
-	kmem = (uint8_t *)&kernel_ptr[0x001DEBFE];
-	kmem[0] = 0x90;
-	kmem[1] = 0x90;
-	kmem[2] = 0x90;
-	kmem[3] = 0x90;
-	kmem[4] = 0x90;
-	kmem[5] = 0x90;
+	//// Enable mount for unprivileged user
+	//kmem = (uint8_t *)&kernel_ptr[0x001DEBFE];
+	//kmem[0] = 0x90;
+	//kmem[1] = 0x90;
+	//kmem[2] = 0x90;
+	//kmem[3] = 0x90;
+	//kmem[4] = 0x90;
+	//kmem[5] = 0x90;
 
 
-	// prtinf hook patches
-	kmem = (uint8_t *)&kernel_ptr[0x00436136];
-	kmem[0] = 0xEB;
-	kmem[1] = 0x1E;
+	//// prtinf hook patches
+	//kmem = (uint8_t *)&kernel_ptr[0x00436136];
+	//kmem[0] = 0xEB;
+	//kmem[1] = 0x1E;
 
-	kmem = (uint8_t *)&kernel_ptr[0x00436154];
-	kmem[0] = 0x90;
-	kmem[1] = 0x90;
+	//kmem = (uint8_t *)&kernel_ptr[0x00436154];
+	//kmem[0] = 0x90;
+	//kmem[1] = 0x90;
 
 	//(uint8_t *)&kernel_ptr[KERN_PTRACE_CHECK] = 0xEB;
 
-	kmem = (uint8_t *)&kernel_ptr[0x30D9AA];
+	/*kmem = (uint8_t *)&kernel_ptr[0x30D9AA];
+	kmem[0] = 0xEB;*/
+
+
+	kmem = (uint8_t *)&kernel_ptr[K505_TARGET_ID];
+	//kmem = (uint8_t *)tid_patch;
+	kmem[0] = 0x82;
+
+
+	kmem = (uint8_t *)&kernel_ptr[K505_NPDRM_OPEN];
+	kmem[0] = 0x31;
+	kmem[1] = 0xC0;
+	kmem[2] = 0xC3;
+
+	kmem = (uint8_t *)&kernel_ptr[K505_NPDRM_CLOSE];;
+	kmem[0] = 0x31;
+	kmem[1] = 0xC0;
+	kmem[2] = 0xC3;
+
+
+	// This may change depending on new firmware's function structure
+	kmem = (uint8_t *)&kernel_ptr[K505_NPDRM_IOCTL];
 	kmem[0] = 0xEB;
+	//if (fw_version < 500) {
+	//	// 3.50-4.74
+	//	kmem[1] = 0x04;
+	//} else {
+	// 5.00-9.00
+	kmem[1] = 0x00;
+	//}
+
 
 	// Restore write protection
 	cpu_enable_wp();
@@ -1263,13 +1539,70 @@ int patcher(struct thread1 *td){
 
 	return 0;
 }
+static inline struct thread1 *curthread(void) {
+	struct thread1* td;
+	__asm__ volatile (
+		"mov %0, %%gs:0"
+		: "=r"(td)
+		);
 
+	return td;
+}
 
+struct iovec1 {
+	uint64_t iov_base;
+	size_t iov_len;
+};
+
+int proc_rw_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n, int write)
+{
+	notify("proc_rw_mem");
+	struct thread1 *td = curthread();
+	struct iovec1 iov;
+	struct uio uio;
+	int r = 0;
+
+	if (!p)
+		return -1;
+
+	if (size == 0) {
+		if (n)
+			*n = 0;
+
+		return 0;
+	}
+	notify("mem set iov");
+	memset(&iov, 0, sizeof(iov));
+	iov.iov_base = (uint64_t)data;
+	iov.iov_len = size;
+	notify("mem set uio");
+	
+	memset(&uio, 0, sizeof(uio));
+	uio.uio_iov = &iov;
+	uio.uio_iovcnt = 1;
+	uio.uio_offset = (uint64_t)ptr;
+	uio.uio_resid = (uint64_t)size;
+	uio.uio_segflg = UIO_SYSSPACE;
+	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
+	uio.uio_td = td;
+	
+	notify("mem proc_rw_mem1 uio");
+	r = proc_rw_mem1(p, &uio);
+
+	if (n)
+		*n = (size_t)((uint64_t)size - uio.uio_resid);
+
+	return r;
+}
+void Resolve()
+{
+	resolve(proc_rw_mem1);
+}
 
 void InstallPatches(int FW)
 {
 	//kdlsym(proc_rwmem,int (*proc_rwmem)(struct proc *p, struct uio *uio););
-
+	//kdlsym(proc_rwmem,int (*proc_rwmem)(struct kinfo_proc *p, struct uio *uio););
 
 
 	initSysUtil();
@@ -1303,13 +1636,15 @@ void InstallPatches(int FW)
 		break;
 	case 505:
 		{
-
+			notify("resolving");
+			Resolve();
+			//notify("resolving");
 			bool EnableOldPathcer = true;
-			//notify("Enabling write Mode 505");
+			notify("Enabling write Mode 505");
 			//notify("505");
 			/*kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
 			gKernelBase = (uint8_t*)kernel_base;*/
-			struct thread td;
+			struct thread1 td;
 			syscall(11,patcher,td);
 			//save data patches
 
@@ -1318,7 +1653,7 @@ void InstallPatches(int FW)
 				int result;
 
 				printf("Hello From Klog");
-				int shell_pid = find_process("SceShellCore");
+				struct kinfo_proc* shell_pid = findProcess("SceShellCore");
 				if (shell_pid < 0)
 				{
 					notify("shell PID issue");
@@ -1353,10 +1688,12 @@ void InstallPatches(int FW)
 				result = mount_procfs();
 				if (result)
 				{
-				notify("mount_procfs failed");
-				return;
+					notify("mount_procfs failed");
+					return;
 				}
-				if(apply_patches(shell_pid,0, K505_shellcore_patches) != 0)
+
+
+				if(apply_pacthes1(shell_pid,K505_shellcore_patches) != 0)
 				{
 					notify("Could not patch SceShellCore");
 				}
@@ -1367,6 +1704,15 @@ void InstallPatches(int FW)
 					return;
 				}
 
+			}
+			else
+			{
+				int result = mount_npdrm();
+				if (result)
+				{
+					notify("mount_npdrm failed");
+					return;
+				}
 			}
 
 			//new patcher something like ps4debug
