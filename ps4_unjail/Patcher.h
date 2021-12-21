@@ -88,12 +88,117 @@ struct ptrace_io_desc {
 #define K505_kdlsym_vm_map_unlock_read_addr         0x19F190
 #define K505_kdlsym_vm_map_lookup_entry_addr        0x19F760
 #define K505_kdlsym_proc_rw_mem1_addr               0x30D150
+#define K505_kdlsym__vm_map_lock_addr               0x0019EFF0
+#define K505_kdlsym__vm_map_lock_read_addr          0x0019F140
+#define K505_kdlsym__vm_map_insert_addr             0x001A0280
+#define K505_kdlsym__vm_map_unlock_addr             0x0019F060
+#define K505_kdlsym_addr_vm_map_lookup_entry        0x0019F760
+#define K505_kdlsym_addr__vm_map_unlock_read        0x0019F190
+#define K505_kdlsym_addr_M_TEMP                     0x014B4110
 
 #ifndef kdlsym
 #define kdlsym(x) ((void*)((uint8_t *)&gKernelBase[K505_kdlsym_ ## x ##_addr]))
 #endif
 
 #define resolve(name) name = ((void *)&gKernelBase[K505_kdlsym_ ## name ##_addr])
+
+#define JOIN_HELPER(x, y) x##y
+#define JOIN(x, y) JOIN_HELPER(x, y)
+
+#define TYPE_PAD(size) char JOIN(_pad_, __COUNTER__)[size]
+#define TYPE_VARIADIC_BEGIN(name) name { union {
+#define TYPE_BEGIN(name, size) name { union { TYPE_PAD(size)
+#define TYPE_END(...) }; } __VA_ARGS__
+#define TYPE_FIELD(field, offset) struct { TYPE_PAD(offset); field; }
+
+#define TYPE_CHECK_SIZE(name, size) \
+	_Static_assert(sizeof(name) == (size), "Size of " #name " != " #size)
+
+#define TYPE_CHECK_FIELD_OFFSET(name, member, offset) \
+	_Static_assert(offsetof(name, member) == (offset), "Offset of " #name "." #member " != " #offset)
+
+#define TYPE_CHECK_FIELD_SIZE(name, member, size) \
+	_Static_assert(sizeof(((name*)0)->member) == (size), "Size of " #name "." #member " != " #size)
+
+
+
+struct lock_object {
+	const char* lo_name;
+	uint32_t lo_flags;
+	uint32_t lo_data;
+	void* lo_witness;
+};
+
+struct mtx {
+	struct lock_object lock_object;
+	volatile void* mtx_lock;
+};
+
+struct sx {
+	struct lock_object lock_object;
+	volatile uintptr_t sx_lock;
+};
+
+TYPE_BEGIN(struct vm_map_entry, 0xC0);
+TYPE_FIELD(struct vm_map_entry *prev, 0);
+TYPE_FIELD(struct vm_map_entry *next, 8);
+TYPE_FIELD(struct vm_map_entry *left, 0x10);
+TYPE_FIELD(struct vm_map_entry *right, 0x18);
+TYPE_FIELD(uint64_t start, 0x20);
+TYPE_FIELD(uint64_t end, 0x28);
+TYPE_FIELD(uint64_t offset, 0x50);
+TYPE_FIELD(uint16_t prot, 0x5C);
+TYPE_FIELD(char name[32], 0x8D);
+TYPE_END();
+
+TYPE_BEGIN(struct vm_map, 0x178);
+TYPE_FIELD(struct vm_map_entry header, 0);
+TYPE_FIELD(struct sx lock, 0xB8);
+TYPE_FIELD(struct mtx system_mtx, 0xD8);
+TYPE_FIELD(int nentries, 0x100);
+TYPE_END();
+
+TYPE_BEGIN(struct vmspace, 0x250);
+TYPE_FIELD(struct vm_map vm_map, 0);
+// maybe I will add more later just for documentation purposes
+TYPE_END();
+
+TYPE_BEGIN(struct sysent, 0x30);
+TYPE_FIELD(uint32_t sy_narg, 0x00);
+TYPE_FIELD(void *sy_call, 0x08);
+TYPE_FIELD(uint16_t sy_auevent, 0x10);
+TYPE_FIELD(uint64_t sy_systrace_args_func, 0x18);
+TYPE_FIELD(uint32_t sy_entry, 0x20);
+TYPE_FIELD(uint32_t sy_return, 0x24);
+TYPE_FIELD(uint32_t sy_flags, 0x28);
+TYPE_FIELD(uint32_t sy_thrcnt, 0x2C);
+TYPE_END();
+
+TYPE_BEGIN(struct kthread, 0x800); // XXX: random, don't use directly without fixing it
+TYPE_FIELD(struct mtx *volatile td_lock, 0);
+TYPE_FIELD(struct kproc *td_proc, 8);
+TYPE_FIELD(TAILQ_ENTRY(kthread) td_plist, 0x10);
+TYPE_FIELD(int tid, 0x88);
+TYPE_FIELD(int td_pinned, 0x12C);
+TYPE_FIELD(struct ucred *td_ucred, 0x130);
+TYPE_FIELD(char td_name[32], 0x284);
+TYPE_FIELD(uint64_t td_retval[2], 0x398);
+TYPE_FIELD(uint16_t td_priority, 0x380);
+TYPE_END();
+
+
+TYPE_BEGIN(struct kproc, 0x800); // XXX: random, don't use directly without fixing it
+TYPE_FIELD(struct kproc *p_forw, 0);
+TYPE_FIELD(TAILQ_HEAD(, kthread) p_threads, 0x10);
+TYPE_FIELD(struct ucred *p_ucred, 0x40);
+TYPE_FIELD(struct filedesc *p_fd, 0x48);
+TYPE_FIELD(int pid, 0xB0);
+TYPE_FIELD(struct vmspace *p_vmspace, 0x168);
+TYPE_FIELD(char p_comm[32], 0x44C);
+TYPE_FIELD(char titleid[16], 0x390);
+TYPE_FIELD(char contentid[64], 0x3D4);
+TYPE_FIELD(char path[64], 0x46C);
+TYPE_END();
 
 
 //#define _KERNEL 0

@@ -45,7 +45,7 @@ extern "C" {
 #include "types.h"
 
 #include <fcntl.h>
-
+#include <pthread.h>
 
 
 #include "UserService.h"
@@ -609,6 +609,7 @@ void initSceScreenshot(void)
 #define SCE_NP_TROPHY_NAME_MAX_SIZE 128
 #define SCE_NP_TROPHY_DESCR_MAX_SIZE 1024
 #define SCE_NP_TROPHY_INVALID_CONTEXT (-1)
+#define SCE_NP_TROPHY_INVALID_HANDLE		(-1)
 #define SCE_NP_TROPHY_ERROR_INVALID_NP_SERVICE_LABEL -2141907423 /*0x80551621*/
 #define SCE_NP_TROPHY_ERROR_INVALID_ARGUMENT	-2141907452
 #define SCE_NP_TROPHY_ERROR_INVALID_HANDLE	-2141907448
@@ -843,12 +844,12 @@ PRX_EXPORT int MountSaveData(char* TITLEID,char* fingerprint)
 	{
 		if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
 		{
-			notify("Save Mount Full");
+			//notify("Save Mount Full");
 			return ret;
 		}
 		else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
 		{
-			notify("Save Mounted");
+			//notify("Save Mounted");
 		}
 	}
 	return ret;
@@ -893,12 +894,12 @@ PRX_EXPORT int MountSaveData_Path(char* TITLEID,char* SaveToMount,char* fingerpr
 	{
 		if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
 		{
-			notify("Save Mount Full");
+			//notify("Save Mount Full");
 			return ret;
 		}
 		else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
 		{
-			notify("Save Mounted");
+			//notify("Save Mounted");
 		}
 	}
 	return ret;
@@ -954,12 +955,12 @@ PRX_EXPORT int MountSaveData2(char* TITLEID,char* SaveToMount)
 		{
 			if(ret = SCE_SAVE_DATA_ERROR_MOUNT_FULL)
 			{
-				notify("Save Mount Full");
+				//notify("Save Mount Full");
 				return ret;
 			}
 			else if(ret == SCE_SAVE_DATA_ERROR_PARAMETER)
 			{
-				notify("Save Mounted");
+				//notify("Save Mounted");
 			}
 		}
 
@@ -986,7 +987,7 @@ PRX_EXPORT int UnMountSaveData()
 
 		if (SaveDataUnmount(&mountPoint) < 0 ) {
 			// Error handling
-			notify("Error Unmounting Save Data");
+			//notify("Error Unmounting Save Data");
 		}
 	}
 	return ret;
@@ -1586,6 +1587,80 @@ PRX_EXPORT int MakeCusaAppReadWrite()
 	return 1;
 }
 
+#define SCE_NP_TROPHY_NUM_MAX							(128)
+#define TROPHY_MANAGER_QUEUE_SIZE (SCE_NP_TROPHY_NUM_MAX + 1)
+
+typedef enum TrophyManagerRequestType{
+	TROPHY_MANAGER_REQUEST_REGISTER,
+	TROPHY_MANAGER_REQUEST_UNLOCK,
+	TROPHY_MANAGER_REQUEST_SHOW_TROPHY_LIST,
+	TROPHY_MANAGER_REQUEST_CAPTURE_SCREENSHOT,
+} TrophyManagerRequestType;
+
+typedef struct TrophyManagerRequest{
+	TrophyManagerRequestType type;
+	union {
+		SceNpTrophyId trophyId;
+		SceNpTrophyContext context;
+	} param;
+} TrophyManagerRequest;
+
+typedef struct TrophyManagerQueue {
+	TrophyManagerRequest reqArray[TROPHY_MANAGER_QUEUE_SIZE];
+	int reqCount;
+	int isAborted;
+	ScePthreadMutex mutex;
+	ScePthreadCond cond;
+} TrophyManagerQueue;
+
+/* trophy flag array */
+#define SCE_NP_TROPHY_FLAG_SETSIZE			(128)
+#define SCE_NP_TROPHY_FLAG_BITS				(sizeof(SceNpTrophyFlagMask) * 8)
+#define SCE_NP_TROPHY_FLAG_BITS_ALL			((SceNpTrophyFlagMask)-1)
+#define SCE_NP_TROPHY_FLAG_BITS_SHIFT		(5)
+#define SCE_NP_TROPHY_FLAG_BITS_MASK		(SCE_NP_TROPHY_FLAG_BITS - 1)
+#define SCE_NP_TROPHY_FLAG_BITS_MAX			(SCE_NP_TROPHY_FLAG_SETSIZE - 1)
+#define SCE_NP_TROPHY_FLAG_SET(n, p) \
+	((p)->flagBits[(n) >> SCE_NP_TROPHY_FLAG_BITS_SHIFT] |= (1 << ((n) & SCE_NP_TROPHY_FLAG_BITS_MASK)))
+#define SCE_NP_TROPHY_FLAG_CLR(n, p) \
+	((p)->flagBits[(n) >> SCE_NP_TROPHY_FLAG_BITS_SHIFT] &= ~(1 << ((n) & SCE_NP_TROPHY_FLAG_BITS_MASK)))
+#define SCE_NP_TROPHY_FLAG_ISSET(n, p) \
+	((p)->flagBits[(n) >> SCE_NP_TROPHY_FLAG_BITS_SHIFT] & (1 << ((n) & SCE_NP_TROPHY_FLAG_BITS_MASK)))
+#define SCE_NP_TROPHY_FLAG_ZERO(p) do { \
+	SceNpTrophyFlagArray *__fa = (p); \
+	SceNpTrophyFlagMask __i; \
+	for(__i = 0; __i < (SCE_NP_TROPHY_FLAG_SETSIZE >> SCE_NP_TROPHY_FLAG_BITS_SHIFT); __i++) \
+	__fa->flagBits[__i] = 0; \
+} while(0)
+
+
+
+typedef uint32_t SceNpTrophyFlagMask;
+typedef struct SceNpTrophyFlagArray {
+	SceNpTrophyFlagMask flagBits[SCE_NP_TROPHY_FLAG_SETSIZE >> SCE_NP_TROPHY_FLAG_BITS_SHIFT];
+} SceNpTrophyFlagArray;
+
+typedef enum TrophyManagerState {
+	TROPHY_MANAGER_STATE_INIT = 0,
+	TROPHY_MANAGER_STATE_REGISTERING,
+	TROPHY_MANAGER_STATE_READY,
+	TROPHY_MANAGER_STATE_ERROR,
+} TrophyManagerState;
+
+typedef struct TrophyManager{
+	TrophyManagerState state;
+	int errCode;
+	SceNpTrophyContext context;
+	SceNpTrophyHandle handle;
+	uint32_t trophyCount;
+	SceNpTrophyFlagArray trophyFlagArray;
+	TrophyManagerQueue queue;
+	ScePthreadMutex mutex;
+	ScePthread thread;
+} TrophyManager;
+
+
+TrophyManager  					m_trophyManager;
 
 /*Example code provided*/
 PRX_EXPORT int UnlockTrophies(char* TitleId,char * Titleidsecret)
@@ -1875,7 +1950,7 @@ PRX_EXPORT bool CreateAndRegister()
 		char buffer[1000];
 		printf("Error %s",ex.what());
 		sprintf(buffer, "Error %s",ex.what());
-		notify(buffer);
+		//notify(buffer);
 	}
 	return true;
 
@@ -1956,7 +2031,7 @@ PRX_EXPORT bool DestroyAndTerminate()
 		char buffer[1000];
 		printf("Error %s",ex.what());
 		sprintf(buffer, "Error %s",ex.what());
-		notify(buffer);
+		//notify(buffer);
 	}
 	return true;
 
@@ -1966,10 +2041,15 @@ PRX_EXPORT bool UnlockSpesificTrophy(SceNpTrophyId trophyId)
 {
 	try
 	{
+
+
 		int ret = -1;
 		initSysUtil();
 		initsysNpTrophy();
 		initsysNpManager();
+
+
+
 		SceNpTrophyId platinumId = SCE_NP_TROPHY_INVALID_TROPHY_ID;
 		ret = NpTrophyUnlockTrophy(context, handle,
 			trophyId, &platinumId);
@@ -2003,9 +2083,264 @@ PRX_EXPORT bool UnlockSpesificTrophy(SceNpTrophyId trophyId)
 		char buffer[1000];
 		printf("Error %s",ex.what());
 		sprintf(buffer, "Error %s",ex.what());
-		notify(buffer);
+		//notify(buffer);
 	}
 	return true;
+}
+
+void
+	mtxLock(ScePthreadMutex *mutex)
+{
+	int ret = scePthreadMutexLock(mutex);
+	if (ret < 0) {
+		//PRINTF("scePthreadMutexLock() failed. ret = 0x%x\n", ret);
+	}
+}
+
+void
+	mtxUnlock(ScePthreadMutex *mutex)
+{
+	int ret = scePthreadMutexUnlock(mutex);
+	if (ret < 0) {
+		//PRINTF("scePthreadMutexUnlock() failed. ret = 0x%x\n", ret);
+	}
+}
+
+void trophyManagerQueueDestroy(TrophyManagerQueue *queue)
+{
+	scePthreadCondDestroy(&queue->cond);
+	scePthreadMutexDestroy(&queue->mutex);
+	queue->reqCount = 0;
+}
+
+
+void trophyManagerDestroy(TrophyManager *manager)
+{
+	scePthreadMutexDestroy(&manager->mutex);
+	trophyManagerQueueDestroy(&manager->queue);
+}
+
+void trophyManagerQueueEnqueue(TrophyManagerQueue *queue,const TrophyManagerRequest *req)
+{
+	int ret = SCE_OK;
+	mtxLock(&queue->mutex);
+	assert(queue->reqCount < TROPHY_MANAGER_QUEUE_SIZE);
+	queue->reqArray[queue->reqCount++] = *req;
+	ret = scePthreadCondBroadcast(&queue->cond);
+	if (ret < 0) {
+		//PRINTF("scePthreadCondBroadcast() failed. ret = 0x%x\n", ret);
+	}
+	mtxUnlock(&queue->mutex);
+}
+
+void
+trophyManagerUnlock(TrophyManager *manager, SceNpTrophyId trophyId)
+{
+	TrophyManagerRequest req;
+	req.type = TROPHY_MANAGER_REQUEST_UNLOCK;
+	req.param.trophyId = trophyId;
+	trophyManagerQueueEnqueue(&manager->queue, &req);
+}
+
+
+
+
+bool
+	trophyManagerQueueDequeue(TrophyManagerQueue *queue,
+	TrophyManagerRequest *req)
+{
+	bool isOK;
+	mtxLock(&queue->mutex);
+	while (queue->reqCount == 0 && !queue->isAborted) {
+		int ret = scePthreadCondWait(&queue->cond, &queue->mutex);
+		if (ret < 0) {
+			//PRINTF("scePthreadCondWait() failed. ret = 0x%x\n", ret);
+		}
+	}
+	isOK = !queue->isAborted;
+	if (isOK) {
+		*req = queue->reqArray[0];
+		queue->reqCount--;
+		memmove(&queue->reqArray[0], &queue->reqArray[1],
+			queue->reqCount * sizeof(TrophyManagerRequest));
+	}
+	mtxUnlock(&queue->mutex);
+	return isOK;
+}
+
+
+void
+	unlockTrophy(TrophyManager *manager, SceNpTrophyId trophyId)
+{
+	SceNpTrophyId platinumId = SCE_NP_TROPHY_INVALID_TROPHY_ID;
+	int ret;
+	assert(manager->state == TROPHY_MANAGER_STATE_READY);
+	ret = NpTrophyUnlockTrophy(manager->context, manager->handle,
+		trophyId, &platinumId);
+	if (ret < 0) {
+		//PRINTF("sceNpTrophyUnlockTrophy() failed. ret = 0x%x\n", ret);
+	} else {
+		mtxLock(&manager->mutex);
+		//PRINTF("trophy<%d> is unlocked.\n", trophyId);
+		SCE_NP_TROPHY_FLAG_SET(trophyId, &manager->trophyFlagArray);
+		if (platinumId != SCE_NP_TROPHY_INVALID_TROPHY_ID) {
+			SCE_NP_TROPHY_FLAG_SET(platinumId, &manager->trophyFlagArray);
+		}
+		mtxUnlock(&manager->mutex);
+	}
+}
+
+void
+	changeState(TrophyManager *manager, TrophyManagerState state, int errCode)
+{
+	mtxLock(&manager->mutex);
+	manager->state = state;
+	manager->errCode = errCode;
+	mtxUnlock(&manager->mutex);
+}
+
+
+
+int
+	trophyManagerQueueCreate(TrophyManagerQueue *queue)
+{
+	int ret;
+	queue->reqCount = 0;
+	ret = scePthreadMutexInit(&queue->mutex, NULL, "TrophyManagerQueue");
+	if (ret < 0) {
+		//PRINTF("scePthreadMutexInit() failed. ret = 0x%x\n", ret);
+		return ret;
+	}
+	ret = scePthreadCondInit(&queue->cond, NULL, "TrophyManagerQueue");
+	if (ret < 0) {
+		//PRINTF("scePthreadCondInit() failed. ret = 0x%x\n", ret);
+		scePthreadMutexDestroy(&queue->mutex);
+		return ret;
+	}
+	return SCE_OK;
+}
+
+
+
+int	trophyManagerCreate(TrophyManager *manager)
+{
+	int ret = trophyManagerQueueCreate(&manager->queue);
+	if (ret < 0) {
+		return ret;
+	}
+	ret = scePthreadMutexInit(&manager->mutex, NULL, "TrophyManager");
+	if (ret < 0) {
+		//PRINTF("scePthreadMutexInit() failed. ret = 0x%x\n", ret);
+		trophyManagerQueueDestroy(&manager->queue);
+		return ret;
+	}
+	manager->state = TROPHY_MANAGER_STATE_INIT;
+	manager->errCode = SCE_OK;
+	manager->context = SCE_NP_TROPHY_INVALID_CONTEXT;
+	manager->handle = SCE_NP_TROPHY_INVALID_HANDLE;
+	manager->trophyCount = 0;
+	SCE_NP_TROPHY_FLAG_ZERO(&manager->trophyFlagArray);
+	return SCE_OK;
+}
+
+void *
+	requestHandlingLoop(void *arg)
+{
+	TrophyManager *manager = (TrophyManager *)arg;
+	TrophyManagerRequest req;
+
+	while (trophyManagerQueueDequeue(&manager->queue, &req)) {
+		if (manager->state == TROPHY_MANAGER_STATE_ERROR) {
+			//PRINTF("request<%d> is discarded.\n", req.type);
+			continue;
+		}
+		switch (req.type) {
+			/*case TROPHY_MANAGER_REQUEST_REGISTER:
+			registerContext(manager, req.param.context);
+			break;*/
+		case TROPHY_MANAGER_REQUEST_UNLOCK:
+			unlockTrophy(manager, req.param.trophyId);
+			break;
+			/*case TROPHY_MANAGER_REQUEST_SHOW_TROPHY_LIST:
+			showTrophyList(manager);*/
+			/*case TROPHY_MANAGER_REQUEST_CAPTURE_SCREENSHOT:
+			captureScreenshot(manager, req.param.trophyId);
+			break;*/
+		}
+	}
+	//PRINTF("exit request handling loop.\n");
+	return NULL;
+}
+
+int
+	trophyManagerStart(TrophyManager *manager, SceNpTrophyContext context)
+{
+	int ret;
+	TrophyManagerRequest req;
+	manager->context = context;
+	ret = sceNpTrophySystemCreateHandle(&manager->handle);
+	if (ret < 0) {
+		return ret;
+	}
+	changeState(manager, TROPHY_MANAGER_STATE_REGISTERING, SCE_OK);
+	ret = scePthreadCreate(&manager->thread, NULL,
+		requestHandlingLoop, manager, "TrophyManager");
+	if (ret < 0) {
+		//PRINTF("scePthreadCreate() failed. ret = 0x%x\n", ret);
+		sceNpTrophyDestroyHandle(manager->handle);
+		changeState(manager, TROPHY_MANAGER_STATE_INIT, SCE_OK);
+		return ret;
+	}
+	req.type = TROPHY_MANAGER_REQUEST_REGISTER;
+	req.param.context = context;
+	trophyManagerQueueEnqueue(&manager->queue, &req);
+	return SCE_OK;
+}
+
+
+PRX_EXPORT bool  UnlockAllTrophies()
+{
+	try
+	{	
+		int ret = -1;
+		initSysUtil();
+		initsysNpTrophy();
+		initsysNpManager();
+		ret = trophyManagerCreate(&m_trophyManager);
+		if (ret < 0) {
+			goto error2;
+		}
+
+		SceNpTrophyGameDetails details;
+
+		memset(&details, 0x00, sizeof(details));
+
+		details.size = sizeof(details);
+
+		ret = sceNpTrophyGetGameInfo(m_trophyManager.context,m_trophyManager.handle,  &details, NULL);
+		if ( ret < 0 ) {
+			// Error handling
+		}
+		for (int i = 0; i < details.numTrophies; i++)
+		{
+			trophyManagerUnlock(&m_trophyManager, i);
+		}
+
+
+		trophyManagerDestroy(&m_trophyManager);
+
+	}
+	catch(std::exception ex)
+	{
+		char buffer[1000];
+		printf("Error %s",ex.what());
+		sprintf(buffer, "Error %s",ex.what());
+		notify(buffer);
+	}
+
+	return true;
+error2:
+	return false;
 }
 
 

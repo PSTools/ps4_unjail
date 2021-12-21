@@ -56,6 +56,7 @@ extern void cpu_enable_wp();
 int (*sysctl)(const int *, u_int, void *, size_t *, const void *, size_t);
 
 
+
 //struct kinfo_proc {
 //	struct	proc kp_proc;			/* proc structure */
 //	struct	eproc {
@@ -213,10 +214,8 @@ struct kinfo_proc {
 	char name[];
 };
 
-int (*proc_rw_mem1)(struct kinfo_proc *p, struct uio *uio);
 
-
-struct kinfo_proc* findProcess(char *procName) {
+struct kproc* findProcess(char *procName) {
 	int procPID = 0;
 	while (!procPID) {
 		int mib[3];
@@ -234,8 +233,8 @@ struct kinfo_proc* findProcess(char *procName) {
 				if (sysctl(mib, 3, dump, &len, NULL, 0) != -1) {
 					int structSize = *(int *)dump;
 					for (size_t i = 0; i < (len / structSize); i++) {
-						struct kinfo_proc *procInfo = (struct kinfo_proc *)(dump + (i * structSize));
-						if (!strcmp(procInfo->name, procName)) {
+						struct kproc *procInfo = (struct kproc *)(dump + (i * structSize));
+						if (!strcmp(procInfo->p_comm, procName)) {
 							procPID = procInfo->pid;
 							return procInfo;
 							break;
@@ -814,27 +813,64 @@ int createThread(void*(func)(void*), void* args)
 //	return r;
 //}
 
-int apply_pacthes1(struct kinfo_proc* p , patch_info* patches)
+int apply_pacthes1(struct thread1 *td,struct kproc* p , patch_info* patches)
 {
+	int(*printfkernel)(const char *fmt, ...) = (void *)(gKernelBase + 0x00436040);
+	printfkernel("Kernel Log");
+	struct ucred* cred;
+	struct filedesc1* fd;
+
+	fd = td->td_proc->p_fd;
+	cred = td->td_proc->p_ucred;
+	//notify("We made it this far");
+	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
+	uint8_t* kernel_ptr = (uint8_t*)kernel_base;
+	void** got_prison0 =   (void**)&kernel_ptr[K505_PRISON_0];
+	void** got_rootvnode = (void**)&kernel_ptr[K505_ROOTVNODE];
+
+	cred->cr_uid = 0;
+	cred->cr_ruid = 0;
+	cred->cr_rgid = 0;
+	cred->cr_groups[0] = 0;
+
+	cred->cr_prison = *got_prison0;
+	fd->fd_rdir = fd->fd_jdir = *got_rootvnode;
+
+	// escalate ucred privs, needed for access to the filesystem ie* mounting & decrypting files
+	void *td_ucred = *(void **)(((char *)td) + 304); // p_ucred == td_ucred
+
+	// sceSblACMgrIsSystemUcred
+	uint64_t *sonyCred = (uint64_t *)(((char *)td_ucred) + 96);
+	*sonyCred = 0xffffffffffffffff;
+
+	// sceSblACMgrGetDeviceAccessType
+	uint64_t *sceProcType = (uint64_t *)(((char *)td_ucred) + 88);
+	*sceProcType = 0x3801000000000013; // Max access
+
+	// sceSblACMgrHasSceProcessCapability
+	uint64_t *sceProcCap = (uint64_t *)(((char *)td_ucred) + 104);
+	*sceProcCap = 0xffffffffffffffff; // Sce Process
+
+
 	uint64_t code_address, code_size;
 	int result = get_code_info(p->pid, &code_address, &code_size, 0);
 	if (result < 0)
 	{
 		char proc_path1[164];
 		sprintf(proc_path1, "Failed to get code info for %d: %d\n", p->pid, result);
-		notify(proc_path1);
+		//notify(proc_path1);
 		//printfsocket("Failed to get code info for %d: %d\n", pid, result);
 		return -1;
 	}
 
 	char proc_path[64];
 	sprintf(proc_path, "/mnt/proc/%d/mem", p->pid);
-	notify(proc_path);
+	//notify(proc_path);
 	//open
-	int fd = syscall(5,proc_path, 0x0002, 0);
-	if (fd < 0)
+	int fd1 = syscall(5,proc_path, 0x0002, 0);
+	if (fd1 < 0)
 	{
-		notify("Failed to open");
+		//notify("Failed to open");
 		//printfsocket("Failed to open %s!\n", proc_path);
 		return -2;
 	}
@@ -864,20 +900,20 @@ int apply_pacthes1(struct kinfo_proc* p , patch_info* patches)
 		size_t n;
 		char proc_path1[164];
 		sprintf(proc_path1, "Address %llx\n", addressinmem);
-		notify(proc_path1);
+		//notify(proc_path1);
 		////mem protect
 		//procWriteBytes(p->pid,(void*)(code_address + patches[i].address),(void*)patches[i].data,patches[i].size);
 		//result = syscall(74,(void*)addressinmem,patches[i].size,VM_PROT_ALL);
 		if(result != 0)
 		{
 			sprintf(proc_path1, "patch %s: %d\n", patches[i].name, result);
-			notify(proc_path1);
+			//notify(proc_path1);
 			sprintf(proc_path, "Value of errno: %d\n", errno);
-			notify(proc_path);
+			//notify(proc_path);
 			sprintf(proc_path,  "Error: %s\n", strerror( errno ));
-			notify(proc_path);
+			//notify(proc_path);
 		}
-		addressinmem =lseek(fd, code_address + patches[i].address, SEEK_SET);//go back to the start and read again
+		addressinmem =lseek(fd1, code_address + patches[i].address, SEEK_SET);//go back to the start and read again
 		result = proc_rw_mem(p,(void*)(addressinmem),patches[i].size,&patches[i].data ,&n,1);//offset you wanne change
 		//result = syscall(476,fd, patches[i].data, sizeof(patches[i].data), patches[i].size);//	write
 
@@ -885,11 +921,11 @@ int apply_pacthes1(struct kinfo_proc* p , patch_info* patches)
 		if(result != 0)
 		{
 			sprintf(proc_path1, "patch %s: %d\n", patches[i].name, result);
-			notify(proc_path1);
+			//notify(proc_path1);
 			sprintf(proc_path, "Value of errno: %d\n", errno);
-			notify(proc_path);
+			//notify(proc_path);
 			sprintf(proc_path,  "Error: %s\n", strerror( errno ));
-			notify(proc_path);
+			//notify(proc_path);
 		}
 		//printfsocket("patch %s: %d %d\n", patches[i].name, result, result < 0 ? errno : 0);
 	}
@@ -997,276 +1033,216 @@ patch_info K505_shellcore_patches[32] =
 
 #pragma endregion << Old Patching doesn't seem to work >>
 
-//
-//
-////i dont care abo
-////void Install_Patch(uint64_t Address, const void* Data, size_t Length)
-////{
-////
-////	//Set protection to all
-////	sceKernelMprotect((void*)Address, Length, VM_PROT_ALL);
-////
-////	//Write Patch.
-////	memcpy((void*)Address, Data, Length);
-////
-////	//klog("[Patcher] Install_Patch: Patch (%llX) Written Successfully!\n", Address);
-////}
-//
-////int get_proc_count() {
-////	int count = 0;
-////	struct proc *p;
-////
-////	uint8_t* kernbase = gKernelBase;
-////	p = *(struct proc **)(kernbase + K505_addr_allproc);
-////
-////	do {
-////		count++;
-////	} while ((p = p->p_forw));
-////
-////	return count;
-////}
-////
-////struct proc *proc_find_by_name(const char *name) {
-////	struct proc *p;
-////
-////	if (!name) {
-////		return NULL;
-////	}
-////
-////	uint8_t* kernbase = gKernelBase;
-////	p = *(struct proc **)(kernbase + K505_addr_allproc);
-////
-////	do {
-////		if (!memcmp(p->p_comm, name, strlen(name))) {
-////			return p;
-////		}
-////	} while ((p = p->p_forw));
-////
-////	return NULL;
-////}
-//
-////struct proc *proc_find_by_pid(int pid) {
-////	struct proc *p;
-////
-////	uint8_t* kernbase = gKernelBase;
-////	p = *(struct proc **)(kernbase + K505_addr_allproc);
-////
-////	do {
-////		if (p->pid == pid) {
-////			return p;
-////		}
-////	} while ((p = p->p_forw));
-////
-////	return NULL;
-////}
-////
-////int proc_get_vm_map(struct proc *p, struct proc_vm_map_entry **entries, size_t *num_entries) {
-////	struct proc_vm_map_entry *info = NULL;
-////	struct vm_map_entry *entry = NULL;
-////
-////	struct vmspace *vm = vmspace_acquire_ref(p);
-////	if (!vm) {
-////		return 1;
-////	}
-////
-////	struct vm_map *map = &vm->vm_map;
-////
-////	int num = map->nentries;
-////	if (!num) {
-////		vmspace_free(vm);
-////		return 0;
-////	}
-////
-////	vm_map_lock_read(map);
-////
-////	if (vm_map_lookup_entry(map, NULL, &entry)) {
-////		vm_map_unlock_read(map);
-////		vmspace_free(vm);
-////		return 1;
-////	}
-////
-////	info = (struct proc_vm_map_entry *)alloc(num * sizeof(struct proc_vm_map_entry));
-////	if (!info) {
-////		vm_map_unlock_read(map);
-////		vmspace_free(vm);
-////		return 1;
-////	}
-////
-////	for (int i = 0; i < num; i++) {
-////		info[i].start = entry->start;
-////		info[i].end = entry->end;
-////		info[i].offset = entry->offset;
-////		info[i].prot = entry->prot & (entry->prot >> 8);
-////		memcpy(info[i].name, entry->name, sizeof(info[i].name));
-////
-////		if (!(entry = entry->next)) {
-////			break;
-////		}
-////	}
-////
-////	vm_map_unlock_read(map);
-////	vmspace_free(vm);
-////
-////	if (entries) {
-////		*entries = info;
-////	}
-////
-////	if (num_entries) {
-////		*num_entries = num;
-////	}
-////
-////	return 0;
-////}
-////
-////int proc_rw_mem(struct proc *p, void *ptr, size_t size, void *data, size_t *n, int write) {
-////	struct thread *td = curthread();
-////	struct iovec iov;
-////	struct uio uio;
-////	int r = 0;
-////
-////	if (!p) {
-////		return 1;
-////	}
-////
-////	if (size == 0) {
-////		if (n) {
-////			*n = 0;
-////		}
-////
-////		return 0;
-////	}
-////
-////	memset(&iov, NULL, sizeof(iov));
-////	iov.iov_base = (uint64_t)data;
-////	iov.iov_len = size;
-////
-////	memset(&uio, NULL, sizeof(uio));
-////	uio.uio_iov = (uint64_t)&iov;
-////	uio.uio_iovcnt = 1;
-////	uio.uio_offset = (uint64_t)ptr;
-////	uio.uio_resid = (uint64_t)size;
-////	uio.uio_segflg = UIO_SYSSPACE;
-////	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
-////	uio.uio_td = td;
-////
-////	r = proc_rwmem(p, &uio);
-////
-////	if (n) {
-////		*n = (size_t)((uint64_t)size - uio.uio_resid);
-////	}
-////
-////	return r;
-////}
-////
-////inline int proc_read_mem(struct proc *p, void *ptr, size_t size, void *data, size_t *n) {
-////	return proc_rw_mem(p, ptr, size, data, n, 0);
-////}
-////
-////inline int proc_write_mem(struct proc *p, void *ptr, size_t size, void *data, size_t *n) {
-////	return proc_rw_mem(p, ptr, size, data, n, 1);
-////}
-////
-////int proc_allocate(struct proc *p, void **address, size_t size) {
-////	uint64_t addr = NULL;
-////	int r = 0;
-////
-////	if (!address) {
-////		r = 1;
-////		goto error;
-////	}
-////
-////	struct vmspace *vm = p->p_vmspace;
-////	struct vm_map *map = &vm->vm_map;
-////
-////	vm_map_lock(map);
-////
-////	r = vm_map_findspace(map, NULL, size, &addr);
-////	if (r) {
-////		vm_map_unlock(map);
-////		goto error;
-////	}
-////
-////	r = vm_map_insert(map, NULL, NULL, addr, addr + size, VM_PROT_ALL, VM_PROT_ALL, 0);
-////
-////	vm_map_unlock(map);
-////
-////	if (r) {
-////		goto error;
-////	}
-////
-////	if (address) {
-////		*address = (void *)addr;
-////	}
-////
-////error:
-////	return r;
-////}
-////
-////int proc_deallocate(struct proc *p, void *address, size_t size) {
-////	int r = 0;
-////
-////	struct vmspace *vm = p->p_vmspace;
-////	struct vm_map *map = &vm->vm_map;
-////
-////	vm_map_lock(map);
-////
-////	r = vm_map_delete(map, (uint64_t)address, (uint64_t)address + size);
-////
-////	vm_map_unlock(map);
-////
-////	return r;
-////}
-////
-////int proc_mprotect(struct proc *p, void *address, void *end, int new_prot) {
-////	int r = 0;
-////
-////	uint64_t addr = (uint64_t)address;
-////	uint64_t addrend = (uint64_t)end;
-////
-////	struct vmspace *vm = p->p_vmspace;
-////	struct vm_map *map = &vm->vm_map;
-////
-////	r = vm_map_protect(map, addr, addrend, new_prot, 1);
-////	r = vm_map_protect(map, addr, addrend, new_prot, 0);
-////
-////	return r;
-////}
-////
-////
-////uint64_t proc_alloc_size(uint64_t p)
-////{
-////	uint64_t ldrsize = p;
-////	ldrsize += (PAGE_SIZE - (ldrsize % PAGE_SIZE));
-////	return ldrsize;
-////}
-//
-//void Patch505()
-//{
-//	notify("Patch505");
-//	int ret = 0;
-//
-//	/*struct proc *ssc =  proc_find_by_name("SceShellCore");
-//
-//	if (!ssc) {
-//	ret = -1;
-//	goto error;
-//	}
-//	char buffer[180];*/
-//	/*buffer[180];
-//	sprintf(buffer, "Address \n0x%08x", ssc->);
-//	notify(buffer);*/
-//	//Install_Patch(ssc->paddr,
-//	//Install_Patch();
-//
-//
-//error:
-//	/*if (entries)
-//	dealloc(entries);*/
-//
-//	//return ret;
-//	return;
-//}
-//
+
+#pragma region << Sys Kernel Patches >>
+
+
+
+
+
+/*Functions that need to be resloved*/
+int (*proc_rw_mem1)(struct kproc *p, struct uio *uio);
+void(*vm_map_lock)(struct vm_map * map);
+void(*vm_map_lock_read)(struct vm_map *map);
+int(*vm_map_insert)(struct vm_map * map, uint64_t object, uint64_t offset, uint64_t start, uint64_t end, int prot, int max, int cow);
+void(*vm_map_unlock)(struct vm_map * map);
+struct vmspace *(*vmspace_acquire_ref)(struct kproc *p);
+void(*vmspace_free)(struct vmspace *vm);
+int(*vm_map_lookup_entry)(struct vm_map *map, uint64_t address, struct vm_map_entry **entries);
+void(*vm_map_unlock_read)(struct vm_map *map);
+int (*proc_rwmem)(struct kproc *p, struct uio *uio);
+static inline void *alloc(uint32_t size)
+{
+	return malloc(size);
+}
+
+static inline void dealloc(void* addr)
+{
+	free(addr);
+}
+
+// custom syscall 111
+struct sys_kern_rw_args {
+	uint64_t address;
+	void *data;
+	uint64_t length;
+	uint64_t write;
+} __attribute__((packed));
+int sys_kern_rw(struct kthread *td, struct sys_kern_rw_args *uap);
+
+int sys_kern_rw(struct kthread *td, struct sys_kern_rw_args *uap) {
+	if(uap->write) {
+		cpu_disable_wp();
+		memcpy((void *)uap->address, uap->data, uap->length);
+		cpu_enable_wp();
+	} else {
+		memcpy(uap->data, (void *)uap->address, uap->length);
+	}
+
+	td->td_retval[0] = 0;
+	return 0;
+}
+
+struct kproc *proc_find_by_name(const char *name) {
+	int procPID = 0;
+	while (!procPID) {
+		int mib[3];
+		size_t len;
+		mib[0] = CTL_KERN;
+		mib[1] = KERN_PROC;
+		mib[2] = KERN_PROC_ALL;
+
+		if (sysctl(mib, 3, NULL, &len, NULL, 0) != -1) {
+			if (len > 0) {
+				void *dump = malloc(len);
+				if (dump == NULL) {
+					return -1;
+				}
+				if (sysctl(mib, 3, dump, &len, NULL, 0) != -1) {
+					int structSize = *(int *)dump;
+					for (size_t i = 0; i < (len / structSize); i++) {
+						struct kproc *procInfo = (struct kproc *)(dump + (i * structSize));
+						if (!strcmp(procInfo->p_comm, name)) {
+							procPID = procInfo->pid;
+							return procInfo;
+							break;
+						}
+					}
+				}
+				free(dump);
+			}
+		}
+
+		sceKernelSleep(1);
+	}
+}
+
+struct proc_vm_map_entry {
+	char name[32];
+	uint64_t start;
+	uint64_t end;
+	uint64_t offset;
+	uint16_t prot;
+} __attribute__((packed));
+
+static inline int proc_write_mem(struct kproc *p, void *ptr, size_t size, void *data, size_t *n) 
+{
+	return proc_rw_mem(p, ptr, size, data, n, 1);
+}
+
+int proc_get_vm_map(struct kproc *p, struct proc_vm_map_entry **entries, size_t *num_entries)
+{
+	struct proc_vm_map_entry *info = NULL;
+	struct vm_map_entry *entry = NULL;
+
+	struct vmspace *vm = vmspace_acquire_ref(p);
+	if (!vm)
+		return -1;
+
+	struct vm_map *map = &vm->vm_map;
+
+	int num = map->nentries;
+	if (!num) {
+		vmspace_free(vm);
+		return 0;
+	}
+
+	vm_map_lock_read(map);
+
+	if (vm_map_lookup_entry(map, 0, &entry)) {
+		vm_map_unlock_read(map);
+		vmspace_free(vm);
+		return -1;
+	}
+
+	info = (struct proc_vm_map_entry *)alloc(num * sizeof(struct proc_vm_map_entry));
+	if (!info) {
+		vm_map_unlock_read(map);
+		vmspace_free(vm);
+		return -1;
+	}
+
+	for (int i = 0; i < num; i++) {
+		info[i].start = entry->start;
+		info[i].end = entry->end;
+		info[i].offset = entry->offset;
+		info[i].prot = entry->prot & (entry->prot >> 8);
+		memcpy(info[i].name, entry->name, sizeof(info[i].name));
+
+		if (!(entry = entry->next))
+			break;
+	}
+
+	vm_map_unlock_read(map);
+	vmspace_free(vm);
+
+	if (entries)
+		*entries = info;
+
+	if (num_entries)
+		*num_entries = num;
+
+	return 0;
+}
+
+int KPatch()
+{
+	struct kproc *p;
+	struct vmspace *vm;
+	struct vm_map *map;
+	int r;
+
+	uint8_t *text_seg_base = NULL;
+	size_t n;
+
+	struct proc_vm_map_entry *entries = NULL;
+	size_t num_entries = 0;
+
+	int ret = 0;
+	p = proc_find_by_name("SceShellCore");
+	if(!p) {
+		printf("[ps4debug] could not find SceShellCore process!\n");
+		return 1;
+	}
+
+	vm = p->p_vmspace;
+	map = &vm->vm_map;
+
+	ret = proc_get_vm_map(p, &entries, &num_entries);
+	if (ret) {
+		return -15;
+	}
+
+	for (int i = 0; i < num_entries; i++) {
+		if (entries[i].prot == (PROT_READ | PROT_EXEC)) {
+			text_seg_base = (uint8_t *)entries[i].start;
+			break;
+		}
+	}
+
+	if (!text_seg_base) {
+		ret = -1;
+		return ret;
+	}
+	#define r(name, offset) name = (void *)(kbase + offset)
+
+	// enable savedata mounting
+	ret = proc_write_mem(p, (void *)(text_seg_base + K505_verify_keystone_patch), 4, "\x48\x31\xC0\xC3", &n);//0x48, 0x31, 0xC0, 0xC3
+	if (ret)
+	{
+		return ret;
+	}
+
+	 ret = proc_write_mem(p, (void *)(text_seg_base + K505_save_mount_permision), 3, "\x31\xC0\xC3", &n);//0x48, 0x31, 0xC0, 0xC3
+	 if (ret)
+	 {
+		return ret;
+	 }
+}
+
+#pragma endregion << Sys Kernel Patches >>
+
+
 int Mira_Patch_505(void* td, void* args)
 {
 
@@ -1344,15 +1320,16 @@ int Mira_Patch_505(void* td, void* args)
 	return 0;
 
 }
-struct uio {
-	struct	iovec1 *uio_iov;		/* scatter/gather list */
-	int	uio_iovcnt;		/* length of scatter/gather list */
-	off_t	uio_offset;		/* offset in target object */
-	ssize_t	uio_resid;		/* remaining bytes to process */
-	enum	uio_seg uio_segflg;	/* address space */
-	enum	uio_rw uio_rw;		/* operation */
-	struct	thread1 *uio_td;		/* owner */
-};
+
+TYPE_BEGIN(struct uio, 0x30);
+TYPE_FIELD(uint64_t uio_iov, 0);
+TYPE_FIELD(uint32_t uio_iovcnt, 8);
+TYPE_FIELD(uint64_t uio_offset, 0x10);
+TYPE_FIELD(uint64_t uio_resid, 0x18);
+TYPE_FIELD(uint32_t uio_segflg, 0x20);
+TYPE_FIELD(uint32_t uio_rw, 0x24);
+TYPE_FIELD(struct kthread *uio_td, 0x28);
+TYPE_END();
 
 //int proc_write_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n) 
 //{
@@ -1500,10 +1477,7 @@ int patcher(struct thread1 *td){
 	kmem[0] = 0xEB;*/
 
 
-	kmem = (uint8_t *)&kernel_ptr[K505_TARGET_ID];
-	//kmem = (uint8_t *)tid_patch;
-	kmem[0] = 0x82;
-
+	
 
 	kmem = (uint8_t *)&kernel_ptr[K505_NPDRM_OPEN];
 	kmem[0] = 0x31;
@@ -1539,25 +1513,76 @@ int patcher(struct thread1 *td){
 
 	return 0;
 }
-static inline struct thread1 *curthread(void) {
-	struct thread1* td;
-	__asm__ volatile (
-		"mov %0, %%gs:0"
-		: "=r"(td)
-		);
 
-	return td;
+int K505_Patch_Target_ID(struct thread1 *td)
+{
+	struct ucred* cred;
+	struct filedesc1* fd;
+
+	fd = td->td_proc->p_fd;
+	cred = td->td_proc->p_ucred;
+	//notify("We made it this far");
+	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
+	uint8_t* kernel_ptr = (uint8_t*)kernel_base;
+	void** got_prison0 =   (void**)&kernel_ptr[K505_PRISON_0];
+	void** got_rootvnode = (void**)&kernel_ptr[K505_ROOTVNODE];
+
+	cred->cr_uid = 0;
+	cred->cr_ruid = 0;
+	cred->cr_rgid = 0;
+	cred->cr_groups[0] = 0;
+
+	cred->cr_prison = *got_prison0;
+	fd->fd_rdir = fd->fd_jdir = *got_rootvnode;
+
+	// escalate ucred privs, needed for access to the filesystem ie* mounting & decrypting files
+	void *td_ucred = *(void **)(((char *)td) + 304); // p_ucred == td_ucred
+
+	// sceSblACMgrIsSystemUcred
+	uint64_t *sonyCred = (uint64_t *)(((char *)td_ucred) + 96);
+	*sonyCred = 0xffffffffffffffff;
+
+	// sceSblACMgrGetDeviceAccessType
+	uint64_t *sceProcType = (uint64_t *)(((char *)td_ucred) + 88);
+	*sceProcType = 0x3801000000000013; // Max access
+
+	// sceSblACMgrHasSceProcessCapability
+	uint64_t *sceProcCap = (uint64_t *)(((char *)td_ucred) + 104);
+	*sceProcCap = 0xffffffffffffffff; // Sce Process
+
+	// Disable write protection
+	cpu_disable_wp();
+
+
+	//Use "kmem" for all patches
+	uint8_t *kmem;
+
+	kmem = (uint8_t *)&kernel_ptr[K505_TARGET_ID];
+	//kmem = (uint8_t *)tid_patch;
+	kmem[0] = 0x82;
+
+	// Restore write protection
+	cpu_enable_wp();
+
+	return 0;
+
 }
+
 
 struct iovec1 {
 	uint64_t iov_base;
 	size_t iov_len;
-};
-
-int proc_rw_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t *n, int write)
+}iovec1;
+static inline __attribute__((always_inline))
+struct uint64_t* curthread(void)
 {
-	notify("proc_rw_mem");
-	struct thread1 *td = curthread();
+    uint64_t td;
+    __asm__ ("movq %0, %%gs:0" : "=r" (td) : : "memory");
+    return (uint64_t*)td;
+}
+int proc_rw_mem(struct kproc *p, void *ptr, size_t size, void *data, size_t *n, int write)
+{
+	struct kthread *td = curthread();
 	struct iovec1 iov;
 	struct uio uio;
 	int r = 0;
@@ -1571,32 +1596,43 @@ int proc_rw_mem(struct kinfo_proc *p, void *ptr, size_t size, void *data, size_t
 
 		return 0;
 	}
-	notify("mem set iov");
+
 	memset(&iov, 0, sizeof(iov));
 	iov.iov_base = (uint64_t)data;
 	iov.iov_len = size;
-	notify("mem set uio");
-	
+
 	memset(&uio, 0, sizeof(uio));
-	uio.uio_iov = &iov;
+	uio.uio_iov = (uint64_t)&iov;
 	uio.uio_iovcnt = 1;
 	uio.uio_offset = (uint64_t)ptr;
 	uio.uio_resid = (uint64_t)size;
 	uio.uio_segflg = UIO_SYSSPACE;
 	uio.uio_rw = write ? UIO_WRITE : UIO_READ;
 	uio.uio_td = td;
-	
-	notify("mem proc_rw_mem1 uio");
-	r = proc_rw_mem1(p, &uio);
+
+	r = proc_rwmem(p, &uio);
 
 	if (n)
 		*n = (size_t)((uint64_t)size - uio.uio_resid);
 
 	return r;
 }
+
 void Resolve()
 {
-	resolve(proc_rw_mem1);
+
+	proc_rw_mem1 = (int (*)(struct kproc *p, struct uio *uio))K505_kdlsym_proc_rw_mem1_addr;
+	vm_map_lock = (void(*)(struct vm_map * map))K505_kdlsym__vm_map_lock_addr;
+	vm_map_lock_read = (void(*)(struct vm_map *map))K505_kdlsym__vm_map_lock_read_addr;
+	vm_map_insert = (int (*)(struct vm_map * map, uint64_t object, uint64_t offset, uint64_t start, uint64_t end, int prot, int max, int cow))K505_kdlsym__vm_map_insert_addr;
+	vm_map_unlock = (void(*)(struct vm_map * map))K505_kdlsym__vm_map_unlock_addr;
+	//struct vmspace* (*vmspace_acquire_ref)(struct kproc *) = kdlsym(vmspace_acquire_ref);
+	vmspace_acquire_ref = (struct vmspace*(*)(struct kproc *))K505_kdlsym_vmspace_acquire_ref_addr;
+	vmspace_free = (void(*)(struct vmspace *vm))K505_kdlsym_vmspace_free_addr;
+	vm_map_lookup_entry= (int (*)(struct vm_map *map, uint64_t address, struct vm_map_entry **entries))K505_kdlsym_addr_vm_map_lookup_entry;
+	vm_map_unlock_read = (void(*)(struct vm_map *map))K505_kdlsym_addr__vm_map_unlock_read;
+	proc_rwmem = (int(*)(struct kproc *p, struct uio *uio))K505_kdlsym_proc_rw_mem1_addr;
+	//resolve(proc_rw_mem1);
 }
 
 void InstallPatches(int FW)
@@ -1636,24 +1672,27 @@ void InstallPatches(int FW)
 		break;
 	case 505:
 		{
-			notify("resolving");
 			Resolve();
 			//notify("resolving");
 			bool EnableOldPathcer = true;
-			notify("Enabling write Mode 505");
 			//notify("505");
 			/*kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-K505_XFAST_SYSCALL];
 			gKernelBase = (uint8_t*)kernel_base;*/
 			struct thread1 td;
 			syscall(11,patcher,td);
+
+			//for my demo using a semi dex i need this
+			syscall(11,K505_Patch_Target_ID,td);
+
+			notify("Trying to patch");
 			//save data patches
 
 			if(EnableOldPathcer == true)
 			{
 				int result;
-
+				//int(*printfkernel)(const char *fmt, ...) = (void *)(gKernelBase + 0x00436040);
 				printf("Hello From Klog");
-				struct kinfo_proc* shell_pid = findProcess("SceShellCore");
+				struct kproc* shell_pid = findProcess("SceShellCore");
 				if (shell_pid < 0)
 				{
 					notify("shell PID issue");
@@ -1692,8 +1731,8 @@ void InstallPatches(int FW)
 					return;
 				}
 
-
-				if(apply_pacthes1(shell_pid,K505_shellcore_patches) != 0)
+				notify("trying new patch method");
+				if(syscall(11,apply_pacthes1,td,shell_pid,K505_shellcore_patches) != 0)
 				{
 					notify("Could not patch SceShellCore");
 				}

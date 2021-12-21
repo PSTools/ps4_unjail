@@ -92,6 +92,7 @@
     <ClCompile Include="Kernel.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="mount.c" />
+    <ClCompile Include="Patch505.cpp" />
     <ClCompile Include="Patcher.c" />
     <ClCompile Include="PatcherUtil.s" />
     <ClCompile Include="PlayerInterface\UnityPrxPlugin.cpp" />
@@ -105,6 +106,7 @@
     <ClCompile Include="syscall.cpp" />
     <ClCompile Include="SystemService.cpp" />
     <ClCompile Include="SysUtil.cpp" />
+    <ClCompile Include="TrophyUtil.c" />
     <ClCompile Include="unjail.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">CompileAsC</CompileAs>
     </ClCompile>
@@ -113,7 +115,6 @@
   <ItemGroup>
     <ClInclude Include="bls.h" />
     <ClInclude Include="CommonDialog.h" />
-    <ClInclude Include="Common_Patcher.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="decrypt.h" />
     <ClInclude Include="decryptio.h" />
@@ -121,7 +122,6 @@
     <ClInclude Include="DownloadHTTPS.h" />
     <ClInclude Include="encryptsrv.h" />
     <ClInclude Include="encryptsrv_args.h" />
-    <ClInclude Include="freebsd_helper.h" />
     <ClInclude Include="ftps4.h" />
     <ClInclude Include="Kernel.h" />
     <ClInclude Include="Module.h" />
@@ -144,11 +144,11 @@
     <ClInclude Include="SaveDataDialog.h" />
     <ClInclude Include="Saves.h" />
     <ClInclude Include="SoundUtil.h" />
-    <ClInclude Include="freebsd.h" />
     <ClInclude Include="syscall.h" />
     <ClInclude Include="SystemService.h" />
     <ClInclude Include="SYSTEM_VERSION.h" />
     <ClInclude Include="SysUtil.h" />
+    <ClInclude Include="TrophyUtil.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="unjail.h" />
     <ClInclude Include="UserService.h" />

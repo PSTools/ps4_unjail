@@ -44,6 +44,12 @@
     <ClCompile Include="PatcherUtil.s">
       <Filter>Patcher</Filter>
     </ClCompile>
+    <ClCompile Include="Patch505.cpp">
+      <Filter>Patcher</Filter>
+    </ClCompile>
+    <ClCompile Include="TrophyUtil.c">
+      <Filter>TrophyUtil</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="PlayerInterface">
@@ -75,6 +81,9 @@
     </Filter>
     <Filter Include="Jailbreak">
       <UniqueIdentifier>{c7dd7486-ab8e-455d-aa4a-92b089ad9757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TrophyUtil">
+      <UniqueIdentifier>{440d58dd-40c8-49d4-85d4-92d9d4c07e25}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -145,13 +154,7 @@
     <ClInclude Include="SYSTEM_VERSION.h">
       <Filter>Patcher</Filter>
     </ClInclude>
-    <ClInclude Include="Common_Patcher.h">
-      <Filter>Patcher</Filter>
-    </ClInclude>
     <ClInclude Include="proc.h">
-      <Filter>Patcher</Filter>
-    </ClInclude>
-    <ClInclude Include="freebsd.h">
       <Filter>Patcher</Filter>
     </ClInclude>
     <ClInclude Include="resolver_patch.h">
@@ -160,8 +163,8 @@
     <ClInclude Include="resolver_patch.c">
       <Filter>Patcher</Filter>
     </ClInclude>
-    <ClInclude Include="freebsd_helper.h">
-      <Filter>Patcher</Filter>
+    <ClInclude Include="TrophyUtil.h">
+      <Filter>TrophyUtil</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
