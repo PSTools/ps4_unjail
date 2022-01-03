@@ -1901,7 +1901,7 @@ PRX_EXPORT bool CreateAndRegister()
 		UserServiceGetUserId();
 
 		//SceNpTrophyHandle handle = SCE_NP_TROPHY_ERROR_INVALID_HANDLE;
-		ret = sceNpTrophySystemCreateHandle(&handle);
+		ret = NpTrophyCreateHandle(&handle);
 		if (ret < 0) {
 			//if(DEBUGENABlED == 1)
 			sprintf(buffer, "NpTrophyCreateHandle() failed. ret = 0x%x\n", ret);
@@ -2134,7 +2134,7 @@ void trophyManagerQueueEnqueue(TrophyManagerQueue *queue,const TrophyManagerRequ
 }
 
 void
-trophyManagerUnlock(TrophyManager *manager, SceNpTrophyId trophyId)
+	trophyManagerUnlock(TrophyManager *manager, SceNpTrophyId trophyId)
 {
 	TrophyManagerRequest req;
 	req.type = TROPHY_MANAGER_REQUEST_UNLOCK;
@@ -2243,6 +2243,27 @@ int	trophyManagerCreate(TrophyManager *manager)
 	return SCE_OK;
 }
 
+static void
+	registerContext(TrophyManager *manager, SceNpTrophyContext context)
+{
+	int ret;
+	assert(manager->state == TROPHY_MANAGER_STATE_REGISTERING);
+	ret = sceNpTrophyRegisterContext(manager->context, manager->handle, 0);
+	if (ret < 0) {
+		//PRINTF("sceNpTrophyRegisterContext() failed. ret = 0x%x\n", ret);
+		changeState(manager, TROPHY_MANAGER_STATE_ERROR, ret);
+		return;
+	}
+	changeState(manager, TROPHY_MANAGER_STATE_READY, SCE_OK);
+	//PRINTF("Context<%d> is registered.\n", context);
+	//ret = sceNpTrophyGetTrophyUnlockState(manager->context, manager->handle,
+	//									  &manager->trophyFlagArray,
+	//									  &manager->trophyCount);
+	//if (ret < 0) {
+	//	//PRINTF("sceNpTrophyGetTrophyUnlockState() failed. ret = 0x%x\n", ret);
+	//}
+}
+
 void *
 	requestHandlingLoop(void *arg)
 {
@@ -2255,9 +2276,9 @@ void *
 			continue;
 		}
 		switch (req.type) {
-			/*case TROPHY_MANAGER_REQUEST_REGISTER:
-			registerContext(manager, req.param.context);
-			break;*/
+		case TROPHY_MANAGER_REQUEST_REGISTER:
+			//registerContext(manager, req.param.context);
+			break;
 		case TROPHY_MANAGER_REQUEST_UNLOCK:
 			unlockTrophy(manager, req.param.trophyId);
 			break;
@@ -2273,20 +2294,21 @@ void *
 }
 
 int
-	trophyManagerStart(TrophyManager *manager, SceNpTrophyContext context)
+	trophyManagerStart(TrophyManager *manager, SceNpTrophyContext context,SceNpTrophyHandle handle)
 {
 	int ret;
 	TrophyManagerRequest req;
 	manager->context = context;
-	ret = sceNpTrophySystemCreateHandle(&manager->handle);
+	manager->handle = handle;
+	/*ret = sceNpTrophySystemCreateHandle(&manager->handle);
 	if (ret < 0) {
-		return ret;
-	}
+	return ret;
+	}*/
 	changeState(manager, TROPHY_MANAGER_STATE_REGISTERING, SCE_OK);
 	ret = scePthreadCreate(&manager->thread, NULL,
 		requestHandlingLoop, manager, "TrophyManager");
 	if (ret < 0) {
-		//PRINTF("scePthreadCreate() failed. ret = 0x%x\n", ret);
+		notify("scePthreadCreate() failed.");
 		sceNpTrophyDestroyHandle(manager->handle);
 		changeState(manager, TROPHY_MANAGER_STATE_INIT, SCE_OK);
 		return ret;
@@ -2297,6 +2319,7 @@ int
 	return SCE_OK;
 }
 
+SceNpTrophyContext			m_trophyContext;
 
 PRX_EXPORT bool  UnlockAllTrophies()
 {
@@ -2306,11 +2329,52 @@ PRX_EXPORT bool  UnlockAllTrophies()
 		initSysUtil();
 		initsysNpTrophy();
 		initsysNpManager();
+
 		ret = trophyManagerCreate(&m_trophyManager);
 		if (ret < 0) {
+			notify("Error trophyManagerCreate"); 
 			goto error2;
 		}
 
+		char buffer[1000];
+
+
+		ret = InitlizieUserService();
+		if (ret < 0) {
+			//if(DEBUGENABlED == 1)
+			sprintf(buffer, "InitlizieUserService() failed. ret = 0x%x\n", ret);
+			notify(buffer);
+			// Error handling
+		}
+
+		UserServiceGetUserId();
+
+		/*ret = sceNpTrophySystemCreateHandle(&m_trophyManager.handle);
+		if(ret <0)
+		{
+		buffer[500];
+		sprintf(buffer, "sceNpTrophySystemCreateHandle Error\n0x%08x", ret);
+		notify(buffer);
+		return ret;
+		}
+
+		ret = sceNpTrophyCreateContext(&m_trophyContext,userId,0, 0);
+		if (ret < 0) {
+		buffer[500];
+		sprintf(buffer, "sceNpTrophySystemCreateContext Error\n0x%08x", ret);
+		notify(buffer);
+		goto error2;
+		}*/
+
+		//m_trophyManager.context = context;
+		//m_trophyManager.handle = handle;
+		notify("trophyManagerStart");
+		ret =trophyManagerStart(&m_trophyManager,context,handle);
+		if (ret < 0) {
+			notify("Error trophyManagerStart"); 
+			goto error2;
+		}
+		notify("GetGameDetails");
 		SceNpTrophyGameDetails details;
 
 		memset(&details, 0x00, sizeof(details));
@@ -2319,10 +2383,20 @@ PRX_EXPORT bool  UnlockAllTrophies()
 
 		ret = sceNpTrophyGetGameInfo(m_trophyManager.context,m_trophyManager.handle,  &details, NULL);
 		if ( ret < 0 ) {
+			buffer[500];
 			// Error handling
+			sprintf(buffer,  "Error: %s\n", strerror( errno ));
+			notify(buffer);
+			goto error2;
 		}
+		/*for (int i = details.numTrophies - 1; i >= 0; i--)
+		{
+		notify("Unlocking");
+		trophyManagerUnlock(&m_trophyManager, i);
+		}*/
 		for (int i = 0; i < details.numTrophies; i++)
 		{
+			notify("Unlocking");
 			trophyManagerUnlock(&m_trophyManager, i);
 		}
 
